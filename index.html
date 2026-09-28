@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>قطاع الملايكة - Scout Manager</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #2D6A4F;
+    --green-mid: #40916C;
+    --green-light: #74C69D;
+    --green-pale: #D8F3DC;
+    --green-faint: #F0FAF3;
+    --brown: #5C4033;
+    --amber: #E9A919;
+    --amber-pale: #FFF3CD;
+    --red: #C0392B;
+    --red-pale: #FDECEA;
+    --blue: #2563EB;
+    --blue-pale: #EFF6FF;
+    --text: #1A2E22;
+    --text-mid: #3D5A47;
+    --text-muted: #7A9585;
+    --border: #C8E6D0;
+    --surface: #FFFFFF;
+    --bg: #F4FAF6;
+    --radius: 10px;
+    --shadow: 0 1px 4px rgba(45,106,79,0.10);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Cairo', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 15px; }
+
+  /* ===== SCREENS ===== */
+  .screen { display: none; min-height: 100vh; }
+  .screen.active { display: flex; flex-direction: column; }
+
+  /* ===== LOGIN SCREEN ===== */
+  #screen-login { align-items: center; justify-content: center; background: linear-gradient(160deg, #1B4332 0%, #2D6A4F 60%, #40916C 100%); }
+  .login-box { background: white; border-radius: 20px; padding: 40px 36px; width: 100%; max-width: 420px; box-shadow: 0 8px 32px rgba(0,0,0,0.18); }
+  .login-logo { text-align: center; margin-bottom: 28px; }
+  .login-logo .logo-icon { width: 64px; height: 64px; background: var(--green-pale); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 12px; }
+  .login-logo .logo-icon svg { width: 36px; height: 36px; fill: var(--green); }
+  .login-logo h1 { font-size: 22px; font-weight: 700; color: var(--green); }
+  .login-logo p { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+  .login-label { font-size: 13px; font-weight: 600; color: var(--text-mid); margin-bottom: 6px; display: block; }
+  .login-select, .login-input { width: 100%; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: var(--radius); font-family: 'Cairo', sans-serif; font-size: 14px; color: var(--text); background: white; margin-bottom: 16px; outline: none; }
+  .login-select:focus, .login-input:focus { border-color: var(--green-mid); }
+  .login-role-btns { display: flex; gap: 10px; margin-bottom: 20px; }
+  .role-btn { flex: 1; padding: 12px; border: 2px solid var(--border); border-radius: var(--radius); background: white; font-family: 'Cairo', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; transition: all .18s; color: var(--text-muted); }
+  .role-btn.active { border-color: var(--green); background: var(--green-faint); color: var(--green); }
+  .login-btn { width: 100%; padding: 13px; background: var(--green); color: white; border: none; border-radius: var(--radius); font-family: 'Cairo', sans-serif; font-size: 16px; font-weight: 700; cursor: pointer; transition: background .18s; }
+  .login-btn:hover { background: var(--green-mid); }
+  .login-error { color: var(--red); font-size: 13px; text-align: center; margin-bottom: 12px; display: none; }
+  .admin-pass-field { display: none; }
+
+  /* ===== APP SHELL ===== */
+  #screen-app { background: var(--bg); }
+  .app-header { background: var(--green); color: white; padding: 0 20px; height: 56px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
+  .app-header-title { font-size: 16px; font-weight: 700; }
+  .app-header-sub { font-size: 12px; opacity: .75; }
+  .header-right { display: flex; align-items: center; gap: 10px; }
+  .logout-btn { background: rgba(255,255,255,0.15); border: none; color: white; padding: 6px 14px; border-radius: 20px; font-family: 'Cairo', sans-serif; font-size: 13px; cursor: pointer; }
+  .logout-btn:hover { background: rgba(255,255,255,0.25); }
+  .birthday-banner { background: var(--amber); color: #5C3D00; padding: 8px 20px; font-size: 13px; font-weight: 600; display: none; text-align: center; }
+
+  /* ===== TABS ===== */
+  .tabs-bar { display: flex; background: white; border-bottom: 2px solid var(--border); padding: 0 20px; gap: 0; overflow-x: auto; position: sticky; top: 56px; z-index: 90; }
+  .tab-btn { padding: 14px 18px; font-family: 'Cairo', sans-serif; font-size: 14px; font-weight: 600; border: none; background: none; cursor: pointer; color: var(--text-muted); white-space: nowrap; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all .18s; }
+  .tab-btn.active { color: var(--green); border-bottom-color: var(--green); }
+  .tab-content { display: none; padding: 20px; max-width: 900px; margin: 0 auto; width: 100%; }
+  .tab-content.active { display: block; }
+
+  /* ===== CARDS ===== */
+  .card { background: white; border-radius: 14px; box-shadow: var(--shadow); padding: 20px; margin-bottom: 16px; border: 1px solid var(--border); }
+  .card-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+  .card-title .badge { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; }
+  .badge-green { background: var(--green-pale); color: var(--green); }
+  .badge-amber { background: var(--amber-pale); color: #7A5000; }
+  .badge-red { background: var(--red-pale); color: var(--red); }
+  .badge-blue { background: var(--blue-pale); color: var(--blue); }
+
+  /* ===== YEARLY PLAN ===== */
+  .meeting-card { background: white; border-radius: 14px; box-shadow: var(--shadow); border: 1px solid var(--border); margin-bottom: 14px; overflow: hidden; }
+  .meeting-header { background: var(--green-faint); padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+  .meeting-date { font-size: 13px; color: var(--text-muted); font-weight: 600; }
+  .meeting-num { font-size: 15px; font-weight: 700; color: var(--green); }
+  .meeting-body { padding: 14px 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .para-item { padding: 10px 14px; border-radius: 8px; border: 1.5px solid var(--border); background: var(--bg); }
+  .para-item.mine { border-color: var(--amber); background: var(--amber-pale); }
+  .para-label { font-size: 11px; font-weight: 600; color: var(--text-muted); margin-bottom: 3px; }
+  .para-leader { font-size: 13px; font-weight: 700; color: var(--text); }
+  .para-item.mine .para-leader { color: #7A5000; }
+
+  /* ===== ATTENDANCE / FOLLOWUP ===== */
+  .child-row { background: white; border-radius: 12px; box-shadow: var(--shadow); border: 1px solid var(--border); padding: 16px 18px; margin-bottom: 12px; }
+  .child-name { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .child-info { font-size: 12px; color: var(--text-muted); margin-bottom: 10px; }
+  .status-btns { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+  .status-btn { padding: 7px 16px; border-radius: 20px; border: 1.5px solid var(--border); background: white; font-family: 'Cairo', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--text-muted); transition: all .15s; }
+  .status-btn.s-done, .status-btn.s-present { background: var(--green-pale); border-color: var(--green-light); color: var(--green); }
+  .status-btn.s-excused { background: var(--amber-pale); border-color: var(--amber); color: #7A5000; }
+  .status-btn.s-absent { background: var(--red-pale); border-color: var(--red); color: var(--red); }
+  .notes-input { width: 100%; padding: 8px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 13px; color: var(--text); resize: vertical; min-height: 56px; outline: none; }
+  .notes-input:focus { border-color: var(--green-mid); }
+
+  /* ===== ADMIN TABS ===== */
+  .section-title { font-size: 17px; font-weight: 700; color: var(--green); margin-bottom: 16px; padding-bottom: 10px; border-bottom: 2px solid var(--green-pale); }
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { background: var(--green-faint); padding: 10px 14px; text-align: right; font-weight: 700; color: var(--green); border-bottom: 2px solid var(--border); }
+  td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  tr:hover td { background: var(--green-faint); }
+  .act-btn { padding: 5px 14px; border-radius: 20px; border: none; font-family: 'Cairo', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; }
+  .act-btn-green { background: var(--green-pale); color: var(--green); }
+  .act-btn-red { background: var(--red-pale); color: var(--red); }
+
+  /* ===== REPORTS ===== */
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-bottom: 20px; }
+  .stat-box { background: white; border-radius: 12px; padding: 18px; box-shadow: var(--shadow); border: 1px solid var(--border); text-align: center; }
+  .stat-num { font-size: 32px; font-weight: 700; color: var(--green); line-height: 1; }
+  .stat-label { font-size: 12px; color: var(--text-muted); margin-top: 6px; }
+  .progress-bar { height: 8px; border-radius: 4px; background: var(--green-pale); margin-top: 8px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 4px; background: var(--green); transition: width .4s; }
+
+  /* ===== BIRTHDAYS ===== */
+  .month-section { margin-bottom: 20px; }
+  .month-title { font-size: 14px; font-weight: 700; color: var(--text-mid); margin-bottom: 10px; padding: 6px 14px; background: var(--green-faint); border-radius: 8px; display: inline-block; }
+  .bday-item { display: flex; align-items: center; gap: 14px; padding: 10px 16px; background: white; border-radius: 10px; margin-bottom: 8px; border: 1px solid var(--border); box-shadow: var(--shadow); }
+  .bday-avatar { width: 38px; height: 38px; border-radius: 50%; background: var(--green-pale); display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; color: var(--green); flex-shrink: 0; }
+  .bday-name { font-size: 14px; font-weight: 700; flex: 1; }
+  .bday-date { font-size: 12px; color: var(--text-muted); }
+  .bday-today { border-color: var(--amber); background: var(--amber-pale); }
+
+  /* ===== ADD FORM ===== */
+  .add-form { background: var(--green-faint); border: 1.5px solid var(--border); border-radius: 12px; padding: 18px; margin-bottom: 20px; }
+  .add-form h3 { font-size: 14px; font-weight: 700; color: var(--green); margin-bottom: 14px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+  .form-row.single { grid-template-columns: 1fr; }
+  .form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--text-mid); margin-bottom: 4px; }
+  .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-family: 'Cairo', sans-serif; font-size: 13px; color: var(--text); background: white; outline: none; }
+  .form-group input:focus, .form-group select:focus { border-color: var(--green-mid); }
+  .save-btn { background: var(--green); color: white; border: none; border-radius: 8px; padding: 10px 24px; font-family: 'Cairo', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; }
+  .save-btn:hover { background: var(--green-mid); }
+
+  /* ===== ACTIVITIES ===== */
+  .activity-card { display: flex; align-items: center; gap: 16px; background: white; border-radius: 12px; padding: 16px 18px; margin-bottom: 12px; border: 1px solid var(--border); box-shadow: var(--shadow); }
+  .activity-icon { width: 44px; height: 44px; border-radius: 10px; background: var(--green-pale); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .activity-icon svg { width: 24px; height: 24px; fill: var(--green); }
+  .activity-info { flex: 1; }
+  .activity-name { font-size: 15px; font-weight: 700; }
+  .activity-meta { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
+  .pdf-btn { background: var(--red-pale); color: var(--red); border: none; border-radius: 8px; padding: 8px 16px; font-family: 'Cairo', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+
+  /* ===== LEADER ATTENDANCE ===== */
+  .leader-att-row { background: white; border-radius: 12px; padding: 14px 18px; margin-bottom: 10px; border: 1px solid var(--border); }
+  .la-name { font-size: 14px; font-weight: 700; margin-bottom: 8px; }
+  .la-controls { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .uniform-toggle { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-muted); margin-right: 10px; }
+  .uniform-toggle input { accent-color: var(--green); width: 16px; height: 16px; }
+
+  @media (max-width: 600px) {
+    .meeting-body { grid-template-columns: 1fr; }
+    .form-row { grid-template-columns: 1fr; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .tab-btn { padding: 12px 12px; font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== LOGIN SCREEN ===== -->
+<div id="screen-login" class="screen active">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
+      </div>
+      <h1>قطاع الملايكة</h1>
+      <p>نظام إدارة الكشافة</p>
+    </div>
+
+    <p style="font-size:13px;font-weight:600;color:var(--text-mid);margin-bottom:10px;">أنا:</p>
+    <div class="login-role-btns">
+      <button class="role-btn active" onclick="selectRole('leader')" id="role-leader">مساعد قائد فريق</button>
+      <button class="role-btn" onclick="selectRole('admin')" id="role-admin">قائد القطاع (أدمن)</button>
+    </div>
+
+    <div id="leader-fields">
+      <label class="login-label">اختار الفصل:</label>
+      <select class="login-select" id="sel-class">
+        <option value="">-- اختار --</option>
+        <option value="الملايكة أولى">الملايكة أولى</option>
+        <option value="الملايكة ثانية">الملايكة ثانية</option>
+      </select>
+      <label class="login-label">اختار اسمك:</label>
+      <select class="login-select" id="sel-leader">
+        <option value="">-- اختار --</option>
+      </select>
+    </div>
+
+    <div class="admin-pass-field" id="admin-pass-field">
+      <label class="login-label">كلمة السر:</label>
+      <input class="login-input" type="password" id="admin-pass" placeholder="ادخل كلمة السر">
+    </div>
+
+    <p class="login-error" id="login-error">بيانات غلط، حاول تاني</p>
+    <button class="login-btn" onclick="doLogin()">دخول</button>
+  </div>
+</div>
+
+<!-- ===== APP SCREEN ===== -->
+<div id="screen-app" class="screen">
+  <div class="birthday-banner" id="birthday-banner">🎂 عيد ميلاد سعيد يا <span id="bday-name-banner"></span>!</div>
+
+  <div class="app-header">
+    <div>
+      <div class="app-header-title" id="header-title">قطاع الملايكة</div>
+      <div class="app-header-sub" id="header-sub"></div>
+    </div>
+    <div class="header-right">
+      <button class="logout-btn" onclick="doLogout()">خروج</button>
+    </div>
+  </div>
+
+  <!-- LEADER TABS -->
+  <div id="leader-tabs" style="display:none">
+    <div class="tabs-bar">
+      <button class="tab-btn active" onclick="showTab('plan')">خطة السنة</button>
+      <button class="tab-btn" onclick="showTab('followup')">الافتقاد</button>
+      <button class="tab-btn" onclick="showTab('activities')">الأنشطة</button>
+      <button class="tab-btn" onclick="showTab('attendance')">الحضور والغياب</button>
+    </div>
+    <div id="tab-plan" class="tab-content active"></div>
+    <div id="tab-followup" class="tab-content"></div>
+    <div id="tab-activities" class="tab-content"></div>
+    <div id="tab-attendance" class="tab-content"></div>
+  </div>
+
+  <!-- ADMIN TABS -->
+  <div id="admin-tabs" style="display:none">
+    <div class="tabs-bar">
+      <button class="tab-btn active" onclick="showAdminTab('plan-mgmt')">إدارة الخطة</button>
+      <button class="tab-btn" onclick="showAdminTab('children-mgmt')">إدارة الأولاد</button>
+      <button class="tab-btn" onclick="showAdminTab('leaders-mgmt')">القادة</button>
+      <button class="tab-btn" onclick="showAdminTab('leaders-att')">حضور القادة</button>
+      <button class="tab-btn" onclick="showAdminTab('birthdays')">أعياد الميلاد</button>
+      <button class="tab-btn" onclick="showAdminTab('reports')">التقارير</button>
+    </div>
+    <div id="tab-plan-mgmt" class="tab-content active"></div>
+    <div id="tab-children-mgmt" class="tab-content"></div>
+    <div id="tab-leaders-mgmt" class="tab-content"></div>
+    <div id="tab-leaders-att" class="tab-content"></div>
+    <div id="tab-birthdays" class="tab-content"></div>
+    <div id="tab-reports" class="tab-content"></div>
+  </div>
+</div>
+
+<script>
+// ===== DATA =====
+const ADMIN_PASS = "1234";
+
+const DATA = {
+  leaders: [
+    { id: 1, name: "القس مرقس", class: "الملايكة أولى", phone: "0100000001", dob: "1990-03-15" },
+    { id: 2, name: "الأخ بولس",  class: "الملايكة أولى", phone: "0100000002", dob: "1995-09-28" },
+    { id: 3, name: "الأخ يوحنا", class: "الملايكة ثانية", phone: "0100000003", dob: "1992-06-10" },
+    { id: 4, name: "الأخ متى",   class: "الملايكة ثانية", phone: "0100000004", dob: "1993-09-28" },
+  ],
+  children: [
+    { id: 1, name: "كيرلس سامي",   class: "الملايكة أولى", leader_id: 1, phone: "0111111111", address: "شبرا", dob: "2015-03-05" },
+    { id: 2, name: "مارك أشرف",    class: "الملايكة أولى", leader_id: 1, phone: "0111111112", address: "المطرية", dob: "2014-07-22" },
+    { id: 3, name: "بيشوي كامل",   class: "الملايكة أولى", leader_id: 2, phone: "0111111113", address: "عين شمس", dob: "2015-11-01" },
+    { id: 4, name: "مينا جرجس",    class: "الملايكة ثانية", leader_id: 3, phone: "0111111114", address: "حلمية", dob: "2016-02-14" },
+    { id: 5, name: "فيليبس رامي",  class: "الملايكة ثانية", leader_id: 3, phone: "0111111115", address: "روض الفرج", dob: "2015-08-30" },
+    { id: 6, name: "أبو فام نادر", class: "الملايكة ثانية", leader_id: 4, phone: "0111111116", address: "شبرا", dob: "2014-12-19" },
+  ],
+  meetings: [
+    { id: 1, date: "2024-10-04", num: 1, spiritual: 1, scout: 2, culture: 3, game: 4, other: "" },
+    { id: 2, date: "2024-10-18", num: 2, spiritual: 3, scout: 4, culture: 1, game: 2, other: "" },
+    { id: 3, date: "2024-11-01", num: 3, spiritual: 2, scout: 1, culture: 4, game: 3, other: "" },
+    { id: 4, date: "2024-11-15", num: 4, spiritual: 4, scout: 3, culture: 2, game: 1, other: "" },
+    { id: 5, date: "2024-12-06", num: 5, spiritual: 1, scout: 2, culture: 3, game: 4, other: "" },
+  ],
+  activities: [
+    { id: 1, name: "معسكر الصيف", date: "2024-07-10", leader_id: 1, pdf: null },
+    { id: 2, name: "رحلة المقطم", date: "2024-09-20", leader_id: 3, pdf: null },
+    { id: 3, name: "حفلة الكريسماس", date: "2024-12-24", leader_id: 2, pdf: null },
+  ],
+  attendance: {},
+  followup: {},
+  leader_attendance: {},
+};
+
+let currentUser = null;
+let currentRole = "leader";
+
+// ===== ROLE SELECT =====
+function selectRole(r) {
+  currentRole = r;
+  document.getElementById("role-leader").classList.toggle("active", r === "leader");
+  document.getElementById("role-admin").classList.toggle("active", r === "admin");
+  document.getElementById("leader-fields").style.display = r === "leader" ? "block" : "none";
+  document.getElementById("admin-pass-field").style.display = r === "admin" ? "block" : "none";
+}
+
+// populate leader dropdown based on class
+document.getElementById("sel-class").addEventListener("change", function() {
+  const cls = this.value;
+  const sel = document.getElementById("sel-leader");
+  sel.innerHTML = '<option value="">-- اختار --</option>';
+  DATA.leaders.filter(l => l.class === cls).forEach(l => {
+    sel.innerHTML += `<option value="${l.id}">${l.name}</option>`;
+  });
+});
+
+function doLogin() {
+  const err = document.getElementById("login-error");
+  err.style.display = "none";
+  if (currentRole === "admin") {
+    const pass = document.getElementById("admin-pass").value;
+    if (pass !== ADMIN_PASS) { err.style.display = "block"; return; }
+    currentUser = { role: "admin", name: "قائد القطاع" };
+  } else {
+    const cls = document.getElementById("sel-class").value;
+    const lid = document.getElementById("sel-leader").value;
+    if (!cls || !lid) { err.textContent = "اختار الفصل والاسم"; err.style.display = "block"; return; }
+    const leader = DATA.leaders.find(l => l.id == lid);
+    currentUser = { role: "leader", name: leader.name, id: leader.id, class: cls };
+  }
+  document.getElementById("screen-login").classList.remove("active");
+  document.getElementById("screen-app").classList.add("active");
+  initApp();
+}
+
+function doLogout() {
+  currentUser = null;
+  document.getElementById("screen-app").classList.remove("active");
+  document.getElementById("screen-login").classList.add("active");
+  document.getElementById("admin-pass").value = "";
+  document.getElementById("login-error").style.display = "none";
+}
+
+// ===== INIT APP =====
+function initApp() {
+  document.getElementById("header-title").textContent = currentRole === "admin" ? "لوحة تحكم الأدمن — قطاع الملايكة" : "قطاع الملايكة";
+  document.getElementById("header-sub").textContent = currentUser.name + (currentUser.class ? " — " + currentUser.class : "");
+
+  if (currentRole === "admin") {
+    document.getElementById("admin-tabs").style.display = "block";
+    document.getElementById("leader-tabs").style.display = "none";
+    checkBirthdays();
+    renderAdminPlanMgmt();
+    renderAdminChildrenMgmt();
+    renderAdminLeadersMgmt();
+    renderAdminLeadersAtt();
+    renderBirthdays();
+    renderReports();
+  } else {
+    document.getElementById("leader-tabs").style.display = "block";
+    document.getElementById("admin-tabs").style.display = "none";
+    renderPlan();
+    renderFollowup();
+    renderActivities();
+    renderAttendance();
+  }
+}
+
+// ===== TAB SWITCHING =====
+function showTab(name) {
+  document.querySelectorAll("#leader-tabs .tab-content").forEach(t => t.classList.remove("active"));
+  document.querySelectorAll("#leader-tabs .tab-btn").forEach(t => t.classList.remove("active"));
+  document.getElementById("tab-" + name).classList.add("active");
+  event.target.classList.add("active");
+}
+function showAdminTab(name) {
+  document.querySelectorAll("#admin-tabs .tab-content").forEach(t => t.classList.remove("active"));
+  document.querySelectorAll("#admin-tabs .tab-btn").forEach(t => t.classList.remove("active"));
+  document.getElementById("tab-" + name).classList.add("active");
+  event.target.classList.add("active");
+}
+
+// ===== HELPERS =====
+function leaderName(id) {
+  const l = DATA.leaders.find(l => l.id == id);
+  return l ? l.name : "—";
+}
+function formatDate(d) {
+  if (!d) return "";
+  const parts = d.split("-");
+  return parts[2] + "/" + parts[1] + "/" + parts[0];
+}
+const PARA_NAMES = { spiritual: "المحاضرة الروحية", scout: "المحاضرة الكشفية", culture: "المحاضرة الثقافية", game: "اللعبة" };
+
+// ===== LEADER: YEARLY PLAN =====
+function renderPlan() {
+  const container = document.getElementById("tab-plan");
+  let html = `<h2 class="section-title">خطة اجتماعات السنة</h2>`;
+  DATA.meetings.forEach(m => {
+    html += `<div class="meeting-card">
+      <div class="meeting-header">
+        <span class="meeting-num">اجتماع ${m.num}</span>
+        <span class="meeting-date">${formatDate(m.date)}</span>
+      </div>
+      <div class="meeting-body">`;
+    ["spiritual","scout","culture","game"].forEach(key => {
+      const isMine = m[key] == currentUser.id;
+      html += `<div class="para-item ${isMine ? "mine" : ""}">
+        <div class="para-label">${PARA_NAMES[key]}</div>
+        <div class="para-leader">${leaderName(m[key])} ${isMine ? "⭐" : ""}</div>
+      </div>`;
+    });
+    html += `</div></div>`;
+  });
+  container.innerHTML = html;
+}
+
+// ===== LEADER: FOLLOWUP =====
+function renderFollowup() {
+  const myChildren = DATA.children.filter(c => c.leader_id == currentUser.id);
+  const container = document.getElementById("tab-followup");
+  if (!myChildren.length) { container.innerHTML = `<div class="card" style="text-align:center;color:var(--text-muted)">لا يوجد أولاد مسجلين</div>`; return; }
+  let html = `<h2 class="section-title">أولاد فصلي — الافتقاد</h2>`;
+  myChildren.forEach(c => {
+    const key = `f_${c.id}`;
+    const status = DATA.followup[key] || "";
+    const note = DATA.followup[key + "_note"] || "";
+    html += `<div class="child-row">
+      <div class="child-name">${c.name}</div>
+      <div class="child-info">📞 ${c.phone} &nbsp;|&nbsp; 📍 ${c.address} &nbsp;|&nbsp; 🎂 ${formatDate(c.dob)}</div>
+      <div class="status-btns">
+        <button class="status-btn ${status === "done" ? "s-done" : ""}" onclick="setFollowup(${c.id}, 'done', this)">تم الافتقاد ✓</button>
+        <button class="status-btn ${status === "pending" ? "s-absent" : ""}" onclick="setFollowup(${c.id}, 'pending', this)">لم يتم</button>
+      </div>
+      <textarea class="notes-input" placeholder="ملاحظات عن الطفل..." onchange="setFollowupNote(${c.id}, this.value)">${note}</textarea>
+    </div>`;
+  });
+  container.innerHTML = html;
+}
+function setFollowup(childId, status, btn) {
+  DATA.followup["f_" + childId] = status;
+  const row = btn.closest(".child-row");
+  row.querySelectorAll(".status-btn").forEach(b => { b.className = "status-btn"; });
+  btn.classList.add(status === "done" ? "s-done" : "s-absent");
+}
+function setFollowupNote(childId, val) {
+  DATA.followup["f_" + childId + "_note"] = val;
+}
+
+// ===== LEADER: ACTIVITIES =====
+function renderActivities() {
+  const container = document.getElementById("tab-activities");
+  let html = `<h2 class="section-title">الأنشطة السنوية</h2>`;
+  DATA.activities.forEach(a => {
+    const campIcon = `<svg viewBox="0 0 24 24"><path d="M12 3L2 21h20L12 3zm0 4l7 14H5l7-14z"/></svg>`;
+    html += `<div class="activity-card">
+      <div class="activity-icon">${campIcon}</div>
+      <div class="activity-info">
+        <div class="activity-name">${a.name}</div>
+        <div class="activity-meta">📅 ${formatDate(a.date)} &nbsp;|&nbsp; القائد المسئول: ${leaderName(a.leader_id)}</div>
+      </div>
+      <button class="pdf-btn" onclick="alert('ملف PDF غير مرفق بعد')">📄 البرنامج</button>
+    </div>`;
+  });
+  container.innerHTML = html;
+}
+
+// ===== LEADER: ATTENDANCE =====
+function renderAttendance() {
+  const myChildren = DATA.children.filter(c => c.leader_id == currentUser.id);
+  const container = document.getElementById("tab-attendance");
+  if (!myChildren.length) { container.innerHTML = `<div class="card" style="text-align:center;color:var(--text-muted)">لا يوجد أولاد مسجلين</div>`; return; }
+
+  // meeting picker
+  const latestMeeting = DATA.meetings[DATA.meetings.length - 1];
+  let html = `<h2 class="section-title">تسجيل الحضور والغياب</h2>
+  <div class="card" style="margin-bottom:16px">
+    <label style="font-size:13px;font-weight:600;color:var(--text-mid);margin-bottom:6px;display:block">اجتماع:</label>
+    <select class="login-select" style="margin-bottom:0" id="att-meeting-sel" onchange="renderAttendance()">
+      ${DATA.meetings.map(m => `<option value="${m.id}" ${m.id == latestMeeting.id ? "selected":""}>اجتماع ${m.num} — ${formatDate(m.date)}</option>`).join("")}
+    </select>
+  </div>`;
+
+  myChildren.forEach(c => {
+    const meetId = document.getElementById ? (document.getElementById("att-meeting-sel") ? document.getElementById("att-meeting-sel").value : latestMeeting.id) : latestMeeting.id;
+    const key = `att_${meetId}_${c.id}`;
+    const status = DATA.attendance[key] || "";
+    const note = DATA.attendance[key + "_note"] || "";
+    html += `<div class="child-row">
+      <div class="child-name">${c.name}</div>
+      <div class="status-btns">
+        <button class="status-btn ${status === "present" ? "s-present" : ""}" onclick="setAtt('${key}', 'present', this)">حضر ✓</button>
+        <button class="status-btn ${status === "excused" ? "s-excused" : ""}" onclick="setAtt('${key}', 'excused', this)">غياب بعذر</button>
+        <button class="status-btn ${status === "absent" ? "s-absent" : ""}" onclick="setAtt('${key}', 'absent', this)">غياب بدون عذر</button>
+      </div>
+      <textarea class="notes-input" placeholder="سبب الغياب أو ملاحظات..." onchange="DATA.attendance['${key}_note']=this.value">${note}</textarea>
+    </div>`;
+  });
+  container.innerHTML = html;
+}
+function setAtt(key, status, btn) {
+  DATA.attendance[key] = status;
+  const row = btn.closest(".child-row");
+  row.querySelectorAll(".status-btn").forEach(b => b.className = "status-btn");
+  const cls = { present: "s-present", excused: "s-excused", absent: "s-absent" };
+  btn.classList.add(cls[status]);
+}
+
+// ===== ADMIN: PLAN MANAGEMENT =====
+function renderAdminPlanMgmt() {
+  const container = document.getElementById("tab-plan-mgmt");
+  const leaderOptions = DATA.leaders.map(l => `<option value="${l.id}">${l.name}</option>`).join("");
+  let html = `<h2 class="section-title">إدارة خطة الاجتماعات</h2>
+  <div class="add-form">
+    <h3>إضافة اجتماع جديد</h3>
+    <div class="form-row">
+      <div class="form-group"><label>التاريخ</label><input type="date" id="new-meet-date"></div>
+      <div class="form-group"><label>رقم الاجتماع</label><input type="number" id="new-meet-num" min="1"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>المحاضرة الروحية</label><select id="new-spiritual">${leaderOptions}</select></div>
+      <div class="form-group"><label>المحاضرة الكشفية</label><select id="new-scout">${leaderOptions}</select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>المحاضرة الثقافية</label><select id="new-culture">${leaderOptions}</select></div>
+      <div class="form-group"><label>اللعبة</label><select id="new-game">${leaderOptions}</select></div>
+    </div>
+    <button class="save-btn" onclick="addMeeting()">حفظ الاجتماع</button>
+  </div>`;
+
+  html += `<div class="table-wrap"><table>
+    <thead><tr><th>#</th><th>التاريخ</th><th>الروحية</th><th>الكشفية</th><th>الثقافية</th><th>اللعبة</th><th>حذف</th></tr></thead>
+    <tbody>`;
+  DATA.meetings.forEach(m => {
+    html += `<tr>
+      <td><strong>${m.num}</strong></td>
+      <td>${formatDate(m.date)}</td>
+      <td>${leaderName(m.spiritual)}</td>
+      <td>${leaderName(m.scout)}</td>
+      <td>${leaderName(m.culture)}</td>
+      <td>${leaderName(m.game)}</td>
+      <td><button class="act-btn act-btn-red" onclick="deleteMeeting(${m.id})">حذف</button></td>
+    </tr>`;
+  });
+  html += `</tbody></table></div>`;
+
+  // Activities section
+  html += `<h2 class="section-title" style="margin-top:28px">الأنشطة السنوية</h2>
+  <div class="add-form">
+    <h3>إضافة نشاط</h3>
+    <div class="form-row">
+      <div class="form-group"><label>اسم النشاط</label><input type="text" id="new-act-name" placeholder="معسكر صيفي..."></div>
+      <div class="form-group"><label>التاريخ</label><input type="date" id="new-act-date"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>القائد المسئول</label><select id="new-act-leader">${leaderOptions}</select></div>
+      <div class="form-group"><label>ملف PDF (اختياري)</label><input type="file" id="new-act-pdf" accept=".pdf"></div>
+    </div>
+    <button class="save-btn" onclick="addActivity()">حفظ النشاط</button>
+  </div>`;
+
+  DATA.activities.forEach(a => {
+    html += `<div class="activity-card">
+      <div class="activity-icon"><svg viewBox="0 0 24 24"><path d="M12 3L2 21h20L12 3zm0 4l7 14H5l7-14z"/></svg></div>
+      <div class="activity-info"><div class="activity-name">${a.name}</div><div class="activity-meta">📅 ${formatDate(a.date)} | ${leaderName(a.leader_id)}</div></div>
+      <button class="act-btn act-btn-red" onclick="deleteActivity(${a.id})">حذف</button>
+    </div>`;
+  });
+
+  container.innerHTML = html;
+}
+
+function addMeeting() {
+  const date = document.getElementById("new-meet-date").value;
+  const num = document.getElementById("new-meet-num").value;
+  if (!date || !num) { alert("ادخل التاريخ والرقم"); return; }
+  const newId = Math.max(...DATA.meetings.map(m=>m.id), 0) + 1;
+  DATA.meetings.push({
+    id: newId, date, num: parseInt(num),
+    spiritual: parseInt(document.getElementById("new-spiritual").value),
+    scout: parseInt(document.getElementById("new-scout").value),
+    culture: parseInt(document.getElementById("new-culture").value),
+    game: parseInt(document.getElementById("new-game").value),
+    other: ""
+  });
+  renderAdminPlanMgmt();
+}
+function deleteMeeting(id) {
+  if (!confirm("حذف الاجتماع؟")) return;
+  DATA.meetings = DATA.meetings.filter(m => m.id !== id);
+  renderAdminPlanMgmt();
+}
+function addActivity() {
+  const name = document.getElementById("new-act-name").value;
+  const date = document.getElementById("new-act-date").value;
+  if (!name || !date) { alert("ادخل اسم النشاط والتاريخ"); return; }
+  const newId = Math.max(...DATA.activities.map(a=>a.id), 0) + 1;
+  DATA.activities.push({ id: newId, name, date, leader_id: parseInt(document.getElementById("new-act-leader").value), pdf: null });
+  renderAdminPlanMgmt();
+}
+function deleteActivity(id) {
+  if (!confirm("حذف النشاط؟")) return;
+  DATA.activities = DATA.activities.filter(a => a.id !== id);
+  renderAdminPlanMgmt();
+}
+
+// ===== ADMIN: CHILDREN MANAGEMENT =====
+function renderAdminChildrenMgmt() {
+  const container = document.getElementById("tab-children-mgmt");
+  const classOptions = ["الملايكة أولى", "الملايكة ثانية"].map(c => `<option value="${c}">${c}</option>`).join("");
+  const leaderOptions = DATA.leaders.map(l => `<option value="${l.id}">${l.name} (${l.class})</option>`).join("");
+
+  let html = `<h2 class="section-title">إدارة الأولاد</h2>
+  <div class="add-form">
+    <h3>إضافة طفل جديد</h3>
+    <div class="form-row">
+      <div class="form-group"><label>الاسم</label><input type="text" id="new-child-name" placeholder="الاسم الكامل"></div>
+      <div class="form-group"><label>رقم التليفون</label><input type="text" id="new-child-phone"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>العنوان</label><input type="text" id="new-child-addr"></div>
+      <div class="form-group"><label>تاريخ الميلاد</label><input type="date" id="new-child-dob"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>الفصل</label><select id="new-child-class">${classOptions}</select></div>
+      <div class="form-group"><label>القائد المسئول</label><select id="new-child-leader">${leaderOptions}</select></div>
+    </div>
+    <button class="save-btn" onclick="addChild()">إضافة</button>
+  </div>
+  <div class="table-wrap"><table>
+    <thead><tr><th>الاسم</th><th>الفصل</th><th>القائد</th><th>التليفون</th><th>العنوان</th><th>الميلاد</th><th>حذف</th></tr></thead>
+    <tbody>`;
+  DATA.children.forEach(c => {
+    html += `<tr>
+      <td><strong>${c.name}</strong></td>
+      <td>${c.class}</td>
+      <td>${leaderName(c.leader_id)}</td>
+      <td>${c.phone}</td>
+      <td>${c.address}</td>
+      <td>${formatDate(c.dob)}</td>
+      <td><button class="act-btn act-btn-red" onclick="deleteChild(${c.id})">حذف</button></td>
+    </tr>`;
+  });
+  html += `</tbody></table></div>`;
+  container.innerHTML = html;
+}
+function addChild() {
+  const name = document.getElementById("new-child-name").value;
+  if (!name) { alert("ادخل اسم الطفل"); return; }
+  const newId = Math.max(...DATA.children.map(c=>c.id), 0) + 1;
+  DATA.children.push({
+    id: newId,
+    name,
+    phone: document.getElementById("new-child-phone").value,
+    address: document.getElementById("new-child-addr").value,
+    dob: document.getElementById("new-child-dob").value,
+    class: document.getElementById("new-child-class").value,
+    leader_id: parseInt(document.getElementById("new-child-leader").value)
+  });
+  renderAdminChildrenMgmt();
+}
+function deleteChild(id) {
+  if (!confirm("حذف الطفل؟")) return;
+  DATA.children = DATA.children.filter(c => c.id !== id);
+  renderAdminChildrenMgmt();
+}
+
+// ===== ADMIN: LEADERS MANAGEMENT =====
+function renderAdminLeadersMgmt() {
+  const container = document.getElementById("tab-leaders-mgmt");
+  const classOptions = ["الملايكة أولى", "الملايكة ثانية"].map(c => `<option value="${c}">${c}</option>`).join("");
+  let html = `<h2 class="section-title">إدارة القادة</h2>
+  <div class="add-form">
+    <h3>إضافة قائد جديد</h3>
+    <div class="form-row">
+      <div class="form-group"><label>الاسم</label><input type="text" id="new-ldr-name" placeholder="اسم القائد"></div>
+      <div class="form-group"><label>رقم الموبايل</label><input type="text" id="new-ldr-phone"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>تاريخ الميلاد</label><input type="date" id="new-ldr-dob"></div>
+      <div class="form-group"><label>الفصل</label><select id="new-ldr-class">${classOptions}</select></div>
+    </div>
+    <button class="save-btn" onclick="addLeader()">إضافة</button>
+  </div>
+  <div class="table-wrap"><table>
+    <thead><tr><th>الاسم</th><th>الفصل</th><th>الموبايل</th><th>تاريخ الميلاد</th><th>حذف</th></tr></thead>
+    <tbody>`;
+  DATA.leaders.forEach(l => {
+    html += `<tr>
+      <td><strong>${l.name}</strong></td>
+      <td>${l.class}</td>
+      <td>${l.phone}</td>
+      <td>${formatDate(l.dob)}</td>
+      <td><button class="act-btn act-btn-red" onclick="deleteLeader(${l.id})">حذف</button></td>
+    </tr>`;
+  });
+  html += `</tbody></table></div>`;
+  container.innerHTML = html;
+}
+function addLeader() {
+  const name = document.getElementById("new-ldr-name").value;
+  if (!name) { alert("ادخل اسم القائد"); return; }
+  const newId = Math.max(...DATA.leaders.map(l=>l.id), 0) + 1;
+  DATA.leaders.push({
+    id: newId, name,
+    phone: document.getElementById("new-ldr-phone").value,
+    dob: document.getElementById("new-ldr-dob").value,
+    class: document.getElementById("new-ldr-class").value
+  });
+  renderAdminLeadersMgmt();
+}
+function deleteLeader(id) {
+  if (!confirm("حذف القائد؟")) return;
+  DATA.leaders = DATA.leaders.filter(l => l.id !== id);
+  renderAdminLeadersMgmt();
+}
+
+// ===== ADMIN: LEADERS ATTENDANCE =====
+function renderAdminLeadersAtt() {
+  const container = document.getElementById("tab-leaders-att");
+  const meetOptions = DATA.meetings.map(m => `<option value="${m.id}">اجتماع ${m.num} — ${formatDate(m.date)}</option>`).join("");
+  let html = `<h2 class="section-title">حضور وغياب القادة</h2>
+  <div class="card" style="margin-bottom:16px">
+    <label style="font-size:13px;font-weight:600;color:var(--text-mid);margin-bottom:6px;display:block">اختار الاجتماع:</label>
+    <select class="login-select" style="margin-bottom:0" id="la-meet-sel" onchange="updateLeaderAtt()">${meetOptions}</select>
+  </div>
+  <div id="la-rows">`;
+  DATA.leaders.forEach(l => {
+    const mid = DATA.meetings[DATA.meetings.length-1].id;
+    const key = `la_${mid}_${l.id}`;
+    const status = DATA.leader_attendance[key] || "";
+    const uniform = DATA.leader_attendance[key+"_uniform"] || false;
+    const note = DATA.leader_attendance[key+"_note"] || "";
+    html += leaderAttRow(l, key, status, uniform, note);
+  });
+  html += `</div>`;
+  container.innerHTML = html;
+}
+function leaderAttRow(l, key, status, uniform, note) {
+  return `<div class="leader-att-row" id="la-${l.id}">
+    <div class="la-name">${l.name} <span style="font-size:12px;color:var(--text-muted)">${l.class}</span></div>
+    <div class="la-controls">
+      <button class="status-btn ${status==="present"?"s-present":""}" onclick="setLeaderAtt('${key}','present',${l.id})">حضر ✓</button>
+      <button class="status-btn ${status==="excused"?"s-excused":""}" onclick="setLeaderAtt('${key}','excused',${l.id})">غياب بعذر</button>
+      <button class="status-btn ${status==="absent"?"s-absent":""}" onclick="setLeaderAtt('${key}','absent',${l.id})">بدون عذر</button>
+      <label class="uniform-toggle">
+        <input type="checkbox" ${uniform?"checked":""} onchange="DATA.leader_attendance['${key}_uniform']=this.checked"> بزي كشفي
+      </label>
+    </div>
+    <textarea class="notes-input" style="margin-top:8px" placeholder="سبب الغياب..." onchange="DATA.leader_attendance['${key}_note']=this.value">${note}</textarea>
+  </div>`;
+}
+function setLeaderAtt(key, status, leaderId) {
+  DATA.leader_attendance[key] = status;
+  renderAdminLeadersAtt();
+}
+function updateLeaderAtt() { renderAdminLeadersAtt(); }
+
+// ===== BIRTHDAYS =====
+function checkBirthdays() {
+  const today = new Date();
+  const mm = String(today.getMonth()+1).padStart(2,'0');
+  const dd = String(today.getDate()).padStart(2,'0');
+  const todayMD = `${mm}-${dd}`;
+  const bday = DATA.leaders.find(l => l.dob && l.dob.slice(5) === todayMD);
+  if (bday) {
+    document.getElementById("bday-name-banner").textContent = bday.name;
+    document.getElementById("birthday-banner").style.display = "block";
+  }
+}
+
+function renderBirthdays() {
+  const container = document.getElementById("tab-birthdays");
+  const today = new Date();
+  const todayMD = `${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+  const months = ["يناير","فبراير","مارس","إبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
+
+  let byMonth = {};
+  DATA.leaders.forEach(l => {
+    if (!l.dob) return;
+    const mIdx = parseInt(l.dob.split("-")[1]) - 1;
+    if (!byMonth[mIdx]) byMonth[mIdx] = [];
+    byMonth[mIdx].push(l);
+  });
+
+  let html = `<h2 class="section-title">أعياد ميلاد القادة</h2>`;
+  for (let i = 0; i < 12; i++) {
+    if (!byMonth[i]) continue;
+    html += `<div class="month-section"><div class="month-title">🗓 ${months[i]}</div>`;
+    byMonth[i].forEach(l => {
+      const isToday = l.dob && l.dob.slice(5) === todayMD;
+      html += `<div class="bday-item ${isToday ? "bday-today" : ""}">
+        <div class="bday-avatar">${l.name[0]}</div>
+        <div class="bday-name">${l.name} ${isToday ? "🎂" : ""}</div>
+        <div class="bday-date">${formatDate(l.dob)}</div>
+        <span class="badge ${isToday ? "badge-amber" : "badge-green"}">${isToday ? "اليوم!" : l.class}</span>
+      </div>`;
+    });
+    html += `</div>`;
+  }
+  container.innerHTML = html;
+}
+
+// ===== REPORTS =====
+function renderReports() {
+  const container = document.getElementById("tab-reports");
+
+  // Followup stats
+  const followedUp = DATA.children.filter(c => DATA.followup["f_"+c.id] === "done").length;
+  const totalChildren = DATA.children.length;
+  const followPct = totalChildren ? Math.round(followedUp/totalChildren*100) : 0;
+
+  // Children attendance (latest meeting)
+  const lastMeet = DATA.meetings[DATA.meetings.length-1];
+  let presentCount = 0, excusedCount = 0, absentCount = 0;
+  DATA.children.forEach(c => {
+    const s = DATA.attendance[`att_${lastMeet.id}_${c.id}`];
+    if (s === "present") presentCount++;
+    else if (s === "excused") excusedCount++;
+    else if (s === "absent") absentCount++;
+  });
+
+  // Leader followup per leader
+  let html = `<h2 class="section-title">تقارير القطاع</h2>
+  <div class="stats-grid">
+    <div class="stat-box">
+      <div class="stat-num">${followedUp}/${totalChildren}</div>
+      <div class="stat-label">أولاد تم افتقادهم</div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${followPct}%"></div></div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num" style="color:var(--green)">${presentCount}</div>
+      <div class="stat-label">حضروا (آخر اجتماع)</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num" style="color:var(--amber)">${excusedCount}</div>
+      <div class="stat-label">غياب بعذر</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num" style="color:var(--red)">${absentCount}</div>
+      <div class="stat-label">غياب بدون عذر</div>
+    </div>
+  </div>`;
+
+  // Per leader followup
+  html += `<div class="card">
+    <div class="card-title">متابعة الافتقاد لكل قائد</div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>القائد</th><th>الفصل</th><th>عدد الأولاد</th><th>تم افتقادهم</th><th>النسبة</th></tr></thead>
+      <tbody>`;
+  DATA.leaders.forEach(l => {
+    const myKids = DATA.children.filter(c => c.leader_id == l.id);
+    const done = myKids.filter(c => DATA.followup["f_"+c.id] === "done").length;
+    const pct = myKids.length ? Math.round(done/myKids.length*100) : 0;
+    html += `<tr>
+      <td><strong>${l.name}</strong></td>
+      <td>${l.class}</td>
+      <td>${myKids.length}</td>
+      <td>${done}</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="progress-bar" style="flex:1;min-width:80px"><div class="progress-fill" style="width:${pct}%"></div></div>
+          <span style="font-size:12px;font-weight:700;color:var(--green)">${pct}%</span>
+        </div>
+      </td>
+    </tr>`;
+  });
+  html += `</tbody></table></div></div>`;
+
+  // Attendance per child summary
+  html += `<div class="card"><div class="card-title">حضور الأولاد — آخر اجتماع (${formatDate(lastMeet.date)})</div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>الطفل</th><th>الفصل</th><th>القائد</th><th>الحالة</th></tr></thead>
+      <tbody>`;
+  DATA.children.forEach(c => {
+    const s = DATA.attendance[`att_${lastMeet.id}_${c.id}`] || "لم يسجل";
+    const labels = { present: "حضر", excused: "غياب بعذر", absent: "بدون عذر", "لم يسجل": "—" };
+    const badges = { present: "badge-green", excused: "badge-amber", absent: "badge-red", "لم يسجل": "" };
+    html += `<tr>
+      <td><strong>${c.name}</strong></td>
+      <td>${c.class}</td>
+      <td>${leaderName(c.leader_id)}</td>
+      <td><span class="badge ${badges[s]}">${labels[s]}</span></td>
+    </tr>`;
+  });
+  html += `</tbody></table></div></div>`;
+
+  container.innerHTML = html;
+}
+</script>
+</body>
+</html>

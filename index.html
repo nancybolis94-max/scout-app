@@ -233,8 +233,8 @@
 
 <script>
 // ===================== CONFIG =====================
-const SHEET_ID = "1qOPlnAHYZiZjkkoTQGcaB8GRf-JLjXD7";
-const API_KEY  = "AIzaSyBmAsGfWW88VZkENH8VvCGHwNaO21x9BZE";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwgRr7OnHXkHH2FmFMaLFQT_v9Hy7LS9WRIhPu5IePWi8KScy0BSWbG5dnsskZHDxb8BA/exec";
+
 const ADMIN_PASS = "1234";
 
 // ===================== DATA =====================
@@ -331,32 +331,23 @@ async function syncToSheet(sheetName, rowData) {
   indicator.className = "sync-indicator";
   indicator.style.display = "block";
   try {
-    // Read current sheet to find next empty row
-    const readUrl = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(sheetName)}?key=${API_KEY}`;
-    const readRes = await fetch(readUrl);
-    let nextRow = 2;
-    if (readRes.ok) {
-      const readData = await readRes.json();
-      nextRow = (readData.values ? readData.values.length : 0) + 1;
-    }
-    // Append row
-    const appendUrl = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(sheetName)}!A1:append?valueInputOption=USER_ENTERED&key=${API_KEY}`;
-    const appendRes = await fetch(appendUrl, {
+    const res = await fetch(APPS_SCRIPT_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ values: [rowData] })
+      body: JSON.stringify({ sheet: sheetName, row: rowData })
     });
-    if (appendRes.ok) {
-      indicator.textContent = "✓ تم الحفظ";
+    const text = await res.text();
+    if (text === "ok" || res.ok) {
+      indicator.textContent = "✓ تم الحفظ في الشيت";
       indicator.className = "sync-indicator";
       setTimeout(() => indicator.style.display = "none", 2000);
     } else {
-      throw new Error("Write failed");
+      throw new Error(text);
     }
   } catch(e) {
-    indicator.textContent = "⚠ تعذر الحفظ في الشيت";
+    indicator.textContent = "⚠ تعذر الحفظ — تحقق من الاتصال";
     indicator.className = "sync-indicator error";
-    setTimeout(() => indicator.style.display = "none", 3000);
+    setTimeout(() => indicator.style.display = "none", 3500);
   }
 }
 

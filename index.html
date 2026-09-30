@@ -262,6 +262,7 @@ tr:hover td{background:var(--gf)}
     <div id="tab-tl-catt" class="tab-content"></div>
     <div id="tab-tl-followup" class="tab-content"></div>
     <div id="tab-tl-activities" class="tab-content"></div>
+    <div id="tab-tl-lvisit" class="tab-content"></div>
     <div id="tab-tl-reports" class="tab-content"></div>
   </div>
 
@@ -379,6 +380,7 @@ const DATA = {
   attendance:{},
   followup:{},
   latt:{},
+  lvisit:{},
 };
 
 let CU = null;
@@ -545,7 +547,7 @@ function initApp(){
   ["assistant","teamleader","admin"].forEach(r=>document.getElementById("tabs-"+r).style.display=CU.role===r?"block":"none");
   checkBdays();
   if(CU.role==="admin"){ rAdPlan();rAdChildren();rAdLeaders();rAdLatt();rBdays();rReports("ad");rPasswords(); }
-  else if(CU.role==="teamleader"){ rTLPlan();rTLChildren();rTLLatt();rTLCatt();rTLFollowup();rTLActivities();rReports("tl"); }
+  else if(CU.role==="teamleader"){ rTLPlan();rTLChildren();rTLLatt();rTLCatt();rTLFollowup();rTLActivities();rTLLvisit();rReports("tl"); }
   else{ rAsPlan();rAsFollowup();rActivities("as");rAsAttendance(); }
 }
 
@@ -831,6 +833,52 @@ function rTLFollowup(){
     <div class="child-info">👤 ${lName(ch.lid)}${nt?` | ${nt}`:""}</div></div>`;
   });
   c.innerHTML=h;
+}
+
+function rTLLvisit(){
+  const ml=myLdrs();
+  const c=document.getElementById("tab-tl-lvisit");
+  if(!ml.length){c.innerHTML=`<div class="empty-state"><div class="ei">👥</div>لا يوجد قادة في فريقك بعد</div>`;return;}
+  const done=ml.filter(l=>DATA.lvisit["lv_"+l.id]==="done").length;
+  const pct=ml.length?Math.round(done/ml.length*100):0;
+  let h=`<h2 class="sec-title">افتقاد قادة ${CU.cls} <span class="badge bg-g">${ml.length} قائد</span></h2>
+  <div class="card" style="margin-bottom:14px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px">
+      <b style="font-size:14px">إجمالي الافتقاد</b>
+      <b style="color:var(--g);font-size:14px">${done}/${ml.length} (${pct}%)</b>
+    </div>
+    <div class="prog"><div class="prog-fill" style="width:${pct}%"></div></div>
+  </div>`;
+  ml.forEach(l=>{
+    const key="lv_"+l.id,st=DATA.lvisit[key]||"",nt=DATA.lvisit[key+"_n"]||"";
+    h+=`<div class="child-row">
+      <div class="child-rh">
+        <div class="child-name">${l.name}</div>
+        <span class="badge ${st==="done"?"bg-g":"bg-r"}">${st==="done"?"تم ✓":"لم يتم"}</span>
+      </div>
+      <div class="child-info">📞 ${l.phone||"—"}</div>
+      <div class="st-btns">
+        <button class="st-btn ${st==="done"?"sd":""}" onclick="setLV(${l.id},done,this)">تم الافتقاد ✓</button>
+        <button class="st-btn ${st==="pending"?"sa":""}" onclick="setLV(${l.id},pending,this)">لم يتم</button>
+      </div>
+      <textarea class="notes" placeholder="ملاحظات..." onchange="DATA.lvisit[_n]=this.value;syncLvisit(${l.id})">${nt}</textarea>
+    </div>`;
+  });
+  c.innerHTML=h;
+}
+function setLV(lid,st,btn){
+  const key="lv_"+lid;
+  DATA.lvisit[key]=st;
+  btn.closest(".child-row").querySelectorAll(".st-btn").forEach(b=>b.className="st-btn");
+  btn.classList.add(st==="done"?"sd":"sa");
+  const l=DATA.leaders.find(l=>l.id===lid);
+  sheetPost({sheet:"افتقاد القادة",row:[new Date().toLocaleDateString("ar-EG"),CU.cls,l?.name||lid,st==="done"?"تم":"لم يتم",DATA.lvisit[key+"_n"]||""]});
+  rTLLvisit();
+}
+function syncLvisit(lid){
+  const key="lv_"+lid;
+  const l=DATA.leaders.find(l=>l.id===lid);
+  sheetPost({sheet:"افتقاد القادة",row:[new Date().toLocaleDateString("ar-EG"),CU.cls,l?.name||lid,DATA.lvisit[key]==="done"?"تم":"لم يتم",DATA.lvisit[key+"_n"]||""]});
 }
 
 function rTLActivities(){
@@ -1157,7 +1205,7 @@ function rReports(prefix){
     <div class="stat-box"><div class="stat-num">${scopeLdrs.length}</div><div class="stat-lbl">القادة</div></div>
   </div>`;
   if(scopeLdrs.length){
-    h+=`<div class="card"><div style="font-size:14px;font-weight:700;margin-bottom:12px">افتقاد كل قائد</div><div class="tw"><table><thead><tr><th>القائد</th><th>الفصل</th><th>الأولاد</th><th>تم</th><th>النسبة</th></tr></thead><tbody>`;
+    h+=`<div class="card"><div style="font-size:14px;font-weight:700;margin-bottom:12px">افتقاد الأولاد — كل قائد</div><div class="tw"><table><thead><tr><th>القائد</th><th>الفصل</th><th>الأولاد</th><th>تم</th><th>النسبة</th></tr></thead><tbody>`;
     scopeLdrs.forEach(l=>{
       const kids=DATA.children.filter(c=>c.lid==l.id);
       const d=kids.filter(c=>DATA.followup["f_"+c.id]==="done").length;
@@ -1165,6 +1213,47 @@ function rReports(prefix){
       h+=`<tr><td><b>${l.name}</b></td><td>${l.cls}</td><td>${kids.length}</td><td>${d}</td><td><div style="display:flex;align-items:center;gap:7px"><div class="prog" style="flex:1;min-width:50px"><div class="prog-fill" style="width:${p}%"></div></div><b style="font-size:11px;color:var(--g)">${p}%</b></div></td></tr>`;
     });
     h+=`</tbody></table></div></div>`;
+
+    // Leaders visitation report — grouped by class
+    const lvisitLdrs = prefix==="ad" ? DATA.leaders : scopeLdrs;
+    const lDone = lvisitLdrs.filter(l=>DATA.lvisit["lv_"+l.id]==="done").length;
+    const lPct = lvisitLdrs.length ? Math.round(lDone/lvisitLdrs.length*100) : 0;
+    h+=`<div class="card" style="margin-top:16px">
+      <div style="font-size:14px;font-weight:700;margin-bottom:12px">افتقاد القادة 👥</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <span style="font-size:13px;color:var(--mu)">إجمالي القطاع</span>
+        <b style="color:var(--g)">${lDone}/${lvisitLdrs.length} (${lPct}%)</b>
+      </div>
+      <div class="prog" style="margin-bottom:16px"><div class="prog-fill" style="width:${lPct}%"></div></div>
+      <div class="tw"><table><thead><tr><th>القائد</th><th>الفصل</th><th>حالة الافتقاد</th><th>ملاحظات</th></tr></thead><tbody>`;
+    lvisitLdrs.forEach(l=>{
+      const st=DATA.lvisit["lv_"+l.id]||"";
+      const nt=DATA.lvisit["lv_"+l.id+"_n"]||"";
+      h+=`<tr>
+        <td><b>${l.name}</b></td>
+        <td>${l.cls}</td>
+        <td><span class="badge ${st==="done"?"bg-g":"bg-r"}">${st==="done"?"تم ✓":"لم يتم"}</span></td>
+        <td style="font-size:12px;color:var(--mu)">${nt||"—"}</td>
+      </tr>`;
+    });
+    h+=`</tbody></table></div>`;
+
+    // Per-class breakdown for admin
+    if(prefix==="ad"){
+      h+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px">`;
+      ["ملايكة أ","ملايكة ب"].forEach(cls=>{
+        const clsLdrs=DATA.leaders.filter(l=>l.cls===cls||l.cls==="كلا الفصلين");
+        const clsDone=clsLdrs.filter(l=>DATA.lvisit["lv_"+l.id]==="done").length;
+        const clsPct=clsLdrs.length?Math.round(clsDone/clsLdrs.length*100):0;
+        h+=`<div class="stat-box"><div style="font-size:13px;font-weight:700;margin-bottom:8px">${cls}</div>
+          <div class="stat-num" style="font-size:22px">${clsDone}/${clsLdrs.length}</div>
+          <div class="stat-lbl">قادة تم افتقادهم</div>
+          <div class="prog"><div class="prog-fill" style="width:${clsPct}%"></div></div>
+        </div>`;
+      });
+      h+=`</div>`;
+    }
+    h+=`</div>`;
   }
   c.innerHTML=h;
 }

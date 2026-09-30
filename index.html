@@ -170,6 +170,11 @@ tr:hover td{background:var(--green-faint)}
 </head>
 <body>
 <div id="sync-indicator" class="sync-indicator">جاري الحفظ...</div>
+<div id="loading-overlay" style="display:none;position:fixed;inset:0;background:rgba(27,67,50,0.92);z-index:9999;align-items:center;justify-content:center;flex-direction:column;gap:16px">
+  <div style="width:48px;height:48px;border:4px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin 0.8s linear infinite"></div>
+  <div style="color:white;font-size:15px;font-weight:600;font-family:'Cairo',sans-serif">جاري تحميل البيانات...</div>
+</div>
+<style>@keyframes spin{to{transform:rotate(360deg)}}</style>
 
 <!-- MODAL -->
 <div class="modal-overlay" id="modal-overlay">
@@ -282,7 +287,7 @@ tr:hover td{background:var(--green-faint)}
 
 <script>
 // ===================== CONFIG =====================
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxr5wpdp-jeroSBJD0-UmR3S-E_KvKUMIN2wryyf57PDiamsPwVOnbhWOp2_Ksjiyz6mw/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx6asLJXLxN43VVv-pJl6RcjNe2nalqkQLLpdU573Om0htxHQHuNCUETqR2pydCrIuUBg/exec";
 const ADMIN_PASS = "Jesus2026";
 
 // ===================== STATE =====================
@@ -369,6 +374,55 @@ const DATA = {
 
 let CU = null; // current user
 
+// ===================== LOAD FROM SHEET =====================
+async function loadFromSheet(sheetName) {
+  try {
+    const url = `${APPS_SCRIPT_URL}?sheet=${encodeURIComponent(sheetName)}`;
+    const res = await fetch(url);
+    const json = await res.json();
+    return json.data || [];
+  } catch(e) {
+    console.warn("Could not load from sheet:", sheetName, e);
+    return [];
+  }
+}
+
+async function loadAllData() {
+  const loadingEl = document.getElementById("loading-overlay");
+  loadingEl.style.display = "flex";
+  try {
+    // Load leaders
+    const ldrs = await loadFromSheet("القادة");
+    DATA.leaders = ldrs.filter(r => r[0] && String(r[0]).trim()).map((r, i) => ({
+      id: i + 1,
+      name: String(r[0]).trim(),
+      cls: String(r[1] || "").trim(),
+      phone: String(r[2] || "").trim(),
+      dob: String(r[3] || "").trim(),
+    }));
+
+    // Load meetings from sheet
+    const meets = await loadFromSheet("خطة الاجتماعات");
+    meets.filter(r => r[0]).forEach((r, i) => {
+      const existing = DATA.meetings.find(m => m.num == parseInt(r[0].replace(/[^0-9]/g,"")));
+      if (!existing) {
+        DATA.meetings.push({
+          id: i + 1,
+          num: parseInt(r[0].replace(/[^0-9]/g,"")) || i+1,
+          date: String(r[1]||"").trim(),
+          responsible: null,
+          paras: {spiritual:{},scout:{},culture:{},game:{},other:{}}
+        });
+      }
+    });
+
+  } catch(e) {
+    console.warn("loadAllData error:", e);
+  } finally {
+    loadingEl.style.display = "none";
+  }
+}
+
 // ===================== SYNC =====================
 async function syncToSheet(sheetName, rowData) {
   const ind = document.getElementById("sync-indicator");
@@ -402,6 +456,13 @@ function openModal(title, bodyHTML, onSave) {
 function closeModal() { document.getElementById("modal-overlay").classList.remove("open"); }
 
 // ===================== LOGIN =====================
+// Load data on page open
+window.addEventListener("load", async () => {
+  await loadAllData();
+  const cls = document.getElementById("sel-class").value;
+  if (cls) document.getElementById("sel-class").dispatchEvent(new Event("change"));
+});
+
 let currentRole = "teamleader";
 function selectRole(r) {
   currentRole = r;

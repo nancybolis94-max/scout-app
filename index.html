@@ -572,28 +572,82 @@ function closeModal(){ document.getElementById("modal-ov").classList.remove("ope
 // =========================================================
 // ASSISTANT
 // =========================================================
+function meetParasHTML(m, highlightMine){
+  let h=`<div class="meet-body">`;
+  PARA_KEYS.forEach(k=>{
+    const p=m.paras[k]||{};
+    const mine=highlightMine&&(p.leaders||[]).includes(CU?.id);
+    h+=`<div class="para-item ${mine?"mine":""}">
+      <div class="para-lbl">${PARA_NAMES[k]}</div>
+      <div class="para-topic">${p.topic||"—"}</div>
+      <div class="para-ldrs">${lNamesArr(p.leaders)}${mine?" ⭐":""}</div>
+    </div>`;
+  });
+  h+=`</div>`;
+  return h;
+}
+
+function getUpcomingMeeting(){
+  const today=new Date(); today.setHours(0,0,0,0);
+  const sorted=[...DATA.meetings].sort((a,b)=>new Date(a.date)-new Date(b.date));
+  return sorted.find(m=>new Date(m.date)>=today) || sorted[sorted.length-1];
+}
+
 function rAsPlan(){
   const c=document.getElementById("tab-as-plan");
   if(!DATA.meetings.length){c.innerHTML=`<div class="empty-state"><div class="ei">📅</div>لم تُضف اجتماعات بعد</div>`;return;}
+  const upcoming=getUpcomingMeeting();
+  const rest=[...DATA.meetings].filter(m=>m.id!==upcoming?.id).sort((a,b)=>new Date(a.date)-new Date(b.date));
+
   let h=`<h2 class="sec-title">خطة اجتماعات السنة</h2>`;
-  DATA.meetings.forEach(m=>{
-    h+=`<div class="meet-card"><div class="meet-hd">
-      <span class="meet-num">اجتماع ${m.num}</span>
-      <span class="meet-date">${fDate(m.date)}</span>
-      <span class="meet-resp">المسئول: ${lName(m.responsible)}</span>
-    </div><div class="meet-body">`;
+
+  // Featured upcoming meeting
+  if(upcoming){
+    h+=`<div style="background:linear-gradient(135deg,#1B4332,#2D6A4F);border-radius:16px;padding:18px;margin-bottom:18px;color:white">
+      <div style="font-size:11px;font-weight:700;opacity:.75;margin-bottom:6px;letter-spacing:1px">▶ الاجتماع القادم</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:14px">
+        <span style="font-size:18px;font-weight:700">اجتماع ${upcoming.num}</span>
+        <span style="font-size:14px;opacity:.85">📅 ${fDate(upcoming.date)}</span>
+        <span style="background:rgba(255,255,255,0.2);padding:3px 12px;border-radius:20px;font-size:12px">المسئول: ${lName(upcoming.responsible)}</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">`;
     PARA_KEYS.forEach(k=>{
-      const p=m.paras[k]||{};
-      const mine=(p.leaders||[]).includes(CU.id);
-      h+=`<div class="para-item ${mine?"mine":""}">
-        <div class="para-lbl">${PARA_NAMES[k]}</div>
-        <div class="para-topic">${p.topic||"—"}</div>
-        <div class="para-ldrs">${lNamesArr(p.leaders)}${mine?" ⭐":""}</div>
+      const p=upcoming.paras[k]||{};
+      const mine=(p.leaders||[]).includes(CU?.id);
+      h+=`<div style="background:rgba(255,255,255,${mine?'0.25':'0.12'});border-radius:10px;padding:10px 12px;border:1px solid rgba(255,255,255,${mine?'0.5':'0.15'})">
+        <div style="font-size:10px;font-weight:700;opacity:.7;margin-bottom:3px">${PARA_NAMES[k]}</div>
+        <div style="font-size:11px;opacity:.8;margin-bottom:3px;font-style:italic">${p.topic||"—"}</div>
+        <div style="font-size:13px;font-weight:700">${lNamesArr(p.leaders)}${mine?" ⭐":""}</div>
       </div>`;
     });
     h+=`</div></div>`;
-  });
+  }
+
+  // Accordion for rest
+  if(rest.length){
+    h+=`<div style="font-size:13px;font-weight:700;color:var(--mu);margin-bottom:10px">باقي الاجتماعات</div>`;
+    rest.forEach(m=>{
+      h+=`<div class="meet-card" style="margin-bottom:8px">
+        <div class="meet-hd" style="cursor:pointer" onclick="toggleAccordion('acc-${m.id}',this)">
+          <span class="meet-num">اجتماع ${m.num}</span>
+          <span class="meet-date">${fDate(m.date)}</span>
+          <span class="meet-resp">المسئول: ${lName(m.responsible)}</span>
+          <span style="font-size:16px;color:var(--mu);margin-right:auto" id="acc-icon-${m.id}">▼</span>
+        </div>
+        <div id="acc-${m.id}" style="display:none">
+          ${meetParasHTML(m, true)}
+        </div>
+      </div>`;
+    });
+  }
   c.innerHTML=h;
+}
+
+function toggleAccordion(id, hd){
+  const el=document.getElementById(id);
+  const icon=document.getElementById("acc-icon-"+id.replace("acc-",""));
+  if(el.style.display==="none"){el.style.display="block";if(icon)icon.textContent="▲";}
+  else{el.style.display="none";if(icon)icon.textContent="▼";}
 }
 
 function rAsFollowup(){
@@ -1015,7 +1069,7 @@ function addChild(){
   const ch={id:nxtId(DATA.children),name,phone:document.getElementById("nc-ph").value,addr:document.getElementById("nc-ad").value,dob:document.getElementById("nc-db").value,cls:document.getElementById("nc-cl").value,lid:parseInt(document.getElementById("nc-ld").value)||0};
   DATA.children.push(ch);
   rAdChildren();
-  sheetPost({sheet:"الأولاد",row:[ch.name,ch.cls,lName(ch.lid),ch.phone,ch.addr,ch.dob]});
+  sheetPost({sheet:ch.cls,row:[ch.name,ch.phone,ch.addr,ch.dob,lName(ch.lid)]});
 }
 function delChild(id){if(!confirm("حذف؟"))return;DATA.children=DATA.children.filter(c=>c.id!==id);rAdChildren();}
 function editChild(id){
@@ -1061,11 +1115,26 @@ function addLeader(){
 function delLeader(id){if(!confirm("حذف؟"))return;DATA.leaders=DATA.leaders.filter(l=>l.id!==id);rAdLeaders();}
 function editLeader(id){
   const l=DATA.leaders.find(l=>l.id===id);
+  if(!l){alert("القائد غير موجود");return;}
   const clsO=["ملايكة أ","ملايكة ب","كلا الفصلين"].map(x=>`<option value="${x}" ${l.cls===x?"selected":""}>${x}</option>`).join("");
-  openModal("تعديل: "+l.name,
+  openModal("تعديل بيانات: "+l.name,
     `<div class="fr"><div class="fg"><label>الاسم</label><input type="text" id="el-n" value="${l.name}"></div><div class="fg"><label>الموبايل</label><input type="text" id="el-p" value="${l.phone||""}"></div></div>
     <div class="fr"><div class="fg"><label>الميلاد</label><input type="date" id="el-d" value="${l.dob||""}"></div><div class="fg"><label>الفصل</label><select id="el-c">${clsO}</select></div></div>`,
-    ()=>{l.name=document.getElementById("el-n").value;l.phone=document.getElementById("el-p").value;l.dob=document.getElementById("el-d").value;l.cls=document.getElementById("el-c").value;closeModal();rAdLeaders();}
+    ()=>{
+      const newName=document.getElementById("el-n").value.trim();
+      if(!newName){alert("الاسم لا يمكن أن يكون فارغاً");return;}
+      // Update in DATA
+      l.name=newName;
+      l.phone=document.getElementById("el-p").value.trim();
+      l.dob=document.getElementById("el-d").value;
+      l.cls=document.getElementById("el-c").value;
+      closeModal();
+      // Save full updated leaders list to sheet (overwrite row by name match)
+      sheetPost({sheet:"القادة", action:"update", id:String(id), row:[l.name,l.cls,l.phone,l.dob]});
+      // Refresh UI immediately
+      rAdLeaders();
+      showSync("✓ تم تحديث بيانات "+l.name);
+    }
   );
 }
 

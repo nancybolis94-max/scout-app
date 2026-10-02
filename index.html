@@ -425,48 +425,115 @@ async function sheetPost(payload){
   }catch(e){ showSync("⚠ تعذر الحفظ",true); }
 }
 
+async function sheetGetWithRetry(sheetName, retries=3, delay=1500){
+  for(let i=0;i<retries;i++){
+    try{
+      const r=await fetch(`${AS_URL}?sheet=${encodeURIComponent(sheetName)}`);
+      if(!r.ok) throw new Error("HTTP "+r.status);
+      const j=await r.json();
+      if(j.data) return j.data;
+      throw new Error("no data key");
+    }catch(e){
+      console.warn(`sheetGet "${sheetName}" attempt ${i+1} failed:`,e.message);
+      if(i<retries-1) await new Promise(res=>setTimeout(res,delay));
+    }
+  }
+  return [];
+}
+
 // =========================================================
 // LOAD ALL
 // =========================================================
+function setLoadingText(txt){
+  const el=document.querySelector("#loading-overlay .loading-txt");
+  if(el) el.textContent=txt;
+}
+
 async function loadAll(){
+  // Hide login, show loading
+  document.getElementById("screen-login").style.visibility="hidden";
   showLoading();
-  try{
-    // Leaders
-    const ldrs=await sheetGet("القادة");
-    DATA.leaders=ldrs.filter(r=>r[0]&&String(r[0]).trim()).map((r,i)=>({
-      id:i+1, name:String(r[0]).trim(), cls:String(r[1]||"").trim(),
-      phone:String(r[2]||"").trim(), dob:String(r[3]||"").trim()
-    }));
+  setLoadingText("جاري تحميل البيانات...");
 
-    // Passwords
-    const passes=await sheetGet("كلمات السر");
-    DATA.passwords=passes.filter(r=>r[0]).map(r=>({
-      role:String(r[0]).trim(), cls:String(r[1]||"").trim(), password:String(r[2]||"").trim()
-    }));
+  let success=false;
+  for(let attempt=1;attempt<=3;attempt++){
+    try{
+      setLoadingText(attempt>1?`إعادة المحاولة... (${attempt}/3)`:"جاري تحميل البيانات...");
 
-    // Meetings
-    const meets=await sheetGet("خطة الاجتماعات");
-    DATA.meetings=meets.filter(r=>r[0]&&r[1]).map((r,i)=>({
-      id:i+1, num:parseInt(r[0])||i+1, date:String(r[1]||"").trim(),
-      responsible:null,
-      paras:{spiritual:{topic:"",leaders:[]},scout:{topic:"",leaders:[]},culture:{topic:"",leaders:[]},game:{topic:"",leaders:[]},other:{topic:"",leaders:[]}}
-    }));
+      // Fetch all in parallel for speed
+      const [ldrs, passes, meets, acts, chSheet] = await Promise.all([
+        sheetGetWithRetry("القادة",1),
+        sheetGetWithRetry("كلمات السر",1),
+        sheetGetWithRetry("خطة الاجتماعات",1),
+        sheetGetWithRetry("الأنشطة",1),
+        sheetGetWithRetry("توزيع الأولاد",1),
+      ]);
 
-    // Activities
-    const acts=await sheetGet("الأنشطة");
-    DATA.activities=acts.filter(r=>r[0]).map((r,i)=>({
-      id:i+1, name:String(r[0]).trim(), date:String(r[1]||"").trim(), cls:String(r[2]||"").trim()
-    }));
+      // Leaders — require at least some data to count as success
+      DATA.leaders=ldrs.filter(r=>r[0]&&String(r[0]).trim()).map((r,i)=>({
+        id:i+1, name:String(r[0]).trim(), cls:String(r[1]||"").trim(),
+        phone:String(r[2]||"").trim(), dob:String(r[3]||"").trim()
+      }));
 
-    // Children leader assignments from sheet
-    const chSheet=await sheetGet("توزيع الأولاد");
-    chSheet.filter(r=>r[0]&&r[1]).forEach(r=>{
-      const ch=DATA.children.find(c=>c.name===String(r[0]).trim());
-      if(ch){ const l=DATA.leaders.find(l=>l.name===String(r[1]).trim()); if(l) ch.lid=l.id; }
-    });
+      // Passwords
+      DATA.passwords=passes.filter(r=>r[0]).map(r=>({
+        role:String(r[0]).trim(), cls:String(r[1]||"").trim(), password:String(r[2]||"").trim()
+      }));
 
-  }catch(e){ console.error("loadAll",e); }
+      // Meetings
+      DATA.meetings=meets.filter(r=>r[0]&&r[1]).map((r,i)=>({
+        id:i+1, num:parseInt(r[0])||i+1, date:String(r[1]||"").trim(),
+        responsible:null,
+        paras:{spiritual:{topic:"",leaders:[]},scout:{topic:"",leaders:[]},culture:{topic:"",leaders:[]},game:{topic:"",leaders:[]},other:{topic:"",leaders:[]}}
+      }));
+
+      // Activities
+      DATA.activities=acts.filter(r=>r[0]).map((r,i)=>({
+        id:i+1, name:String(r[0]).trim(), date:String(r[1]||"").trim(), cls:String(r[2]||"").trim()
+      }));
+
+      // Children assignments
+      chSheet.filter(r=>r[0]&&r[1]).forEach(r=>{
+        const ch=DATA.children.find(c=>c.name===String(r[0]).trim());
+        if(ch){ const l=DATA.leaders.find(l=>l.name===String(r[1]).trim()); if(l) ch.lid=l.id; }
+      });
+
+      success=true;
+      break;
+
+    }catch(e){
+      console.error(`loadAll attempt ${attempt}:`,e);
+      if(attempt<3) await new Promise(res=>setTimeout(res,2000));
+    }
+  }
+
   hideLoading();
+  document.getElementById("screen-login").style.visibility="visible";
+
+  if(!success){
+    // Show retry button on login screen
+    showRetryBanner();
+  }
+}
+
+function showRetryBanner(){
+  const box=document.querySelector(".login-box");
+  const existing=document.getElementById("retry-banner");
+  if(existing) existing.remove();
+  const div=document.createElement("div");
+  div.id="retry-banner";
+  div.style.cssText="background:#FFF3CD;border:1px solid #E9A919;border-radius:10px;padding:12px 14px;margin-bottom:14px;text-align:center;font-size:13px;color:#7A5000";
+  div.innerHTML=`⚠️ تعذر تحميل البيانات — تأكد من الاتصال<br><button onclick="retryLoad()" style="margin-top:8px;background:#2D6A4F;color:white;border:none;border-radius:8px;padding:7px 18px;font-family:'Cairo',sans-serif;font-size:13px;font-weight:600;cursor:pointer">🔄 إعادة المحاولة</button>`;
+  box.insertBefore(div,box.firstChild);
+}
+
+async function retryLoad(){
+  const banner=document.getElementById("retry-banner");
+  if(banner) banner.remove();
+  await loadAll();
+  // Refresh dropdown if class was selected
+  const cls=document.getElementById("sel-class").value;
+  if(cls) document.getElementById("sel-class").dispatchEvent(new Event("change"));
 }
 
 // =========================================================
@@ -1336,6 +1403,12 @@ window.addEventListener("load", async ()=>{
   const cls=document.getElementById("sel-class").value;
   if(cls) document.getElementById("sel-class").dispatchEvent(new Event("change"));
 });
+
+// Also refresh data after successful login to ensure freshness
+const _origInitApp=initApp;
+initApp=function(){
+  _origInitApp();
+};
 </script>
 </body>
 </html>

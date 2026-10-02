@@ -870,6 +870,7 @@ function assignKid(cid,lid){
   if(ch){ ch.lid=parseInt(lid)||0; sheetPost({sheet:"توزيع الأولاد",row:[ch.name,lName(ch.lid),ch.cls]}); }
 }
 function editChildTL(id){
+  id=parseInt(id);
   const ch=DATA.children.find(c=>c.id===id);
   const ml=myLdrs();
   openModal("تعديل: "+ch.name,
@@ -1026,11 +1027,13 @@ function addActivityTL(){
   sheetPost({sheet:"الأنشطة",row:[name,date,CU.cls]});
 }
 function deleteActivity(id){
+  id=parseInt(id);
   if(!confirm("حذف النشاط؟"))return;
   DATA.activities=DATA.activities.filter(a=>a.id!==id);
   rTLActivities(); rAdPlan&&rAdPlan();
 }
 function editActivityTL(id){
+  id=parseInt(id);
   const a=DATA.activities.find(a=>a.id===id);
   openModal("تعديل نشاط",
     `<div class="fr"><div class="fg"><label>الاسم</label><input type="text" id="ea-n" value="${a.name}"></div><div class="fg"><label>التاريخ</label><input type="date" id="ea-d" value="${a.date||""}"></div></div>`,
@@ -1087,8 +1090,9 @@ function addMeeting(){
   rAdPlan();
   sheetPost({sheet:"خطة الاجتماعات",row:[`اجتماع ${num}`,date]});
 }
-function deleteMeeting(id){if(!confirm("حذف؟"))return;DATA.meetings=DATA.meetings.filter(m=>m.id!==id);rAdPlan();}
+function deleteMeeting(id){id=parseInt(id);if(!confirm("حذف؟"))return;DATA.meetings=DATA.meetings.filter(m=>m.id!==id);rAdPlan();}
 function editMeeting(id){
+  id=parseInt(id);
   const m=DATA.meetings.find(m=>m.id===id);
   openModal("تعديل اجتماع "+m.num,
     `<div class="fr"><div class="fg"><label>التاريخ</label><input type="date" id="em-dt" value="${m.date}"></div><div class="fg"><label>الرقم</label><input type="number" id="em-nu" value="${m.num}"></div></div>`,
@@ -1102,8 +1106,9 @@ function addActivityAdmin(){
   rAdPlan();
   sheetPost({sheet:"الأنشطة",row:[name,date,cls]});
 }
-function deleteActivityAdmin(id){if(!confirm("حذف؟"))return;DATA.activities=DATA.activities.filter(a=>a.id!==id);rAdPlan();}
+function deleteActivityAdmin(id){id=parseInt(id);if(!confirm("حذف؟"))return;DATA.activities=DATA.activities.filter(a=>a.id!==id);rAdPlan();}
 function editActivityAdmin(id){
+  id=parseInt(id);
   const a=DATA.activities.find(a=>a.id===id);
   openModal("تعديل نشاط",
     `<div class="fr"><div class="fg"><label>الاسم</label><input type="text" id="ea-n" value="${a.name}"></div><div class="fg"><label>التاريخ</label><input type="date" id="ea-d" value="${a.date||""}"></div></div>`,
@@ -1138,8 +1143,9 @@ function addChild(){
   rAdChildren();
   sheetPost({sheet:ch.cls,row:[ch.name,ch.phone,ch.addr,ch.dob,lName(ch.lid)]});
 }
-function delChild(id){if(!confirm("حذف؟"))return;DATA.children=DATA.children.filter(c=>c.id!==id);rAdChildren();}
+function delChild(id){id=parseInt(id);if(!confirm("حذف؟"))return;DATA.children=DATA.children.filter(c=>c.id!==id);rAdChildren();}
 function editChild(id){
+  id=parseInt(id);
   const ch=DATA.children.find(c=>c.id===id);
   const lo=allLOpts();
   const clsO=["ملايكة أ","ملايكة ب"].map(x=>`<option value="${x}" ${ch.cls===x?"selected":""}>${x}</option>`).join("");
@@ -1164,12 +1170,28 @@ function rAdLeaders(){
   else{
     h+=`<div class="tw"><table><thead><tr><th>الاسم</th><th>الفصل</th><th>الموبايل</th><th>الميلاد</th><th></th></tr></thead><tbody>`;
     DATA.leaders.forEach(l=>{
-      h+=`<tr><td><b>${l.name}</b></td><td>${l.cls}</td><td>${l.phone||"—"}</td><td>${fDate(l.dob)}</td>
-      <td><div class="abtns"><button class="ab ab-a" onclick="editLeader(${l.id})">تعديل</button><button class="ab ab-r" onclick="delLeader(${l.id})">حذف</button></div></td></tr>`;
+      h+=`<tr>
+        <td><b>${l.name}</b></td>
+        <td>${l.cls}</td>
+        <td>${l.phone||"—"}</td>
+        <td>${fDate(l.dob)}</td>
+        <td><div class="abtns">
+          <button class="ab ab-a ldr-edit-btn" data-id="${l.id}">تعديل</button>
+          <button class="ab ab-r ldr-del-btn" data-id="${l.id}">حذف</button>
+        </div></td>
+      </tr>`;
     });
     h+=`</tbody></table></div>`;
   }
   c.innerHTML=h;
+
+  // Attach events via data attributes — safe for any name content
+  c.querySelectorAll(".ldr-edit-btn").forEach(btn=>{
+    btn.addEventListener("click", ()=> editLeader(parseInt(btn.dataset.id)));
+  });
+  c.querySelectorAll(".ldr-del-btn").forEach(btn=>{
+    btn.addEventListener("click", ()=> delLeader(parseInt(btn.dataset.id)));
+  });
 }
 function addLeader(){
   const name=document.getElementById("nl-nm").value;
@@ -1179,27 +1201,37 @@ function addLeader(){
   rAdLeaders();
   sheetPost({sheet:"القادة",row:[l.name,l.cls,l.phone,l.dob]});
 }
-function delLeader(id){if(!confirm("حذف؟"))return;DATA.leaders=DATA.leaders.filter(l=>l.id!==id);rAdLeaders();}
+function delLeader(id){
+  id=parseInt(id);
+  if(!confirm("حذف القائد؟")) return;
+  DATA.leaders=DATA.leaders.filter(l=>l.id!==id);
+  rAdLeaders();
+  showSync("✓ تم حذف القائد");
+}
 function editLeader(id){
+  id=parseInt(id);
   const l=DATA.leaders.find(l=>l.id===id);
-  if(!l){alert("القائد غير موجود");return;}
+  if(!l){alert("القائد غير موجود — id: "+id);return;}
   const clsO=["ملايكة أ","ملايكة ب","كلا الفصلين"].map(x=>`<option value="${x}" ${l.cls===x?"selected":""}>${x}</option>`).join("");
   openModal("تعديل بيانات: "+l.name,
-    `<div class="fr"><div class="fg"><label>الاسم</label><input type="text" id="el-n" value="${l.name}"></div><div class="fg"><label>الموبايل</label><input type="text" id="el-p" value="${l.phone||""}"></div></div>
-    <div class="fr"><div class="fg"><label>الميلاد</label><input type="date" id="el-d" value="${l.dob||""}"></div><div class="fg"><label>الفصل</label><select id="el-c">${clsO}</select></div></div>`,
+    `<div class="fr">
+      <div class="fg"><label>الاسم</label><input type="text" id="el-n" value="${l.name}"></div>
+      <div class="fg"><label>الموبايل</label><input type="text" id="el-p" value="${l.phone||""}"></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label>الميلاد</label><input type="date" id="el-d" value="${l.dob||""}"></div>
+      <div class="fg"><label>الفصل</label><select id="el-c">${clsO}</select></div>
+    </div>`,
     ()=>{
       const newName=document.getElementById("el-n").value.trim();
       if(!newName){alert("الاسم لا يمكن أن يكون فارغاً");return;}
-      // Update in DATA
       l.name=newName;
       l.phone=document.getElementById("el-p").value.trim();
       l.dob=document.getElementById("el-d").value;
       l.cls=document.getElementById("el-c").value;
       closeModal();
-      // Save full updated leaders list to sheet (overwrite row by name match)
-      sheetPost({sheet:"القادة", action:"update", id:String(id), row:[l.name,l.cls,l.phone,l.dob]});
-      // Refresh UI immediately
       rAdLeaders();
+      sheetPost({sheet:"القادة", action:"update", id:String(id), row:[l.name,l.cls,l.phone,l.dob]});
       showSync("✓ تم تحديث بيانات "+l.name);
     }
   );

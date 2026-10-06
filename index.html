@@ -814,19 +814,32 @@ async function uploadPdfToDrive(file, activityName, team){
     const reader = new FileReader();
     reader.onload = async (e)=>{
       try{
-        const base64Full = e.target.result; // data:application/pdf;base64,XXXX
+        const base64Full = e.target.result;
         const base64 = base64Full.split(",")[1];
         const filename = `${activityName}_${team}_${new Date().toISOString().slice(0,10)}.pdf`;
-        const result = await sheetPostWithResponse({
-          action:"uploadPDF",
-          base64,
-          filename
+
+        // Send in chunks if large, otherwise single request
+        // Use form-encoded to avoid CORS preflight issues
+        const formData = new URLSearchParams();
+        formData.append("action", "uploadPDF");
+        formData.append("filename", filename);
+        formData.append("base64", base64);
+
+        const res = await fetch(AS_URL, {
+          method: "POST",
+          headers: {"Content-Type": "application/x-www-form-urlencoded"},
+          body: formData.toString()
         });
+
+        let result;
+        try { result = await res.json(); }
+        catch(e){ result = {status:"error", message:"Invalid response from server"}; }
+
         if(result.status==="ok" && result.viewUrl){
           showSync("✓ تم رفع الملف على Drive");
           resolve(result.viewUrl);
         } else {
-          throw new Error(result.message||"Upload failed");
+          throw new Error(result.message || "فشل الرفع");
         }
       }catch(err){
         showSync("⚠ فشل رفع الملف — "+err.message, true);

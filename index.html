@@ -976,9 +976,53 @@ function rAdPlan(){
   c.querySelectorAll(".meet-edit-btn").forEach(btn=>{
     btn.addEventListener("click",()=>{
       const m=DATA.meetings.find(m=>m.id==btn.dataset.mid);if(!m)return;
+      const lo=allLOpts();
+      const respSel=DATA.leaders.map(l=>`<option value="${l.id}"${m.responsible==l.id?" selected":""}>${l.name} (${l.cls})</option>`).join("");
+      // Build para rows
+      let paraRows="";
+      PARA_KEYS.forEach(k=>{
+        const p=m.paras[k]||{topic:"",leaders:[]};
+        const multiSel=DATA.leaders.map(l=>`<option value="${l.id}"${(p.leaders||[]).includes(l.id)?" selected":""}>${l.name}</option>`).join("");
+        paraRows+=`
+        <div style="background:var(--bg);border:1px solid var(--bd);border-radius:8px;padding:10px 12px;margin-bottom:8px">
+          <div style="font-size:11px;font-weight:700;color:var(--mu);margin-bottom:6px">${PARA_NAMES[k]}</div>
+          <div class="fr">
+            <div class="fg"><label>العنوان</label><input type="text" id="ep-topic-${k}" value="${p.topic||""}"></div>
+            <div class="fg"><label>القادة المسئولون (Ctrl للتعدد)</label>
+              <select multiple id="ep-ldrs-${k}" style="height:70px">${multiSel}</select>
+            </div>
+          </div>
+        </div>`;
+      });
       openModal("تعديل اجتماع "+m.num,
-        `<div class="fr"><div class="fg"><label>التاريخ</label><input type="date" id="em-dt" value="${m.date}"></div><div class="fg"><label>الرقم</label><input type="number" id="em-nu" value="${m.num}"></div></div>`,
-        ()=>{m.date=document.getElementById("em-dt").value;m.num=parseInt(document.getElementById("em-nu").value);closeModal();rAdPlan();}
+        `<div class="fr">
+          <div class="fg"><label>التاريخ</label><input type="date" id="em-dt" value="${m.date}"></div>
+          <div class="fg"><label>رقم الاجتماع</label><input type="number" id="em-nu" value="${m.num}"></div>
+        </div>
+        <div class="fr fr1" style="margin-bottom:12px">
+          <div class="fg"><label>المسئول العام</label>
+            <select id="em-resp"><option value="">-- اختار --</option>${respSel}</select>
+          </div>
+        </div>
+        <div style="font-size:12px;font-weight:700;color:var(--g);margin-bottom:8px">فقرات الاجتماع:</div>
+        ${paraRows}`,
+        ()=>{
+          m.date=document.getElementById("em-dt").value;
+          m.num=parseInt(document.getElementById("em-nu").value);
+          m.responsible=parseInt(document.getElementById("em-resp").value)||null;
+          PARA_KEYS.forEach(k=>{
+            if(!m.paras[k])m.paras[k]={};
+            m.paras[k].topic=document.getElementById(`ep-topic-${k}`).value;
+            m.paras[k].leaders=Array.from(document.getElementById(`ep-ldrs-${k}`).selectedOptions).map(o=>parseInt(o.value));
+          });
+          closeModal();
+          rAdPlan();
+          sheetPost({sheet:"خطة الاجتماعات",action:"update",match:`اجتماع ${m.num}`,
+            row:[`اجتماع ${m.num}`,m.date,lName(m.responsible),
+              ...PARA_KEYS.map(k=>(m.paras[k]?.topic||"")),
+              ...PARA_KEYS.map(k=>lNamesArr(m.paras[k]?.leaders))]});
+          showSync("✓ تم تحديث الاجتماع");
+        }
       );
     });
   });

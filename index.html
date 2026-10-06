@@ -1237,21 +1237,26 @@ function rTLActivities(){
   acts.forEach(a=>{
     const myLdr=a[teamKey2]?lName(a[teamKey2]):"لم يحدد";
     const myPdf=a[pdfKey];
-    h+=`<div class="act-card">
-      <div class="act-icon">⛺</div>
-      <div style="flex:1">
-        <div style="font-size:14px;font-weight:700">${a.name}</div>
-        <div style="font-size:12px;color:var(--mu);margin-top:2px">📅 ${fDate(a.date)}</div>
-        <div style="font-size:11px;margin-top:3px;color:var(--tm)">👤 ${myLdr}</div>
-        <div style="margin-top:5px">${pdfBtn(myPdf,`برنامج ${CU.cls}`)}</div>
+    h+=`<div class="act-card" style="flex-direction:column;align-items:stretch">
+      <div style="display:flex;gap:12px;align-items:flex-start">
+        <div class="act-icon">⛺</div>
+        <div style="flex:1">
+          <div style="font-size:14px;font-weight:700">${a.name}</div>
+          <div style="font-size:12px;color:var(--mu);margin-top:2px">📅 ${fDate(a.date)}</div>
+          <div style="font-size:11px;margin-top:3px;color:var(--tm)">👤 ${myLdr}</div>
+          <div style="margin-top:5px">${pdfBtn(myPdf,`برنامج ${CU.cls}`)}</div>
+        </div>
+        <div class="abtns" style="flex-direction:column;gap:5px">
+          <button class="ab ab-a act-edit-btn" data-aid="${a.id}">تعديل</button>
+          <button class="ab ab-r act-del-btn" data-aid="${a.id}">حذف</button>
+        </div>
       </div>
-      <div class="abtns" style="flex-direction:column;gap:5px">
-        <button class="ab ab-a act-edit-btn" data-aid="${a.id}">تعديل</button>
-        <button class="ab ab-r act-del-btn" data-aid="${a.id}">حذف</button>
-        <label class="ab ab-g" style="cursor:pointer;text-align:center">
-          📎 رفع PDF
-          <input type="file" accept="application/pdf" style="display:none" data-aid="${a.id}" class="pdf-upload-input">
-        </label>
+      <div style="margin-top:10px;display:flex;gap:7px;align-items:center">
+        <input type="text" class="fi pdf-link-input" data-aid="${a.id}"
+          style="margin-bottom:0;font-size:12px;padding:7px 10px"
+          placeholder="🔗 الصق رابط PDF من Google Drive هنا..."
+          value="${myPdf||""}">
+        <button class="sv-btn pdf-link-save" data-aid="${a.id}" style="padding:7px 14px;font-size:12px;white-space:nowrap">حفظ</button>
       </div>
     </div>`;
   });
@@ -1293,17 +1298,19 @@ function rTLActivities(){
     });
   });
 
-  // PDF upload — send to Drive via Apps Script
-  c.querySelectorAll(".pdf-upload-input").forEach(inp=>{
-    inp.addEventListener("change",async()=>{
-      const file=inp.files[0];if(!file)return;
-      if(file.size>10*1024*1024){alert("الملف أكبر من 10MB");return;}
-      const a=DATA.activities.find(x=>x.id==inp.dataset.aid);if(!a)return;
-      try{
-        const viewUrl = await uploadPdfToDrive(file, a.name, CU.cls);
-        a[pdfKey] = viewUrl;
-        rTLActivities();
-      }catch(e){ console.error("PDF upload failed",e); }
+  // PDF link save
+  c.querySelectorAll(".pdf-link-save").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      const a=DATA.activities.find(x=>x.id==btn.dataset.aid);if(!a)return;
+      const inp=c.querySelector(`.pdf-link-input[data-aid="${btn.dataset.aid}"]`);
+      const url=inp?.value.trim()||"";
+      a[pdfKey]=url||null;
+      sheetPatch("الأنشطة",a.name,[{col:pdfKey==="pdf_a"?"PDF أ URL":"PDF ب URL",value:url}]);
+      btn.textContent="✓";btn.style.background="var(--gm)";
+      setTimeout(()=>{btn.textContent="حفظ";btn.style.background="";},2000);
+      // refresh PDF button display only
+      const pdfDiv=btn.closest(".act-card").querySelector("div[style*='margin-top:5px']");
+      if(pdfDiv) pdfDiv.innerHTML=pdfBtn(url,`برنامج ${CU.cls}`);
     });
   });
 }
@@ -1422,29 +1429,41 @@ function rAdPlan(){
     <button class="sv-btn" onclick="addActAdmin()">إضافة</button>
   </div>`;
   DATA.activities.forEach(a=>{
-    h+=`<div class="act-card">
-      <div class="act-icon">⛺</div>
-      <div style="flex:1">
-        <div style="font-size:14px;font-weight:700">${a.name}</div>
-        <div style="font-size:12px;color:var(--mu);margin-top:2px">📅 ${fDate(a.date)}</div>
-        <div style="font-size:11px;margin-top:4px;line-height:1.9">
-          <div><span style="font-weight:700;color:var(--bl)">فريق أ:</span> ${a.leader_a?lName(a.leader_a):"لم يحدد"}</div>
-          <div><span style="font-weight:700;color:var(--g)">فريق ب:</span> ${a.leader_b?lName(a.leader_b):"لم يحدد"}</div>
+    h+=`<div class="act-card" style="flex-direction:column;align-items:stretch">
+      <div style="display:flex;gap:12px;align-items:flex-start">
+        <div class="act-icon">⛺</div>
+        <div style="flex:1">
+          <div style="font-size:14px;font-weight:700">${a.name}</div>
+          <div style="font-size:12px;color:var(--mu);margin-top:2px">📅 ${fDate(a.date)}${a.cls?` | ${a.cls}`:""}</div>
+          <div style="font-size:11px;margin-top:4px;line-height:1.9">
+            <div><span style="font-weight:700;color:var(--bl)">فريق أ:</span> ${a.leader_a?lName(a.leader_a):"لم يحدد"}</div>
+            <div><span style="font-weight:700;color:var(--g)">فريق ب:</span> ${a.leader_b?lName(a.leader_b):"لم يحدد"}</div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap">
+            ${pdfBtn(a.pdf_a,"برنامج فريق أ")}
+            ${pdfBtn(a.pdf_b,"برنامج فريق ب")}
+          </div>
         </div>
-        <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap">
-          ${pdfBtn(a.pdf_a,"برنامج فريق أ")}
-          ${pdfBtn(a.pdf_b,"برنامج فريق ب")}
+        <div class="abtns" style="flex-direction:column;gap:5px">
+          <button class="ab ab-a act-edit-btn" data-aid="${a.id}">تعديل</button>
+          <button class="ab ab-r act-del-btn" data-aid="${a.id}">حذف</button>
         </div>
       </div>
-      <div class="abtns" style="flex-direction:column;gap:5px">
-        <button class="ab ab-a act-edit-btn" data-aid="${a.id}">تعديل</button>
-        <button class="ab ab-r act-del-btn" data-aid="${a.id}">حذف</button>
-        <label class="ab ab-g" style="cursor:pointer;text-align:center;font-size:11px">
-          📎 PDF أ<input type="file" accept="application/pdf" style="display:none" data-aid="${a.id}" data-team="a" class="ad-pdf-input">
-        </label>
-        <label class="ab ab-g" style="cursor:pointer;text-align:center;font-size:11px">
-          📎 PDF ب<input type="file" accept="application/pdf" style="display:none" data-aid="${a.id}" data-team="b" class="ad-pdf-input">
-        </label>
+      <div style="margin-top:10px;display:flex;flex-direction:column;gap:6px">
+        <div style="display:flex;gap:7px;align-items:center">
+          <span style="font-size:11px;font-weight:700;color:var(--bl);white-space:nowrap">PDF فريق أ:</span>
+          <input type="text" class="fi ad-pdf-link" data-aid="${a.id}" data-team="a"
+            style="margin-bottom:0;font-size:12px;padding:6px 10px"
+            placeholder="🔗 رابط Drive..." value="${a.pdf_a||""}">
+          <button class="sv-btn ad-pdf-save" data-aid="${a.id}" data-team="a" style="padding:6px 12px;font-size:12px;white-space:nowrap">حفظ</button>
+        </div>
+        <div style="display:flex;gap:7px;align-items:center">
+          <span style="font-size:11px;font-weight:700;color:var(--g);white-space:nowrap">PDF فريق ب:</span>
+          <input type="text" class="fi ad-pdf-link" data-aid="${a.id}" data-team="b"
+            style="margin-bottom:0;font-size:12px;padding:6px 10px"
+            placeholder="🔗 رابط Drive..." value="${a.pdf_b||""}">
+          <button class="sv-btn ad-pdf-save" data-aid="${a.id}" data-team="b" style="padding:6px 12px;font-size:12px;white-space:nowrap">حفظ</button>
+        </div>
       </div>
     </div>`;
   });
@@ -1566,20 +1585,19 @@ function rAdPlan(){
   c.querySelectorAll(".act-del-btn").forEach(btn=>{
     btn.addEventListener("click",()=>{if(!confirm("حذف؟"))return;DATA.activities=DATA.activities.filter(x=>x.id!=btn.dataset.aid);rAdPlan();});
   });
-  // Admin PDF upload
-  c.querySelectorAll(".ad-pdf-input").forEach(inp=>{
-    inp.addEventListener("change",async()=>{
-      const file=inp.files[0];if(!file)return;
-      if(file.size>10*1024*1024){alert("الملف أكبر من 10MB");return;}
-      const a=DATA.activities.find(x=>x.id==inp.dataset.aid);if(!a)return;
-      const team=inp.dataset.team; // "a" or "b"
-      const teamLabel=team==="a"?"ملايكة أ":"ملايكة ب";
+  // Admin PDF link save
+  c.querySelectorAll(".ad-pdf-save").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      const a=DATA.activities.find(x=>x.id==btn.dataset.aid);if(!a)return;
+      const team=btn.dataset.team;
       const pdfKey=team==="a"?"pdf_a":"pdf_b";
-      try{
-        const viewUrl=await uploadPdfToDrive(file, a.name, teamLabel);
-        a[pdfKey]=viewUrl;
-        rAdPlan();
-      }catch(e){ console.error("Admin PDF upload failed",e); }
+      const colName=team==="a"?"PDF أ URL":"PDF ب URL";
+      const inp=c.querySelector(`.ad-pdf-link[data-aid="${btn.dataset.aid}"][data-team="${team}"]`);
+      const url=inp?.value.trim()||"";
+      a[pdfKey]=url||null;
+      sheetPatch("الأنشطة",a.name,[{col:colName,value:url}]);
+      btn.textContent="✓";btn.style.background="var(--gm)";
+      setTimeout(()=>{btn.textContent="حفظ";btn.style.background="";},2000);
     });
   });
 }

@@ -1298,18 +1298,18 @@ function rTLActivities(){
     });
   });
 
-  // PDF link save
+  // PDF link save — col 6=PDF أ (1-based), col 7=PDF ب
   c.querySelectorAll(".pdf-link-save").forEach(btn=>{
     btn.addEventListener("click",()=>{
       const a=DATA.activities.find(x=>x.id==btn.dataset.aid);if(!a)return;
       const inp=c.querySelector(`.pdf-link-input[data-aid="${btn.dataset.aid}"]`);
       const url=inp?.value.trim()||"";
       a[pdfKey]=url||null;
-      sheetPatch("الأنشطة",a.name,[{col:pdfKey==="pdf_a"?"PDF أ URL":"PDF ب URL",value:url}]);
+      const colNum=pdfKey==="pdf_a"?6:7; // col F=6, col G=7
+      sheetPatch("الأنشطة",a.name,[{col:colNum,value:url}]);
       btn.textContent="✓";btn.style.background="var(--gm)";
       setTimeout(()=>{btn.textContent="حفظ";btn.style.background="";},2000);
-      // refresh PDF button display only
-      const pdfDiv=btn.closest(".act-card").querySelector("div[style*='margin-top:5px']");
+      const pdfDiv=btn.closest(".act-card").querySelector(".pdf-display");
       if(pdfDiv) pdfDiv.innerHTML=pdfBtn(url,`برنامج ${CU.cls}`);
     });
   });
@@ -1585,17 +1585,17 @@ function rAdPlan(){
   c.querySelectorAll(".act-del-btn").forEach(btn=>{
     btn.addEventListener("click",()=>{if(!confirm("حذف؟"))return;DATA.activities=DATA.activities.filter(x=>x.id!=btn.dataset.aid);rAdPlan();});
   });
-  // Admin PDF link save
+  // Admin PDF link save — col 6=PDF أ, col 7=PDF ب (1-based)
   c.querySelectorAll(".ad-pdf-save").forEach(btn=>{
     btn.addEventListener("click",()=>{
       const a=DATA.activities.find(x=>x.id==btn.dataset.aid);if(!a)return;
       const team=btn.dataset.team;
       const pdfKey=team==="a"?"pdf_a":"pdf_b";
-      const colName=team==="a"?"PDF أ URL":"PDF ب URL";
+      const colNum=team==="a"?6:7;
       const inp=c.querySelector(`.ad-pdf-link[data-aid="${btn.dataset.aid}"][data-team="${team}"]`);
       const url=inp?.value.trim()||"";
       a[pdfKey]=url||null;
-      sheetPatch("الأنشطة",a.name,[{col:colName,value:url}]);
+      sheetPatch("الأنشطة",a.name,[{col:colNum,value:url}]);
       btn.textContent="✓";btn.style.background="var(--gm)";
       setTimeout(()=>{btn.textContent="حفظ";btn.style.background="";},2000);
     });

@@ -409,9 +409,26 @@ async function sheetGet(name,tries=2){
 }
 async function sheetPost(payload){
   try{
-    await fetch(AS_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
+    // Use text/plain so Apps Script treats it as a simple CORS request
+    // Apps Script reads e.postData.contents regardless of content-type
+    await fetch(AS_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain"},body:JSON.stringify(payload)});
     showSync("✓ تم الحفظ في الشيت");
   }catch(e){showSync("⚠ تعذر الحفظ",true);}
+}
+
+async function sheetPostWithResponse(payload){
+  // POST with text/plain = simple CORS request = can read response
+  try{
+    const res = await fetch(AS_URL,{
+      method:"POST",
+      headers:{"Content-Type":"text/plain"},
+      body:JSON.stringify(payload)
+    });
+    return await res.json();
+  }catch(e){
+    console.error("sheetPostWithResponse error:",e);
+    return {status:"error",message:e.message};
+  }
 }
 
 // ── LOAD ALL ───────────────────────────────────────────
@@ -668,15 +685,74 @@ function rAsFollowup(){
   });
 }
 
+function pdfBtn(pdf, label){
+  if(!pdf) return `<span style="font-size:11px;color:var(--mu)">لا يوجد PDF</span>`;
+  // Support both Drive view URLs and legacy base64
+  const href = pdf.startsWith("http") ? pdf : pdf;
+  return `<a href="${href}" target="_blank" rel="noopener"
+    style="display:inline-flex;align-items:center;gap:5px;background:var(--rp);color:var(--rd);border-radius:20px;padding:5px 12px;font-size:11px;font-weight:600;text-decoration:none">
+    📄 ${label} <span style="font-size:9px;opacity:.7">▶ فتح</span></a>`;
+}
+
+async function uploadPdfToDrive(file, activityName, team){
+  showSync("جاري رفع الملف على Drive...");
+  return new Promise((resolve, reject)=>{
+    const reader = new FileReader();
+    reader.onload = async (e)=>{
+      try{
+        const base64Full = e.target.result; // data:application/pdf;base64,XXXX
+        const base64 = base64Full.split(",")[1];
+        const filename = `${activityName}_${team}_${new Date().toISOString().slice(0,10)}.pdf`;
+        const result = await sheetPostWithResponse({
+          action:"uploadPDF",
+          base64,
+          filename
+        });
+        if(result.status==="ok" && result.viewUrl){
+          showSync("✓ تم رفع الملف على Drive");
+          resolve(result.viewUrl);
+        } else {
+          throw new Error(result.message||"Upload failed");
+        }
+      }catch(err){
+        showSync("⚠ فشل رفع الملف — "+err.message, true);
+        reject(err);
+      }
+    };
+    reader.onerror = ()=>{ showSync("⚠ فشل قراءة الملف",true); reject(new Error("FileReader error")); };
+    reader.readAsDataURL(file);
+  });
+}
+
 function rActivities(prefix){
   const c=document.getElementById(`tab-${prefix}-activities`);
-  const acts=prefix==="tl"?DATA.activities.filter(a=>!a.cls||a.cls===CU.cls):DATA.activities;
+  // assistant sees only their team; "as" prefix = assistant
+  const isAs=(prefix==="as");
+  const acts=DATA.activities.filter(a=>!a.cls||a.cls===CU.cls||(CU.role==="admin"));
   if(!acts.length){c.innerHTML='<div class="empty-state"><div class="ei">⛺</div>لم تُضف أنشطة بعد</div>';return;}
   let h='<h2 class="sec-title">الأنشطة السنوية</h2>';
   acts.forEach(a=>{
-    h+=`<div class="act-card"><div class="act-icon">⛺</div>
-      <div style="flex:1"><div style="font-size:14px;font-weight:700">${a.name}</div><div style="font-size:12px;color:var(--mu);margin-top:2px">📅 ${fDate(a.date)}${a.cls?` | ${a.cls}`:""}</div></div>
-      <button class="ab ab-g" onclick="alert('PDF غير مرفق')">📄 PDF</button>
+    const ldrA=a.leader_a?`<span style="color:var(--bl);font-weight:700">أ:</span> ${lName(a.leader_a)}`:"";
+    const ldrB=a.leader_b?`<span style="color:var(--g);font-weight:700">ب:</span> ${lName(a.leader_b)}`:"";
+    // PDF buttons depending on role
+    let pdfSection="";
+    if(CU.role==="admin"){
+      pdfSection=`<div style="display:flex;flex-direction:column;gap:5px;align-items:flex-end">
+        ${pdfBtn(a.pdf_a,"برنامج فريق أ")}
+        ${pdfBtn(a.pdf_b,"برنامج فريق ب")}
+      </div>`;
+    } else {
+      const myPdf=CU.cls==="ملايكة أ"?a.pdf_a:a.pdf_b;
+      pdfSection=pdfBtn(myPdf,`برنامج ${CU.cls||""}`);
+    }
+    h+=`<div class="act-card">
+      <div class="act-icon">⛺</div>
+      <div style="flex:1">
+        <div style="font-size:14px;font-weight:700">${a.name}</div>
+        <div style="font-size:12px;color:var(--mu);margin-top:2px">📅 ${fDate(a.date)}</div>
+        ${ldrA||ldrB?`<div style="font-size:11px;margin-top:3px;line-height:1.8">${ldrA?`<span>${ldrA}</span> `:""} ${ldrB?`<span>${ldrB}</span>`:""}</div>`:""}
+      </div>
+      ${pdfSection}
     </div>`;
   });
   c.innerHTML=h;
@@ -976,28 +1052,74 @@ function rTLLvisit(){
   c.querySelectorAll("textarea[data-lvkey]").forEach(ta=>{ta.addEventListener("change",()=>{DATA.lvisit[ta.dataset.lvkey]=ta.value;});});
 }
 
+function readPdfAsBase64(file){
+  return new Promise((res,rej)=>{
+    const r=new FileReader();
+    r.onload=e=>res(e.target.result); // data:application/pdf;base64,...
+    r.onerror=rej;
+    r.readAsDataURL(file);
+  });
+}
+
 function rTLActivities(){
   const c=document.getElementById("tab-tl-activities");
   const acts=DATA.activities.filter(a=>!a.cls||a.cls===CU.cls);
+  const ml=myLdrs();
+  const ldrOpt=lOpts(ml);
+  const teamKey2=CU.cls==="ملايكة أ"?"leader_a":"leader_b";
+  const pdfKey=CU.cls==="ملايكة أ"?"pdf_a":"pdf_b";
   let h=`<h2 class="sec-title">الأنشطة <span class="badge bg-g">${acts.length}</span></h2>
   <div class="add-form"><h3>➕ إضافة نشاط</h3>
     <div class="fr"><div class="fg"><label>الاسم</label><input type="text" id="tl-na-nm"></div><div class="fg"><label>التاريخ</label><input type="date" id="tl-na-dt"></div></div>
+    <div class="fr fr1"><div class="fg"><label>القائد المسئول (من فريقك)</label><select id="tl-na-ldr"><option value="">-- اختار --</option>${ldrOpt}</select></div></div>
     <button class="sv-btn" onclick="addActTL()">إضافة</button>
   </div>`;
   acts.forEach(a=>{
-    h+=`<div class="act-card"><div class="act-icon">⛺</div><div style="flex:1"><div style="font-size:14px;font-weight:700">${a.name}</div><div style="font-size:12px;color:var(--mu)">📅 ${fDate(a.date)}</div></div>
-    <div class="abtns"><button class="ab ab-a act-edit-btn" data-aid="${a.id}">تعديل</button><button class="ab ab-r act-del-btn" data-aid="${a.id}">حذف</button></div></div>`;
+    const myLdr=a[teamKey2]?lName(a[teamKey2]):"لم يحدد";
+    const myPdf=a[pdfKey];
+    h+=`<div class="act-card">
+      <div class="act-icon">⛺</div>
+      <div style="flex:1">
+        <div style="font-size:14px;font-weight:700">${a.name}</div>
+        <div style="font-size:12px;color:var(--mu);margin-top:2px">📅 ${fDate(a.date)}</div>
+        <div style="font-size:11px;margin-top:3px;color:var(--tm)">👤 ${myLdr}</div>
+        <div style="margin-top:5px">${pdfBtn(myPdf,`برنامج ${CU.cls}`)}</div>
+      </div>
+      <div class="abtns" style="flex-direction:column;gap:5px">
+        <button class="ab ab-a act-edit-btn" data-aid="${a.id}">تعديل</button>
+        <button class="ab ab-r act-del-btn" data-aid="${a.id}">حذف</button>
+        <label class="ab ab-g" style="cursor:pointer;text-align:center">
+          📎 رفع PDF
+          <input type="file" accept="application/pdf" style="display:none" data-aid="${a.id}" class="pdf-upload-input">
+        </label>
+      </div>
+    </div>`;
   });
   c.innerHTML=h;
+
+  // edit
   c.querySelectorAll(".act-edit-btn").forEach(btn=>{
     btn.addEventListener("click",()=>{
       const a=DATA.activities.find(x=>x.id==btn.dataset.aid);if(!a)return;
+      const curLdr=a[teamKey2]||0;
       openModal("تعديل نشاط",
-        `<div class="fr"><div class="fg"><label>الاسم</label><input type="text" id="ea-n" value="${a.name}"></div><div class="fg"><label>التاريخ</label><input type="date" id="ea-d" value="${a.date||""}"></div></div>`,
-        ()=>{a.name=document.getElementById("ea-n").value;a.date=document.getElementById("ea-d").value;closeModal();rTLActivities();}
+        `<div class="fr"><div class="fg"><label>الاسم</label><input type="text" id="ea-n" value="${a.name}"></div><div class="fg"><label>التاريخ</label><input type="date" id="ea-d" value="${a.date||""}"></div></div>
+        <div class="fr fr1"><div class="fg"><label>القائد المسئول (من فريقك)</label>
+          <select id="ea-ldr"><option value="">-- اختار --</option>${lOpts(ml).replace(`value="${curLdr}"`,`value="${curLdr}" selected`)}</select>
+        </div></div>`,
+        ()=>{
+          a.name=document.getElementById("ea-n").value;
+          a.date=document.getElementById("ea-d").value;
+          const ldrVal=parseInt(document.getElementById("ea-ldr").value)||0;
+          a[teamKey2]=ldrVal;
+          closeModal();rTLActivities();
+          sheetPost({sheet:"الأنشطة",action:"update",match:a.name,row:[a.name,a.date,a.cls,lName(a.leader_a),lName(a.leader_b)]});
+        }
       );
     });
   });
+
+  // delete
   c.querySelectorAll(".act-del-btn").forEach(btn=>{
     btn.addEventListener("click",()=>{
       if(!confirm("حذف النشاط؟"))return;
@@ -1005,13 +1127,31 @@ function rTLActivities(){
       rTLActivities();
     });
   });
+
+  // PDF upload — send to Drive via Apps Script
+  c.querySelectorAll(".pdf-upload-input").forEach(inp=>{
+    inp.addEventListener("change",async()=>{
+      const file=inp.files[0];if(!file)return;
+      if(file.size>10*1024*1024){alert("الملف أكبر من 10MB");return;}
+      const a=DATA.activities.find(x=>x.id==inp.dataset.aid);if(!a)return;
+      try{
+        const viewUrl = await uploadPdfToDrive(file, a.name, CU.cls);
+        a[pdfKey] = viewUrl;
+        rTLActivities();
+      }catch(e){ console.error("PDF upload failed",e); }
+    });
+  });
 }
 function addActTL(){
   const name=document.getElementById("tl-na-nm").value,date=document.getElementById("tl-na-dt").value;
   if(!name){alert("ادخل الاسم");return;}
-  DATA.activities.push({id:nxtId(DATA.activities),name,date,cls:CU.cls});
+  const ldr=parseInt(document.getElementById("tl-na-ldr").value)||0;
+  const teamKey2=CU.cls==="ملايكة أ"?"leader_a":"leader_b";
+  const act={id:nxtId(DATA.activities),name,date,cls:CU.cls,leader_a:null,leader_b:null,pdf_a:null,pdf_b:null};
+  act[teamKey2]=ldr;
+  DATA.activities.push(act);
   rTLActivities();
-  sheetPost({sheet:"الأنشطة",row:[name,date,CU.cls]});
+  sheetPost({sheet:"الأنشطة",row:[name,date,CU.cls,lName(act.leader_a),lName(act.leader_b)]});
 }
 
 // ── ADMIN ──────────────────────────────────────────────
@@ -1105,15 +1245,43 @@ function rAdPlan(){
       });
     }
   }
+  const ldrsA=DATA.leaders.filter(l=>l.cls==="ملايكة أ"||l.cls==="كلا الفصلين");
+  const ldrsB=DATA.leaders.filter(l=>l.cls==="ملايكة ب"||l.cls==="كلا الفصلين");
   h+=`<h2 class="sec-title" style="margin-top:22px">الأنشطة السنوية</h2>
   <div class="add-form"><h3>➕ إضافة نشاط</h3>
     <div class="fr"><div class="fg"><label>الاسم</label><input type="text" id="na-nm"></div><div class="fg"><label>التاريخ</label><input type="date" id="na-dt"></div></div>
-    <div class="fr fr1"><div class="fg"><label>الفريق</label><select id="na-cls"><option value="">الكل</option><option value="ملايكة أ">ملايكة أ</option><option value="ملايكة ب">ملايكة ب</option></select></div></div>
+    <div class="fr">
+      <div class="fg"><label style="color:var(--bl)">القائد المسئول — فريق أ</label><select id="na-ldr-a"><option value="">-- اختار --</option>${lOpts(ldrsA)}</select></div>
+      <div class="fg"><label style="color:var(--g)">القائد المسئول — فريق ب</label><select id="na-ldr-b"><option value="">-- اختار --</option>${lOpts(ldrsB)}</select></div>
+    </div>
     <button class="sv-btn" onclick="addActAdmin()">إضافة</button>
   </div>`;
   DATA.activities.forEach(a=>{
-    h+=`<div class="act-card"><div class="act-icon">⛺</div><div style="flex:1"><div style="font-size:14px;font-weight:700">${a.name}</div><div style="font-size:12px;color:var(--mu)">📅 ${fDate(a.date)}${a.cls?` | ${a.cls}`:""}</div></div>
-    <div class="abtns"><button class="ab ab-a act-edit-btn" data-aid="${a.id}">تعديل</button><button class="ab ab-r act-del-btn" data-aid="${a.id}">حذف</button></div></div>`;
+    h+=`<div class="act-card">
+      <div class="act-icon">⛺</div>
+      <div style="flex:1">
+        <div style="font-size:14px;font-weight:700">${a.name}</div>
+        <div style="font-size:12px;color:var(--mu);margin-top:2px">📅 ${fDate(a.date)}</div>
+        <div style="font-size:11px;margin-top:4px;line-height:1.9">
+          <div><span style="font-weight:700;color:var(--bl)">فريق أ:</span> ${a.leader_a?lName(a.leader_a):"لم يحدد"}</div>
+          <div><span style="font-weight:700;color:var(--g)">فريق ب:</span> ${a.leader_b?lName(a.leader_b):"لم يحدد"}</div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap">
+          ${pdfBtn(a.pdf_a,"برنامج فريق أ")}
+          ${pdfBtn(a.pdf_b,"برنامج فريق ب")}
+        </div>
+      </div>
+      <div class="abtns" style="flex-direction:column;gap:5px">
+        <button class="ab ab-a act-edit-btn" data-aid="${a.id}">تعديل</button>
+        <button class="ab ab-r act-del-btn" data-aid="${a.id}">حذف</button>
+        <label class="ab ab-g" style="cursor:pointer;text-align:center;font-size:11px">
+          📎 PDF أ<input type="file" accept="application/pdf" style="display:none" data-aid="${a.id}" data-team="a" class="ad-pdf-input">
+        </label>
+        <label class="ab ab-g" style="cursor:pointer;text-align:center;font-size:11px">
+          📎 PDF ب<input type="file" accept="application/pdf" style="display:none" data-aid="${a.id}" data-team="b" class="ad-pdf-input">
+        </label>
+      </div>
+    </div>`;
   });
   c.innerHTML=h;
   // meetings
@@ -1197,6 +1365,22 @@ function rAdPlan(){
   });
   c.querySelectorAll(".act-del-btn").forEach(btn=>{
     btn.addEventListener("click",()=>{if(!confirm("حذف؟"))return;DATA.activities=DATA.activities.filter(x=>x.id!=btn.dataset.aid);rAdPlan();});
+  });
+  // Admin PDF upload
+  c.querySelectorAll(".ad-pdf-input").forEach(inp=>{
+    inp.addEventListener("change",async()=>{
+      const file=inp.files[0];if(!file)return;
+      if(file.size>10*1024*1024){alert("الملف أكبر من 10MB");return;}
+      const a=DATA.activities.find(x=>x.id==inp.dataset.aid);if(!a)return;
+      const team=inp.dataset.team; // "a" or "b"
+      const teamLabel=team==="a"?"ملايكة أ":"ملايكة ب";
+      const pdfKey=team==="a"?"pdf_a":"pdf_b";
+      try{
+        const viewUrl=await uploadPdfToDrive(file, a.name, teamLabel);
+        a[pdfKey]=viewUrl;
+        rAdPlan();
+      }catch(e){ console.error("Admin PDF upload failed",e); }
+    });
   });
 }
 function addMeeting(){

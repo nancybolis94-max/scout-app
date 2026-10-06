@@ -1047,13 +1047,20 @@ function rAdChildren(){
           ch.addr=document.getElementById("ech-a").value;ch.dob=document.getElementById("ech-d").value;
           ch.cls=document.getElementById("ech-c").value;ch.lid=parseInt(document.getElementById("ech-l").value)||0;
           closeModal();rAdChildren();
-          sheetPost({sheet:"تعديل بيانات",row:[ch.name,ch.cls,lName(ch.lid),ch.phone,ch.addr,ch.dob]});
+          sheetPost({sheet:ch.cls,action:"update",match:ch.name,row:[ch.name,ch.phone,ch.addr,ch.dob,lName(ch.lid)]});
         }
       );
     });
   });
   c.querySelectorAll(".ch-del-btn").forEach(btn=>{
-    btn.addEventListener("click",()=>{if(!confirm("حذف الطفل؟"))return;DATA.children=DATA.children.filter(c=>c.id!=btn.dataset.cid);rAdChildren();});
+    btn.addEventListener("click",()=>{
+      const ch=DATA.children.find(c=>c.id==btn.dataset.cid);
+      if(!confirm(`حذف "${ch?.name}"؟`))return;
+      DATA.children=DATA.children.filter(c=>c.id!=btn.dataset.cid);
+      if(ch) sheetPost({sheet:ch.cls,action:"delete",match:ch.name});
+      rAdChildren();
+      showSync("✓ تم حذف الطفل");
+    });
   });
 }
 function addChild(){
@@ -1097,7 +1104,7 @@ function rAdLeaders(){
           l.name=newName;l.phone=document.getElementById("el-p").value.trim();
           l.dob=document.getElementById("el-d").value;l.cls=document.getElementById("el-c").value;
           closeModal();rAdLeaders();
-          sheetPost({sheet:"القادة",action:"update",id:String(l.id),row:[l.name,l.cls,l.phone,l.dob]});
+          sheetPost({sheet:"القادة",action:"update",match:l.name,row:[l.name,l.cls,l.phone,l.dob]});
           showSync("✓ تم تحديث بيانات "+l.name);
         }
       );
@@ -1108,7 +1115,9 @@ function rAdLeaders(){
       const l=DATA.leaders.find(l=>l.id==btn.dataset.lid);
       if(!confirm(`حذف القائد "${l?.name}"؟`))return;
       DATA.leaders=DATA.leaders.filter(l=>l.id!=btn.dataset.lid);
-      rAdLeaders();showSync("✓ تم حذف القائد");
+      if(l) sheetPost({sheet:"القادة",action:"delete",match:l.name});
+      rAdLeaders();
+      showSync("✓ تم حذف القائد");
     });
   });
 }

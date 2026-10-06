@@ -545,11 +545,16 @@ function parasHTML(m,highlight){
   let h='<div class="meet-body">';
   PARA_KEYS.forEach(k=>{
     const p=m.paras[k]||{};
-    const mine=highlight&&(p.leaders||[]).includes(CU?.id);
+    const allL=allParaLeaders(p);
+    const mine=highlight&&allL.includes(CU?.id);
+    const ldrsA=p.leaders_a||[];
+    const ldrsB=p.leaders_b||[];
     h+=`<div class="para-item${mine?" mine":""}">
       <div class="para-lbl">${PARA_NAMES[k]}</div>
       <div class="para-topic">${p.topic||"—"}</div>
-      <div class="para-ldrs">${lNamesArr(p.leaders)}${mine?" ⭐":""}</div>
+      ${ldrsA.length?`<div style="font-size:11px;margin-top:3px"><span style="font-weight:700;color:var(--bl)">أ:</span> ${lNamesArr(ldrsA)}${mine&&ldrsA.includes(CU?.id)?" ⭐":""}</div>`:""}
+      ${ldrsB.length?`<div style="font-size:11px;margin-top:2px"><span style="font-weight:700;color:var(--g)">ب:</span> ${lNamesArr(ldrsB)}${mine&&ldrsB.includes(CU?.id)?" ⭐":""}</div>`:""}
+      ${!ldrsA.length&&!ldrsB.length?`<div class="para-ldrs" style="color:var(--mu);font-size:11px">لم يوزع بعد</div>`:""}
     </div>`;
   });
   return h+'</div>';
@@ -701,61 +706,113 @@ function rAsAttendance(){
 }
 
 // ── TEAM LEADER ────────────────────────────────────────
+// ── helpers: team-keyed leaders ──────────────────────────
+function teamKey(cls){ return cls==="ملايكة أ"?"leaders_a":"leaders_b"; }
+function getTeamLeaders(para,cls){ return para[teamKey(cls)]||[]; }
+function setTeamLeaders(para,cls,ids){ para[teamKey(cls)]=ids; }
+function allParaLeaders(para){ return [...new Set([...(para.leaders_a||[]),(para.leaders_b||[])])]; }
+
 function rTLPlan(){
   const c=document.getElementById("tab-tl-plan");
   if(!DATA.meetings.length){c.innerHTML='<div class="empty-state"><div class="ei">📅</div>لم يُضف قائد القطاع اجتماعات بعد</div>';return;}
   const ml=myLdrs();
+  const teamLabel=CU.cls==="ملايكة أ"?"فريق أ":"فريق ب";
+
   let h=`<h2 class="sec-title">توزيع فقرات الخطة <span class="badge bg-a">${CU.cls}</span></h2>
-  <div class="card" style="margin-bottom:11px;font-size:13px;color:var(--mu)">💡 اضغط Ctrl (أو Cmd) لاختيار أكثر من قائد لنفس الفقرة</div>`;
+  <div class="card" style="margin-bottom:11px;font-size:13px;color:var(--mu)">💡 اضغط على أي اجتماع لتوزيع قادتك على فقراته</div>`;
+
   DATA.meetings.forEach(m=>{
-    h+=`<div class="meet-card"><div class="meet-hd">
-      <span class="meet-num">اجتماع ${m.num}</span>
-      <span class="meet-date">${fDate(m.date)}</span>
-    </div><div style="padding:11px 14px">
-    <div class="fr fr1" style="margin-bottom:9px"><div class="fg"><label>المسئول العام</label>
-      <select data-mid="${m.id}" data-field="resp"><option value="">-- اختار --</option>${lOpts(ml)}</select>
-    </div></div>
-    <div class="meet-body">`;
+    const tk=teamKey(CU.cls);
+    const hasAssigned=PARA_KEYS.some(k=>(m.paras[k]?.[tk]||[]).length>0);
+    h+=`<div class="meet-card" style="margin-bottom:8px">
+      <div class="meet-hd" style="cursor:pointer" onclick="toggleTLAcc(${m.id})">
+        <span class="meet-num">اجتماع ${m.num}</span>
+        <span class="meet-date">${fDate(m.date)}</span>
+        ${hasAssigned?'<span class="badge bg-g">تم التوزيع ✓</span>':'<span class="badge bg-gray">لم يوزع</span>'}
+        <span id="tlacc-ic-${m.id}" style="font-size:14px;color:var(--mu);margin-right:auto">▼</span>
+      </div>
+      <div id="tlacc-${m.id}" style="display:none;padding:12px 14px">
+        <div class="fr fr1" style="margin-bottom:9px">
+          <div class="fg"><label>المسئول العام (من ${teamLabel})</label>
+            <select id="tl-resp-${m.id}"><option value="">-- اختار --</option>${lOpts(ml)}</select>
+          </div>
+        </div>
+        <div class="meet-body">`;
     PARA_KEYS.forEach(k=>{
-      const p=m.paras[k]||{topic:"",leaders:[]};
+      const p=m.paras[k]||{};
+      const myLdrsSelected=getTeamLeaders(p,CU.cls);
       h+=`<div class="para-item">
         <div class="para-lbl">${PARA_NAMES[k]}</div>
-        <input type="text" class="notes" style="min-height:28px;margin-bottom:5px" placeholder="عنوان الفقرة..." value="${p.topic||""}" data-mid="${m.id}" data-para="${k}" data-field="topic">
-        <select multiple style="width:100%;padding:4px 7px;border:1.5px solid var(--bd);border-radius:8px;font-family:'Cairo',sans-serif;font-size:12px;height:78px" data-mid="${m.id}" data-para="${k}" data-field="leaders">
-          ${lMultiOpts(ml,p.leaders)}
+        <input type="text" id="tl-topic-${m.id}-${k}" class="notes" style="min-height:28px;margin-bottom:5px"
+          placeholder="عنوان الفقرة..." value="${p.topic||""}">
+        <label style="font-size:10px;color:var(--mu);display:block;margin-bottom:3px">قادة ${teamLabel} (Ctrl للتعدد)</label>
+        <select multiple id="tl-ldrs-${m.id}-${k}"
+          style="width:100%;padding:4px 7px;border:1.5px solid var(--bd);border-radius:8px;font-family:'Cairo',sans-serif;font-size:12px;height:72px">
+          ${lMultiOpts(ml,myLdrsSelected)}
         </select>
       </div>`;
     });
-    h+=`</div></div></div>`;
+    h+=`</div>
+        <div style="margin-top:10px;text-align:left">
+          <button class="sv-btn tl-save-meet-btn" data-mid="${m.id}">💾 حفظ توزيع اجتماع ${m.num}</button>
+        </div>
+      </div>
+    </div>`;
   });
-  h+='<button class="sv-btn" style="margin-top:8px" onclick="saveTLPlan()">💾 حفظ التوزيع</button>';
+
   c.innerHTML=h;
-  c.querySelectorAll("select[data-field='resp']").forEach(sel=>{
-    sel.addEventListener("change",()=>{
-      const m=DATA.meetings.find(m=>m.id==sel.dataset.mid);
-      if(m)m.responsible=parseInt(sel.value)||null;
-    });
-  });
-  c.querySelectorAll("input[data-field='topic']").forEach(inp=>{
-    inp.addEventListener("change",()=>{
-      const m=DATA.meetings.find(m=>m.id==inp.dataset.mid);
-      if(m){if(!m.paras[inp.dataset.para])m.paras[inp.dataset.para]={};m.paras[inp.dataset.para].topic=inp.value;}
-    });
-  });
-  c.querySelectorAll("select[data-field='leaders']").forEach(sel=>{
-    sel.addEventListener("change",()=>{
-      const m=DATA.meetings.find(m=>m.id==sel.dataset.mid);
-      if(m){if(!m.paras[sel.dataset.para])m.paras[sel.dataset.para]={};
-        m.paras[sel.dataset.para].leaders=Array.from(sel.selectedOptions).map(o=>parseInt(o.value));
-        rAsPlan();}
+
+  // accordion toggle
+  c.querySelectorAll(".meet-hd[onclick]").forEach(hd=>{});  // handled inline
+
+  // per-meeting save
+  c.querySelectorAll(".tl-save-meet-btn").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      const mid=parseInt(btn.dataset.mid);
+      const m=DATA.meetings.find(m=>m.id===mid);
+      if(!m)return;
+      // save responsible
+      const respEl=document.getElementById(`tl-resp-${mid}`);
+      if(respEl&&respEl.value) m.responsible=parseInt(respEl.value);
+      // save each para — only update this team's leaders, preserve other team
+      PARA_KEYS.forEach(k=>{
+        if(!m.paras[k])m.paras[k]={topic:"",leaders_a:[],leaders_b:[]};
+        const topicEl=document.getElementById(`tl-topic-${mid}-${k}`);
+        const ldrsEl=document.getElementById(`tl-ldrs-${mid}-${k}`);
+        if(topicEl) m.paras[k].topic=topicEl.value;
+        if(ldrsEl){
+          const selected=Array.from(ldrsEl.selectedOptions).map(o=>parseInt(o.value));
+          setTeamLeaders(m.paras[k],CU.cls,selected);
+          // keep combined leaders array for display
+          m.paras[k].leaders=allParaLeaders(m.paras[k]);
+        }
+      });
+      // post to sheet: partial update for this team only
+      PARA_KEYS.forEach(k=>{
+        const p=m.paras[k]||{};
+        const myL=getTeamLeaders(p,CU.cls);
+        if(myL.length||p.topic){
+          sheetPost({sheet:"توزيع الخطة",action:"append",
+            row:[`اجتماع ${m.num}`,fDate(m.date),CU.cls,PARA_NAMES[k],p.topic||"",lNamesArr(myL)]});
+        }
+      });
+      // visual feedback
+      btn.textContent="✓ تم الحفظ";
+      btn.style.background="var(--gm)";
+      setTimeout(()=>{btn.textContent=`💾 حفظ توزيع اجتماع ${m.num}`;btn.style.background="";},2000);
+      showSync("✓ تم حفظ توزيع اجتماع "+m.num);
+      rAsPlan();
     });
   });
 }
-function saveTLPlan(){
-  DATA.meetings.forEach(m=>PARA_KEYS.forEach(k=>{
-    const p=m.paras[k]||{};
-    if(p.leaders&&p.leaders.length)sheetPost({sheet:"توزيع الخطة",row:[`اجتماع ${m.num}`,fDate(m.date),PARA_NAMES[k],p.topic||"",lNamesArr(p.leaders)]});
-  }));
+
+function toggleTLAcc(mid){
+  const el=document.getElementById("tlacc-"+mid);
+  const ic=document.getElementById("tlacc-ic-"+mid);
+  if(!el)return;
+  const open=el.style.display==="block";
+  el.style.display=open?"none":"block";
+  if(ic)ic.textContent=open?"▼":"▲";
 }
 
 function rTLChildren(){
@@ -953,10 +1010,15 @@ function rAdPlan(){
     </div><div class="meet-body">`;
     PARA_KEYS.forEach(k=>{
       const p=m.paras[k]||{};
-      h+=`<div class="para-item${p.leaders&&p.leaders.length?"":" unset"}">
+      const ldrsA=p.leaders_a||[];
+      const ldrsB=p.leaders_b||[];
+      const hasAny=ldrsA.length||ldrsB.length||p.topic;
+      h+=`<div class="para-item${hasAny?"":" unset"}">
         <div class="para-lbl">${PARA_NAMES[k]}</div>
         <div class="para-topic">${p.topic||"—"}</div>
-        <div class="para-ldrs">${lNamesArr(p.leaders)}</div>
+        ${ldrsA.length?`<div style="font-size:11px;margin-top:4px"><span style="color:var(--bl);font-weight:700">فريق أ:</span> ${lNamesArr(ldrsA)}</div>`:""}
+        ${ldrsB.length?`<div style="font-size:11px;margin-top:3px"><span style="color:var(--g);font-weight:700">فريق ب:</span> ${lNamesArr(ldrsB)}</div>`:""}
+        ${!ldrsA.length&&!ldrsB.length?`<div class="para-ldrs" style="color:var(--mu);font-size:11px">لم يوزع بعد</div>`:""}
       </div>`;
     });
     h+=`</div></div>`;

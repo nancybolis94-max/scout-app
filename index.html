@@ -825,15 +825,35 @@ async function uploadPdfToDrive(file, activityName, team){
         formData.append("filename", filename);
         formData.append("base64", base64);
 
-        const res = await fetch(AS_URL, {
-          method: "POST",
-          headers: {"Content-Type": "application/x-www-form-urlencoded"},
-          body: formData.toString()
+        // Apps Script requires JSON body — send as text/plain to avoid CORS preflight
+        // but keep JSON format so doPost can parse it correctly
+        const jsonPayload = JSON.stringify({
+          action: "uploadPDF",
+          filename: filename,
+          base64: base64
         });
 
+        const res = await fetch(AS_URL, {
+          method: "POST",
+          headers: {"Content-Type": "text/plain;charset=utf-8"},
+          body: jsonPayload,
+          redirect: "follow"
+        });
+
+        const text = await res.text();
         let result;
-        try { result = await res.json(); }
-        catch(e){ result = {status:"error", message:"Invalid response from server"}; }
+        try {
+          // Find JSON in response (Apps Script sometimes prepends redirect text)
+          const jsonStart = text.indexOf("{");
+          const jsonEnd = text.lastIndexOf("}");
+          if(jsonStart>=0 && jsonEnd>jsonStart){
+            result = JSON.parse(text.slice(jsonStart, jsonEnd+1));
+          } else {
+            throw new Error("No JSON in response: "+text.slice(0,100));
+          }
+        } catch(e){
+          throw new Error("Parse error: "+e.message);
+        }
 
         if(result.status==="ok" && result.viewUrl){
           showSync("✓ تم رفع الملف على Drive");

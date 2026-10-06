@@ -439,28 +439,133 @@ async function loadAll(){
   for(let att=1;att<=3;att++){
     setLoadTxt(att>1?`إعادة المحاولة... (${att}/3)`:"جاري تحميل البيانات...");
     try{
-      const[ldrs,passes,meets,acts,ch2]=await Promise.all([
-        sheetGet("القادة"),sheetGet("كلمات السر"),
-        sheetGet("خطة الاجتماعات"),sheetGet("الأنشطة"),sheetGet("توزيع الأولاد")
+      const[ldrs,passes,meets,acts,dist,chA,chB]=await Promise.all([
+        sheetGet("القادة"),
+        sheetGet("كلمات السر"),
+        sheetGet("خطة الاجتماعات"),
+        sheetGet("الأنشطة"),
+        sheetGet("توزيع الخطة"),
+        sheetGet("ملايكة أ"),
+        sheetGet("ملايكه ب")
       ]);
-      DATA.leaders=ldrs.filter(r=>r[0]&&String(r[0]).trim()).map((r,i)=>({
-        id:i+1,name:String(r[0]).trim(),cls:String(r[1]||"").trim(),
-        phone:String(r[2]||"").trim(),dob:String(r[3]||"").trim()
-      }));
+
+      // ── LEADERS ─────────────────────────────────────
+      // Sheet: A=name, B=cls, C=phone, D=dob
+      DATA.leaders=ldrs.filter(r=>r[0]&&String(r[0]).trim())
+        .map((r,i)=>({
+          id:i+1,
+          name:String(r[0]).trim(),
+          cls:String(r[1]||"").trim(),
+          phone:String(r[2]||"").trim(),
+          dob:String(r[3]||"").trim()
+        }));
+
+      // ── PASSWORDS ────────────────────────────────────
+      // Sheet: A=role, B=cls, C=password
       DATA.passwords=passes.filter(r=>r[0]).map(r=>({
-        role:String(r[0]).trim(),cls:String(r[1]||"").trim(),password:String(r[2]||"").trim()
+        role:String(r[0]).trim(),
+        cls:String(r[1]||"").trim(),
+        password:String(r[2]||"").trim()
       }));
-      DATA.meetings=meets.filter(r=>r[0]&&r[1]).map((r,i)=>({
-        id:i+1,num:parseInt(r[0])||i+1,date:String(r[1]||"").trim(),responsible_a:null,responsible_b:null,
-        paras:{spiritual:{topic:"",leaders:[]},scout:{topic:"",leaders:[]},culture:{topic:"",leaders:[]},game:{topic:"",leaders:[]},other:{topic:"",leaders:[]}}
-      }));
+
+      // ── MEETINGS ─────────────────────────────────────
+      // Sheet خطة الاجتماعات:
+      // A=num, B=date, C=resp_a_name, D=resp_b_name,
+      // E=روحية topic, F=كشفية topic, G=(empty), H=لعبة topic, I=كشفي topic
+      // J..N = leader names for paras
+      // Deduplicate by meeting num (take first occurrence per num)
+      const meetMap={};
+      meets.filter(r=>r[0]).forEach(r=>{
+        const num=String(r[0]).replace(/[^0-9]/g,"");
+        if(!num)return;
+        if(meetMap[num])return; // dedup
+        const respAName=String(r[2]||"").trim();
+        const respBName=String(r[3]||"").trim();
+        const findLdr=name=>DATA.leaders.find(l=>l.name===name)?.id||null;
+        meetMap[num]={
+          id:parseInt(num),
+          num:parseInt(num),
+          date:String(r[1]||"").trim(),
+          responsible_a:findLdr(respAName),
+          responsible_b:findLdr(respBName),
+          paras:{
+            spiritual:{topic:String(r[4]||"").trim(),leaders:[],leaders_a:[],leaders_b:[]},
+            scout:    {topic:String(r[5]||"").trim(),leaders:[],leaders_a:[],leaders_b:[]},
+            culture:  {topic:String(r[8]||"").trim(),leaders:[],leaders_a:[],leaders_b:[]},
+            game:     {topic:String(r[7]||"").trim(),leaders:[],leaders_a:[],leaders_b:[]},
+            other:    {topic:"",leaders:[],leaders_a:[],leaders_b:[]}
+          }
+        };
+      });
+      // Sort by num
+      DATA.meetings=Object.values(meetMap).sort((a,b)=>a.num-b.num);
+
+      // ── PARA DISTRIBUTION ────────────────────────────
+      // Sheet توزيع الخطة:
+      // A=meetNum, B=date, C=team(ملايكة أ/ب), D=paraName, E=topic, F=leaderName
+      const PARA_MAP={"الروحية":"spiritual","الكشفية":"scout","الثقافية":"culture","اللعبة":"game","فقرات أخرى":"other"};
+      dist.filter(r=>r[0]&&r[2]&&r[3]).forEach(r=>{
+        const num=String(r[0]).replace(/[^0-9]/g,"");
+        const team=String(r[2]).trim(); // ملايكة أ or ملايكة ب
+        const paraAr=String(r[3]).trim();
+        const topic=String(r[4]||"").trim();
+        const ldrName=String(r[5]||"").trim();
+        const paraKey=PARA_MAP[paraAr];
+        if(!paraKey||!num)return;
+        const m=DATA.meetings.find(m=>String(m.num)===num);
+        if(!m)return;
+        if(!m.paras[paraKey])m.paras[paraKey]={topic:"",leaders:[],leaders_a:[],leaders_b:[]};
+        if(topic&&!m.paras[paraKey].topic)m.paras[paraKey].topic=topic;
+        if(ldrName){
+          const l=DATA.leaders.find(l=>l.name===ldrName);
+          if(l){
+            const key=team==="ملايكة أ"?"leaders_a":"leaders_b";
+            if(!m.paras[paraKey][key].includes(l.id))m.paras[paraKey][key].push(l.id);
+            if(!m.paras[paraKey].leaders.includes(l.id))m.paras[paraKey].leaders.push(l.id);
+          }
+        }
+      });
+
+      // ── ACTIVITIES ───────────────────────────────────
+      // Sheet: A=name, B=date, C=cls
       DATA.activities=acts.filter(r=>r[0]).map((r,i)=>({
-        id:i+1,name:String(r[0]).trim(),date:String(r[1]||"").trim(),cls:String(r[2]||"").trim()
+        id:i+1,name:String(r[0]).trim(),date:String(r[1]||"").trim(),
+        cls:String(r[2]||"").trim(),leader_a:null,leader_b:null,pdf_a:null,pdf_b:null
       }));
-      ch2.filter(r=>r[0]&&r[1]).forEach(r=>{
+
+      // ── CHILDREN from real sheets ────────────────────
+      // ملايكة أ / ملايكه ب: row1=headers, then A=name,B=addr,C=dob,D=phone_mom,E=phone_dad
+      // Build children from sheet, overwriting hardcoded DATA.children
+      const buildKids=(rows,cls,startId)=>{
+        return rows.slice(1) // skip header row
+          .filter(r=>r[0]&&String(r[0]).trim())
+          .map((r,i)=>({
+            id:startId+i,
+            name:String(r[0]).trim(),
+            cls,
+            lid:0,
+            phone:String(r[3]||r[4]||"").trim(), // phone_mom or phone_dad
+            addr:String(r[1]||"").trim(),
+            dob:String(r[2]||"").trim()
+          }));
+      };
+      const kidsA=buildKids(chA,"ملايكة أ",1);
+      const kidsB=buildKids(chB,"ملايكة ب",1000);
+      // Merge: keep hardcoded if sheet is empty, else use sheet
+      if(kidsA.length||kidsB.length){
+        DATA.children=[...kidsA,...kidsB];
+      }
+
+      // ── ASSIGN LEADERS TO CHILDREN ───────────────────
+      // From توزيع الأولاد: A=childName, B=leaderName, C=cls
+      // Already loaded above as dist? No — it's توزيع الخطة
+      // Load separately
+      const chDist=await sheetGet("توزيع الأولاد");
+      chDist.filter(r=>r[0]&&r[1]).forEach(r=>{
         const ch=DATA.children.find(c=>c.name===String(r[0]).trim());
         if(ch){const l=DATA.leaders.find(l=>l.name===String(r[1]).trim());if(l)ch.lid=l.id;}
       });
+
       ok=true;break;
     }catch(e){
       console.error("loadAll att"+att,e);

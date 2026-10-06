@@ -15,169 +15,161 @@
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;font-size:15px}
-.screen{display:none;min-height:100vh}
-.screen.active{display:flex;flex-direction:column}
+.screen{display:none;min-height:100vh}.screen.active{display:flex;flex-direction:column}
 @keyframes spin{to{transform:rotate(360deg)}}
-@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 
 /* LOADING */
-#loading-overlay{display:none;position:fixed;inset:0;background:rgba(27,67,50,0.93);z-index:9999;align-items:center;justify-content:center;flex-direction:column;gap:14px}
+#loading-overlay{display:none;position:fixed;inset:0;background:rgba(27,67,50,0.94);z-index:9999;align-items:center;justify-content:center;flex-direction:column;gap:14px}
 .spin{width:44px;height:44px;border:4px solid rgba(255,255,255,0.25);border-top-color:#fff;border-radius:50%;animation:spin .75s linear infinite}
 .loading-txt{color:#fff;font-size:14px;font-weight:600}
 
 /* LOGIN */
 #screen-login{align-items:center;justify-content:center;background:linear-gradient(160deg,#1B4332 0%,#2D6A4F 55%,#40916C 100%);padding:20px}
-.login-box{background:#fff;border-radius:20px;padding:36px;width:100%;max-width:440px;box-shadow:0 8px 32px rgba(0,0,0,0.2);animation:fade .3s ease}
-.login-logo{text-align:center;margin-bottom:22px}
-.logo-ic{width:60px;height:60px;background:var(--gp);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;margin-bottom:10px}
-.login-logo h1{font-size:22px;font-weight:700;color:var(--g)}
+.login-box{background:#fff;border-radius:20px;padding:36px;width:100%;max-width:440px;box-shadow:0 8px 32px rgba(0,0,0,0.2)}
+.login-logo{text-align:center;margin-bottom:20px}
+.logo-ic{width:58px;height:58px;background:var(--gp);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;margin-bottom:9px}
+.login-logo h1{font-size:21px;font-weight:700;color:var(--g)}
 .login-logo p{font-size:13px;color:var(--mu);margin-top:3px}
 .lbl{font-size:13px;font-weight:600;color:var(--tm);margin-bottom:5px;display:block}
 .fi{width:100%;padding:10px 13px;border:1.5px solid var(--bd);border-radius:var(--r);font-family:'Cairo',sans-serif;font-size:14px;color:var(--tx);background:#fff;margin-bottom:13px;outline:none}
 .fi:focus{border-color:var(--gm)}
-.role-tabs{display:flex;gap:8px;margin-bottom:16px}
-.rt{flex:1;padding:10px 4px;border:2px solid var(--bd);border-radius:var(--r);background:#fff;font-family:'Cairo',sans-serif;font-size:13px;font-weight:600;cursor:pointer;color:var(--mu);transition:all .15s;text-align:center}
+.role-tabs{display:flex;gap:7px;margin-bottom:15px}
+.rt{flex:1;padding:9px 4px;border:2px solid var(--bd);border-radius:var(--r);background:#fff;font-family:'Cairo',sans-serif;font-size:13px;font-weight:600;cursor:pointer;color:var(--mu);transition:all .15s;text-align:center}
 .rt.active{border-color:var(--g);background:var(--gf);color:var(--g)}
-.login-btn{width:100%;padding:13px;background:var(--g);color:#fff;border:none;border-radius:var(--r);font-family:'Cairo',sans-serif;font-size:16px;font-weight:700;cursor:pointer;transition:background .15s}
+.login-btn{width:100%;padding:12px;background:var(--g);color:#fff;border:none;border-radius:var(--r);font-family:'Cairo',sans-serif;font-size:16px;font-weight:700;cursor:pointer}
 .login-btn:hover{background:var(--gm)}
 .login-err{color:var(--rd);font-size:13px;text-align:center;margin-bottom:10px;display:none}
 
 /* HEADER */
-.app-header{background:var(--g);color:#fff;padding:0 18px;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,0.12)}
-.hd-title{font-size:15px;font-weight:700}
-.hd-sub{font-size:11px;opacity:.75}
+.app-header{background:var(--g);color:#fff;padding:0 16px;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,0.12)}
+.hd-title{font-size:15px;font-weight:700}.hd-sub{font-size:11px;opacity:.75}
 .hd-right{display:flex;align-items:center;gap:8px}
 .role-bdg{background:rgba(255,255,255,0.2);padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
 .logout-btn{background:rgba(255,255,255,0.15);border:none;color:#fff;padding:6px 12px;border-radius:20px;font-family:'Cairo',sans-serif;font-size:12px;cursor:pointer}
-.bday-banner{background:var(--am);color:#5C3D00;padding:8px 18px;font-size:13px;font-weight:600;display:none;text-align:center}
+.bday-banner{background:var(--am);color:#5C3D00;padding:8px 16px;font-size:13px;font-weight:600;display:none;text-align:center}
 
 /* TABS */
-.tabs-bar{display:flex;background:#fff;border-bottom:2px solid var(--bd);padding:0 14px;overflow-x:auto;position:sticky;top:54px;z-index:90;scrollbar-width:none}
+.tabs-bar{display:flex;background:#fff;border-bottom:2px solid var(--bd);padding:0 12px;overflow-x:auto;position:sticky;top:52px;z-index:90;scrollbar-width:none}
 .tabs-bar::-webkit-scrollbar{display:none}
-.tab-btn{padding:12px 13px;font-family:'Cairo',sans-serif;font-size:13px;font-weight:600;border:none;background:none;cursor:pointer;color:var(--mu);white-space:nowrap;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .15s}
+.tab-btn{padding:11px 13px;font-family:'Cairo',sans-serif;font-size:13px;font-weight:600;border:none;background:none;cursor:pointer;color:var(--mu);white-space:nowrap;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .15s}
 .tab-btn.active{color:var(--g);border-bottom-color:var(--g)}
-.tab-content{display:none;padding:18px;max-width:960px;margin:0 auto;width:100%}
+.tab-content{display:none;padding:16px;max-width:960px;margin:0 auto;width:100%}
 .tab-content.active{display:block;animation:fade .2s ease}
 
-/* COMMON */
-.card{background:#fff;border-radius:14px;box-shadow:var(--sh);padding:18px;margin-bottom:14px;border:1px solid var(--bd)}
-.sec-title{font-size:16px;font-weight:700;color:var(--g);margin-bottom:14px;padding-bottom:9px;border-bottom:2px solid var(--gp);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
-.badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px}
-.bg-g{background:var(--gp);color:var(--g)} .bg-a{background:var(--ap);color:#7A5000}
-.bg-r{background:var(--rp);color:var(--rd)} .bg-b{background:var(--bp);color:var(--bl)}
-.bg-gray{background:#f0f0f0;color:#555}
-.empty-state{text-align:center;padding:40px 16px;color:var(--mu);font-size:14px}
-.empty-state .ei{font-size:38px;margin-bottom:8px}
+/* CARDS */
+.card{background:#fff;border-radius:14px;box-shadow:var(--sh);padding:16px;margin-bottom:13px;border:1px solid var(--bd)}
+.sec-title{font-size:15px;font-weight:700;color:var(--g);margin-bottom:13px;padding-bottom:8px;border-bottom:2px solid var(--gp);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.badge{font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px}
+.bg-g{background:var(--gp);color:var(--g)}.bg-a{background:var(--ap);color:#7A5000}
+.bg-r{background:var(--rp);color:var(--rd)}.bg-b{background:var(--bp);color:var(--bl)}.bg-gray{background:#f0f0f0;color:#555}
+.empty-state{text-align:center;padding:36px 16px;color:var(--mu);font-size:14px}
+.empty-state .ei{font-size:36px;margin-bottom:8px}
 
 /* MEETING */
-.meet-card{background:#fff;border-radius:14px;box-shadow:var(--sh);border:1px solid var(--bd);margin-bottom:13px;overflow:hidden}
-.meet-hd{background:var(--gf);padding:11px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bd);flex-wrap:wrap;gap:8px}
+.meet-card{background:#fff;border-radius:14px;box-shadow:var(--sh);border:1px solid var(--bd);margin-bottom:11px;overflow:hidden}
+.meet-hd{background:var(--gf);padding:10px 15px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bd);flex-wrap:wrap;gap:7px}
 .meet-num{font-size:14px;font-weight:700;color:var(--g)}
 .meet-date{font-size:12px;color:var(--mu);font-weight:600}
-.meet-resp{font-size:11px;background:var(--gp);color:var(--g);padding:3px 10px;border-radius:20px}
-.meet-body{padding:12px 16px;display:grid;grid-template-columns:1fr 1fr;gap:9px}
-.para-item{padding:9px 12px;border-radius:8px;border:1.5px solid var(--bd);background:var(--bg)}
+.meet-resp{font-size:11px;background:var(--gp);color:var(--g);padding:3px 9px;border-radius:20px}
+.meet-body{padding:11px 15px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.para-item{padding:9px 11px;border-radius:8px;border:1.5px solid var(--bd);background:var(--bg)}
 .para-item.mine{border-color:var(--am);background:var(--ap)}
-.para-item.unset{opacity:.7}
-.para-lbl{font-size:10px;font-weight:700;color:var(--mu);margin-bottom:2px;text-transform:uppercase}
-.para-topic{font-size:12px;color:var(--tm);margin-bottom:3px;font-style:italic}
+.para-lbl{font-size:10px;font-weight:700;color:var(--mu);margin-bottom:2px}
+.para-topic{font-size:11px;color:var(--tm);margin-bottom:3px;font-style:italic}
 .para-ldrs{font-size:12px;font-weight:600;color:var(--tx)}
 .para-item.mine .para-ldrs{color:#7A5000}
 
-/* CHILDREN */
-.child-row{background:#fff;border-radius:12px;box-shadow:var(--sh);border:1px solid var(--bd);padding:13px 15px;margin-bottom:10px}
+/* ROWS */
+.child-row{background:#fff;border-radius:12px;box-shadow:var(--sh);border:1px solid var(--bd);padding:12px 14px;margin-bottom:9px}
 .child-rh{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px}
 .child-name{font-size:14px;font-weight:700}
-.child-info{font-size:12px;color:var(--mu);margin-bottom:9px;line-height:1.8}
-.st-btns{display:flex;gap:6px;margin-bottom:9px;flex-wrap:wrap}
-.st-btn{padding:6px 13px;border-radius:20px;border:1.5px solid var(--bd);background:#fff;font-family:'Cairo',sans-serif;font-size:12px;font-weight:600;cursor:pointer;color:var(--mu);transition:all .15s}
-.st-btn.sp{background:var(--gp);border-color:var(--gl);color:var(--g)}
+.child-info{font-size:12px;color:var(--mu);margin-bottom:8px;line-height:1.8}
+.st-btns{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap}
+.st-btn{padding:6px 12px;border-radius:20px;border:1.5px solid var(--bd);background:#fff;font-family:'Cairo',sans-serif;font-size:12px;font-weight:600;cursor:pointer;color:var(--mu);transition:all .15s}
+.st-btn.sp,.st-btn.sd{background:var(--gp);border-color:var(--gl);color:var(--g)}
 .st-btn.se{background:var(--ap);border-color:var(--am);color:#7A5000}
 .st-btn.sa{background:var(--rp);border-color:var(--rd);color:var(--rd)}
-.st-btn.sd{background:var(--gp);border-color:var(--gl);color:var(--g)}
-.notes{width:100%;padding:7px 11px;border:1.5px solid var(--bd);border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px;color:var(--tx);resize:vertical;min-height:46px;outline:none}
+.notes{width:100%;padding:7px 10px;border:1.5px solid var(--bd);border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px;color:var(--tx);resize:vertical;min-height:44px;outline:none}
 .notes:focus{border-color:var(--gm)}
 
 /* TABLE */
 .tw{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:13px}
-th{background:var(--gf);padding:9px 11px;text-align:right;font-weight:700;color:var(--g);border-bottom:2px solid var(--bd);white-space:nowrap}
-td{padding:9px 11px;border-bottom:1px solid var(--bd);vertical-align:middle}
+th{background:var(--gf);padding:9px 10px;text-align:right;font-weight:700;color:var(--g);border-bottom:2px solid var(--bd);white-space:nowrap}
+td{padding:8px 10px;border-bottom:1px solid var(--bd);vertical-align:middle}
 tr:hover td{background:var(--gf)}
-.abtns{display:flex;gap:5px;flex-wrap:nowrap}
+.abtns{display:flex;gap:5px}
 .ab{padding:4px 11px;border-radius:20px;border:none;font-family:'Cairo',sans-serif;font-size:11px;font-weight:600;cursor:pointer}
-.ab-g{background:var(--gp);color:var(--g)} .ab-a{background:var(--ap);color:#7A5000} .ab-r{background:var(--rp);color:var(--rd)}
+.ab-g{background:var(--gp);color:var(--g)}.ab-a{background:var(--ap);color:#7A5000}.ab-r{background:var(--rp);color:var(--rd)}
 
 /* FORM */
-.add-form{background:var(--gf);border:1.5px solid var(--bd);border-radius:12px;padding:16px;margin-bottom:18px}
-.add-form h3{font-size:13px;font-weight:700;color:var(--g);margin-bottom:12px}
+.add-form{background:var(--gf);border:1.5px solid var(--bd);border-radius:12px;padding:15px;margin-bottom:16px}
+.add-form h3{font-size:13px;font-weight:700;color:var(--g);margin-bottom:11px}
 .fr{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
-.fr3{grid-template-columns:1fr 1fr 1fr}
-.fr1{grid-template-columns:1fr}
+.fr3{grid-template-columns:1fr 1fr 1fr}.fr1{grid-template-columns:1fr}
 .fg label{display:block;font-size:11px;font-weight:600;color:var(--tm);margin-bottom:3px}
-.fg input,.fg select,.fg textarea{width:100%;padding:8px 11px;border:1.5px solid var(--bd);border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px;color:var(--tx);background:#fff;outline:none}
+.fg input,.fg select,.fg textarea{width:100%;padding:8px 10px;border:1.5px solid var(--bd);border-radius:8px;font-family:'Cairo',sans-serif;font-size:13px;color:var(--tx);background:#fff;outline:none}
 .fg input:focus,.fg select:focus{border-color:var(--gm)}
-.fg select[multiple]{height:90px;padding:4px}
+.fg select[multiple]{height:88px;padding:4px}
 .sv-btn{background:var(--g);color:#fff;border:none;border-radius:8px;padding:9px 20px;font-family:'Cairo',sans-serif;font-size:13px;font-weight:700;cursor:pointer}
 .cn-btn{background:#f0f0f0;color:#555;border:none;border-radius:8px;padding:9px 20px;font-family:'Cairo',sans-serif;font-size:13px;cursor:pointer;margin-right:6px}
 
 /* MODAL */
 .modal-ov{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:500;display:none;align-items:center;justify-content:center;padding:16px}
 .modal-ov.open{display:flex}
-.modal{background:#fff;border-radius:16px;padding:24px;width:100%;max-width:520px;box-shadow:0 8px 32px rgba(0,0,0,0.2);max-height:90vh;overflow-y:auto;animation:fade .2s ease}
-.modal-title{font-size:16px;font-weight:700;color:var(--g);margin-bottom:18px}
-.modal-footer{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+.modal{background:#fff;border-radius:16px;padding:22px;width:100%;max-width:500px;box-shadow:0 8px 32px rgba(0,0,0,0.2);max-height:90vh;overflow-y:auto;animation:fade .2s ease}
+.modal-title{font-size:15px;font-weight:700;color:var(--g);margin-bottom:16px}
+.modal-footer{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
 
 /* STATS */
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:11px;margin-bottom:18px}
-.stat-box{background:#fff;border-radius:12px;padding:15px;box-shadow:var(--sh);border:1px solid var(--bd);text-align:center}
-.stat-num{font-size:26px;font-weight:700;color:var(--g);line-height:1}
-.stat-lbl{font-size:11px;color:var(--mu);margin-top:5px}
-.prog{height:6px;border-radius:3px;background:var(--gp);margin-top:6px;overflow:hidden}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px;margin-bottom:16px}
+.stat-box{background:#fff;border-radius:12px;padding:14px;box-shadow:var(--sh);border:1px solid var(--bd);text-align:center}
+.stat-num{font-size:25px;font-weight:700;color:var(--g);line-height:1}
+.stat-lbl{font-size:11px;color:var(--mu);margin-top:4px}
+.prog{height:6px;border-radius:3px;background:var(--gp);margin-top:5px;overflow:hidden}
 .prog-fill{height:100%;border-radius:3px;background:var(--g)}
 
 /* BIRTHDAYS */
-.mo-title{font-size:13px;font-weight:700;color:var(--tm);margin-bottom:8px;padding:5px 11px;background:var(--gf);border-radius:8px;display:inline-block}
-.bday-item{display:flex;align-items:center;gap:11px;padding:9px 13px;background:#fff;border-radius:10px;margin-bottom:7px;border:1px solid var(--bd);box-shadow:var(--sh)}
-.bday-av{width:32px;height:32px;border-radius:50%;background:var(--gp);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--g);flex-shrink:0}
+.mo-title{font-size:13px;font-weight:700;color:var(--tm);margin-bottom:7px;padding:5px 11px;background:var(--gf);border-radius:8px;display:inline-block}
+.bday-item{display:flex;align-items:center;gap:10px;padding:9px 12px;background:#fff;border-radius:10px;margin-bottom:7px;border:1px solid var(--bd);box-shadow:var(--sh)}
+.bday-av{width:30px;height:30px;border-radius:50%;background:var(--gp);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--g);flex-shrink:0}
 .bday-today{border-color:var(--am);background:var(--ap)}
 
 /* SYNC */
-.sync-ind{position:fixed;bottom:14px;left:14px;background:var(--g);color:#fff;padding:7px 14px;border-radius:20px;font-size:11px;font-weight:600;display:none;z-index:999;box-shadow:0 2px 8px rgba(0,0,0,0.2)}
+.sync-ind{position:fixed;bottom:12px;left:12px;background:var(--g);color:#fff;padding:7px 14px;border-radius:20px;font-size:11px;font-weight:600;display:none;z-index:999;box-shadow:0 2px 8px rgba(0,0,0,0.2)}
 .sync-ind.err{background:var(--rd)}
 
 /* LATT */
-.latt-row{background:#fff;border-radius:12px;padding:13px 15px;margin-bottom:9px;border:1px solid var(--bd)}
+.latt-row{background:#fff;border-radius:12px;padding:12px 14px;margin-bottom:8px;border:1px solid var(--bd)}
 .latt-name{font-size:14px;font-weight:700;margin-bottom:7px}
 .latt-ctrl{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 .uni-tog{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--mu)}
 .uni-tog input{accent-color:var(--g);width:14px;height:14px}
 
 /* ACT */
-.act-card{display:flex;align-items:center;gap:13px;background:#fff;border-radius:12px;padding:13px 15px;margin-bottom:9px;border:1px solid var(--bd);box-shadow:var(--sh)}
-.act-icon{width:40px;height:40px;border-radius:9px;background:var(--gp);display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+.act-card{display:flex;align-items:center;gap:12px;background:#fff;border-radius:12px;padding:12px 14px;margin-bottom:8px;border:1px solid var(--bd);box-shadow:var(--sh)}
+.act-icon{width:38px;height:38px;border-radius:9px;background:var(--gp);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
 
-/* PASS TAB */
-.pass-row{display:flex;align-items:center;justify-content:space-between;padding:12px 15px;background:#fff;border-radius:10px;border:1px solid var(--bd);margin-bottom:8px;box-shadow:var(--sh)}
-.pass-role{font-size:13px;font-weight:700}
-.pass-val{font-size:13px;color:var(--mu);font-family:monospace;background:var(--gf);padding:3px 10px;border-radius:6px}
+/* PASS */
+.pass-row{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;background:#fff;border-radius:10px;border:1px solid var(--bd);margin-bottom:7px;box-shadow:var(--sh)}
 
 @media(max-width:600px){
   .meet-body,.fr,.fr3{grid-template-columns:1fr}
   .stats-grid{grid-template-columns:repeat(2,1fr)}
-  .tab-btn{padding:11px 9px;font-size:12px}
-  .login-box{padding:24px 18px}
+  .tab-btn{padding:10px 9px;font-size:12px}
+  .login-box{padding:22px 16px}
 }
 </style>
 </head>
 <body>
-<div id="sync-ind" class="sync-ind">جاري الحفظ...</div>
-<div id="loading-overlay" style="display:none;position:fixed;inset:0;background:rgba(27,67,50,0.93);z-index:9999;align-items:center;justify-content:center;flex-direction:column;gap:14px">
+<div id="sync-ind" class="sync-ind"></div>
+<div id="loading-overlay" style="display:none;position:fixed;inset:0;background:rgba(27,67,50,0.94);z-index:9999;align-items:center;justify-content:center;flex-direction:column;gap:14px">
   <div class="spin"></div><div class="loading-txt">جاري تحميل البيانات...</div>
 </div>
 
-<!-- MODAL -->
-<div class="modal-ov" id="modal-ov">
+<!-- MODAL — single global modal, callback stored in closure -->
+<div class="modal-ov" id="modal-ov" onclick="if(event.target===this)closeModal()">
   <div class="modal">
     <div class="modal-title" id="modal-title"></div>
     <div id="modal-body"></div>
@@ -192,16 +184,13 @@ tr:hover td{background:var(--gf)}
 <div id="screen-login" class="screen active">
   <div class="login-box">
     <div class="login-logo">
-      <div class="logo-ic">
-        <svg width="30" height="30" viewBox="0 0 24 24" fill="#2D6A4F"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg>
-      </div>
-      <h1>قطاع الملايكة</h1>
-      <p>نظام إدارة الكشافة</p>
+      <div class="logo-ic"><svg width="28" height="28" viewBox="0 0 24 24" fill="#2D6A4F"><path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/></svg></div>
+      <h1>قطاع الملايكة</h1><p>نظام إدارة الكشافة</p>
     </div>
-    <div class="role-tabs" id="role-tabs-container">
-      <button class="rt" onclick="selectRole('assistant')" id="rt-assistant">مساعد قائد</button>
-      <button class="rt active" onclick="selectRole('teamleader')" id="rt-teamleader">قائد الفريق</button>
-      <button class="rt" onclick="selectRole('admin')" id="rt-admin">قائد القطاع</button>
+    <div class="role-tabs">
+      <button class="rt" id="rt-assistant" onclick="selectRole('assistant')">مساعد قائد</button>
+      <button class="rt active" id="rt-teamleader" onclick="selectRole('teamleader')">قائد الفريق</button>
+      <button class="rt" id="rt-admin" onclick="selectRole('admin')">قائد القطاع</button>
     </div>
     <div id="lf-leader">
       <label class="lbl">الفصل:</label>
@@ -210,14 +199,14 @@ tr:hover td{background:var(--gf)}
         <option value="ملايكة أ">ملايكة أ</option>
         <option value="ملايكة ب">ملايكة ب</option>
       </select>
-      <div id="lf-name-wrap">
+      <div id="lf-name-wrap" style="display:none">
         <label class="lbl">اسمك:</label>
         <select class="fi" id="sel-leader"><option value="">-- اختار الفصل أولاً --</option></select>
       </div>
     </div>
     <div id="lf-admin" style="display:none"></div>
     <label class="lbl">كلمة السر:</label>
-    <input class="fi" type="password" id="login-pass" placeholder="ادخل كلمة السر">
+    <input class="fi" type="password" id="login-pass" placeholder="ادخل كلمة السر" onkeydown="if(event.key==='Enter')doLogin()">
     <p class="login-err" id="login-err">كلمة السر غلط</p>
     <button class="login-btn" onclick="doLogin()">دخول</button>
   </div>
@@ -231,7 +220,6 @@ tr:hover td{background:var(--gf)}
     <div class="hd-right"><span class="role-bdg" id="role-bdg"></span><button class="logout-btn" onclick="doLogout()">خروج</button></div>
   </div>
 
-  <!-- ASSISTANT -->
   <div id="tabs-assistant" style="display:none">
     <div class="tabs-bar">
       <button class="tab-btn active" onclick="showTab('as-plan','assistant')">خطة السنة</button>
@@ -245,7 +233,6 @@ tr:hover td{background:var(--gf)}
     <div id="tab-as-attendance" class="tab-content"></div>
   </div>
 
-  <!-- TEAM LEADER -->
   <div id="tabs-teamleader" style="display:none">
     <div class="tabs-bar">
       <button class="tab-btn active" onclick="showTab('tl-plan','teamleader')">توزيع الخطة</button>
@@ -253,6 +240,7 @@ tr:hover td{background:var(--gf)}
       <button class="tab-btn" onclick="showTab('tl-latt','teamleader')">حضور القادة</button>
       <button class="tab-btn" onclick="showTab('tl-catt','teamleader')">حضور الأولاد</button>
       <button class="tab-btn" onclick="showTab('tl-followup','teamleader')">الافتقاد</button>
+      <button class="tab-btn" onclick="showTab('tl-lvisit','teamleader')">افتقاد القادة</button>
       <button class="tab-btn" onclick="showTab('tl-activities','teamleader')">الأنشطة</button>
       <button class="tab-btn" onclick="showTab('tl-reports','teamleader')">التقارير</button>
     </div>
@@ -261,12 +249,11 @@ tr:hover td{background:var(--gf)}
     <div id="tab-tl-latt" class="tab-content"></div>
     <div id="tab-tl-catt" class="tab-content"></div>
     <div id="tab-tl-followup" class="tab-content"></div>
-    <div id="tab-tl-activities" class="tab-content"></div>
     <div id="tab-tl-lvisit" class="tab-content"></div>
+    <div id="tab-tl-activities" class="tab-content"></div>
     <div id="tab-tl-reports" class="tab-content"></div>
   </div>
 
-  <!-- ADMIN -->
   <div id="tabs-admin" style="display:none">
     <div class="tabs-bar">
       <button class="tab-btn active" onclick="showTab('ad-plan','admin')">خطة الاجتماعات</button>
@@ -288,21 +275,15 @@ tr:hover td{background:var(--gf)}
 </div>
 
 <script>
-// =========================================================
-// CONFIG
-// =========================================================
-const AS_URL = "https://script.google.com/macros/s/AKfycbx6asLJXLxN43VVv-pJl6RcjNe2nalqkQLLpdU573Om0htxHQHuNCUETqR2pydCrIuUBg/exec";
-const PARA_KEYS = ["spiritual","scout","culture","game","other"];
-const PARA_NAMES = {spiritual:"الروحية",scout:"الكشفية",culture:"الثقافية",game:"اللعبة",other:"فقرات أخرى"};
-const MONTHS = ["يناير","فبراير","مارس","إبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
-const CLASSES = ["ملايكة أ","ملايكة ب"];
+const AS_URL="https://script.google.com/macros/s/AKfycbx6asLJXLxN43VVv-pJl6RcjNe2nalqkQLLpdU573Om0htxHQHuNCUETqR2pydCrIuUBg/exec";
+const PARA_KEYS=["spiritual","scout","culture","game","other"];
+const PARA_NAMES={spiritual:"الروحية",scout:"الكشفية",culture:"الثقافية",game:"اللعبة",other:"فقرات أخرى"};
+const MONTHS=["يناير","فبراير","مارس","إبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
 
-// =========================================================
-// DATA — children seeded from sheet, others loaded live
-// =========================================================
-const DATA = {
-  leaders:[],
-  passwords:[], // [{role,cls,password}]
+// ── DATA ──────────────────────────────────────────────
+const DATA={
+  leaders:[],passwords:[],meetings:[],activities:[],
+  attendance:{},followup:{},latt:{},lvisit:{},
   children:[
     {id:1,  name:"ابانوب وائل نبيل",          cls:"ملايكة ب",lid:0,phone:"01211618392",addr:"7ش احمد رفاعي",dob:"2019-01-09"},
     {id:2,  name:"ارسانى امجد وليم",           cls:"ملايكة ب",lid:0,phone:"01277432598",addr:"1ش حسن حسني",dob:"2020-02-14"},
@@ -332,13 +313,13 @@ const DATA = {
     {id:26, name:"فلاديمير روبير",             cls:"ملايكة ب",lid:0,phone:"01211771409",addr:"7ش الجندي",dob:"2020-02-06"},
     {id:27, name:"فيلوباتير وليد نبيل",        cls:"ملايكة ب",lid:0,phone:"01285502080",addr:"25ش محمد اسماعيل",dob:"2019-07-01"},
     {id:28, name:"كاراس هانى تلميذ",           cls:"ملايكة ب",lid:0,phone:"01204313733",addr:"10ش الدرويش",dob:"2020-01-11"},
-    {id:29, name:"كاراس يوسف",                 cls:"ملايكة ب",lid:0,phone:"01283260292",addr:"21ش الخليج",dob:"2019-04-23"},
+    {id:29, name:"كاراس يوسف",                 cls:"ملايكة ب",lid:0,phone:"01283260292",addr:"21ش الخليج المصري",dob:"2019-04-23"},
     {id:30, name:"كريستيانو مايكل",            cls:"ملايكة ب",lid:0,phone:"01024002833",addr:"17مكرر ترعة الجبل",dob:"2019-09-01"},
     {id:31, name:"كلارا كيرلس واصف",           cls:"ملايكة ب",lid:0,phone:"01287347352",addr:"32 بيومي محمد",dob:"2019-07-21"},
     {id:32, name:"كيرمينا رمزي سمير",          cls:"ملايكة ب",lid:0,phone:"01278082486",addr:"14ش الخندق",dob:"2019-08-20"},
     {id:33, name:"كيفن رامي اليشاع",           cls:"ملايكة ب",lid:0,phone:"01283924424",addr:"12ش نبيل السباعي",dob:"2019-08-25"},
     {id:34, name:"ماثيو رامى سامى",            cls:"ملايكة ب",lid:0,phone:"01225237483",addr:"9أ ش ترعة الجبل",dob:"2018-11-16"},
-    {id:35, name:"ماثيو مايكل حشمت",           cls:"ملايكة ب",lid:0,phone:"01285396993",addr:"15ش الخليج",dob:"2018-12-20"},
+    {id:35, name:"ماثيو مايكل حشمت",           cls:"ملايكة ب",lid:0,phone:"01285396993",addr:"15ش الخليج المصري",dob:"2018-12-20"},
     {id:36, name:"ماجد مينا روماني",           cls:"ملايكة ب",lid:0,phone:"01270426962",addr:"78ش دويدار",dob:"2019-07-10"},
     {id:37, name:"ماريا سامح رافت",            cls:"ملايكة ب",lid:0,phone:"01226305121",addr:"5 حارة سامي",dob:"2019-04-18"},
     {id:38, name:"مريم سامح سمير",             cls:"ملايكة ب",lid:0,phone:"01201084709",addr:"24ش سيد الرزق",dob:"2019-04-22"},
@@ -362,7 +343,7 @@ const DATA = {
     {id:56, name:"فيلومينا مايكل",             cls:"ملايكة أ",lid:0,phone:"",addr:"",dob:""},
     {id:57, name:"فيولا رؤوف",                 cls:"ملايكة أ",lid:0,phone:"01273889585",addr:"",dob:""},
     {id:58, name:"كيرلس هشام نعيم",            cls:"ملايكة أ",lid:0,phone:"01013411129",addr:"78 سكة حديد السويس",dob:"2019-08-13"},
-    {id:59, name:"لافيرا ماجد ناصر",          cls:"ملايكة أ",lid:0,phone:"01224397827",addr:"79ش الخليج",dob:"2018-01-08"},
+    {id:59, name:"لافيرا ماجد ناصر",          cls:"ملايكة أ",lid:0,phone:"01224397827",addr:"79ش الخليج المصري",dob:"2018-01-08"},
     {id:60, name:"مارلي هاني",                 cls:"ملايكة أ",lid:0,phone:"01024971471",addr:"8ش بديع ميخائيل",dob:"2018-07-08"},
     {id:61, name:"مريم جرجس عدلي",             cls:"ملايكة أ",lid:0,phone:"01287054598",addr:"2ش دميان",dob:"2018-08-16"},
     {id:62, name:"ملاك نادر",                  cls:"ملايكة أ",lid:0,phone:"01226618015",addr:"",dob:""},
@@ -374,227 +355,153 @@ const DATA = {
     {id:68, name:"بتول سامح رأفت",             cls:"ملايكة أ",lid:0,phone:"",addr:"5ح سامى النجار",dob:"2017-12-21"},
     {id:69, name:"فيلومينا ايهاب",             cls:"ملايكة أ",lid:0,phone:"01289906446",addr:"",dob:""},
     {id:70, name:"كرياكوس مينا",               cls:"ملايكة أ",lid:0,phone:"01224403836",addr:"",dob:""},
-  ],
-  meetings:[],
-  activities:[],
-  attendance:{},
-  followup:{},
-  latt:{},
-  lvisit:{},
+  ]
 };
 
-let CU = null;
-let currentRole = "teamleader";
+let CU=null, currentRole="teamleader";
 
-// =========================================================
-// UTILS
-// =========================================================
-function nxtId(arr){ return arr.length ? Math.max(...arr.map(x=>x.id))+1 : 1; }
-function fDate(d){ if(!d)return "—"; const p=d.split("-"); return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:d; }
-function lName(id){ const l=DATA.leaders.find(l=>l.id==id); return l?l.name:"غير محدد"; }
-function lNamesArr(ids){ if(!ids||!ids.length)return "غير محدد"; return ids.map(id=>lName(id)).join(" + "); }
-function myLdrs(){ return DATA.leaders.filter(l=>l.cls===CU.cls||l.cls==="كلا الفصلين"); }
-function myKids(){ return DATA.children.filter(c=>c.cls===CU.cls); }
-function myAssistKids(){ return DATA.children.filter(c=>c.lid==CU.id); }
-function lOpts(list){ return list.map(l=>`<option value="${l.id}">${l.name}</option>`).join(""); }
-function allLOpts(){ return DATA.leaders.map(l=>`<option value="${l.id}">${l.name} (${l.cls})</option>`).join(""); }
-function lMultiOpts(list,selected=[]){
-  return list.map(l=>`<option value="${l.id}" ${selected.includes(l.id)?"selected":""}>${l.name}</option>`).join("");
-}
-function showLoading(){ document.getElementById("loading-overlay").style.display="flex"; }
-function hideLoading(){ document.getElementById("loading-overlay").style.display="none"; }
-function showSync(msg,err=false){
-  const el=document.getElementById("sync-ind");
-  el.textContent=msg; el.className="sync-ind"+(err?" err":""); el.style.display="block";
-  setTimeout(()=>el.style.display="none",err?3500:2000);
-}
+// ── UTILS ──────────────────────────────────────────────
+const nxtId=arr=>arr.length?Math.max(...arr.map(x=>x.id))+1:1;
+function fDate(d){if(!d)return"—";const p=d.split("-");return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:d;}
+function lName(id){const l=DATA.leaders.find(l=>l.id==id);return l?l.name:"غير محدد";}
+function lNamesArr(ids){if(!ids||!ids.length)return"غير محدد";return ids.map(id=>lName(id)).join(" + ");}
+function myLdrs(){return DATA.leaders.filter(l=>l.cls===CU.cls||l.cls==="كلا الفصلين");}
+function myKids(){return DATA.children.filter(c=>c.cls===CU.cls);}
+function myAssistKids(){return DATA.children.filter(c=>c.lid==CU.id);}
+function lOpts(list){return list.map(l=>`<option value="${l.id}">${l.name}</option>`).join("");}
+function allLOpts(){return DATA.leaders.map(l=>`<option value="${l.id}">${l.name} (${l.cls})</option>`).join("");}
+function lMultiOpts(list,sel=[]){return list.map(l=>`<option value="${l.id}"${sel.includes(l.id)?" selected":""}>${l.name}</option>`).join("");}
+function showSync(msg,err=false){const el=document.getElementById("sync-ind");el.textContent=msg;el.className="sync-ind"+(err?" err":"");el.style.display="block";setTimeout(()=>el.style.display="none",err?3500:2000);}
+function showLoading(){document.getElementById("loading-overlay").style.display="flex";}
+function hideLoading(){document.getElementById("loading-overlay").style.display="none";}
+function setLoadTxt(t){const el=document.querySelector("#loading-overlay .loading-txt");if(el)el.textContent=t;}
 
-// =========================================================
-// SHEET I/O
-// =========================================================
-async function sheetGet(sheetName){
-  try{
-    const r=await fetch(`${AS_URL}?sheet=${encodeURIComponent(sheetName)}`);
-    const j=await r.json(); return j.data||[];
-  }catch(e){ console.warn("sheetGet",sheetName,e); return []; }
+// ── SHEET I/O ──────────────────────────────────────────
+async function sheetGet(name,tries=2){
+  for(let i=0;i<tries;i++){
+    try{
+      const r=await fetch(`${AS_URL}?sheet=${encodeURIComponent(name)}`);
+      if(!r.ok)throw new Error("HTTP "+r.status);
+      const j=await r.json();
+      if(Array.isArray(j.data))return j.data;
+      throw new Error("bad response");
+    }catch(e){
+      if(i<tries-1)await new Promise(r=>setTimeout(r,1200));
+      else console.warn("sheetGet failed:",name,e.message);
+    }
+  }
+  return[];
 }
 async function sheetPost(payload){
   try{
     await fetch(AS_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
     showSync("✓ تم الحفظ في الشيت");
-  }catch(e){ showSync("⚠ تعذر الحفظ",true); }
+  }catch(e){showSync("⚠ تعذر الحفظ",true);}
 }
 
-async function sheetGetWithRetry(sheetName, retries=3, delay=1500){
-  for(let i=0;i<retries;i++){
-    try{
-      const r=await fetch(`${AS_URL}?sheet=${encodeURIComponent(sheetName)}`);
-      if(!r.ok) throw new Error("HTTP "+r.status);
-      const j=await r.json();
-      if(j.data) return j.data;
-      throw new Error("no data key");
-    }catch(e){
-      console.warn(`sheetGet "${sheetName}" attempt ${i+1} failed:`,e.message);
-      if(i<retries-1) await new Promise(res=>setTimeout(res,delay));
-    }
-  }
-  return [];
-}
-
-// =========================================================
-// LOAD ALL
-// =========================================================
-function setLoadingText(txt){
-  const el=document.querySelector("#loading-overlay .loading-txt");
-  if(el) el.textContent=txt;
-}
-
+// ── LOAD ALL ───────────────────────────────────────────
 async function loadAll(){
-  // Hide login, show loading
   document.getElementById("screen-login").style.visibility="hidden";
   showLoading();
-  setLoadingText("جاري تحميل البيانات...");
-
-  let success=false;
-  for(let attempt=1;attempt<=3;attempt++){
+  let ok=false;
+  for(let att=1;att<=3;att++){
+    setLoadTxt(att>1?`إعادة المحاولة... (${att}/3)`:"جاري تحميل البيانات...");
     try{
-      setLoadingText(attempt>1?`إعادة المحاولة... (${attempt}/3)`:"جاري تحميل البيانات...");
-
-      // Fetch all in parallel — each sheet gets 2 attempts independently
-      const [ldrs, passes, meets, acts, chSheet] = await Promise.all([
-        sheetGetWithRetry("القادة", 2, 1000),
-        sheetGetWithRetry("كلمات السر", 2, 1000),
-        sheetGetWithRetry("خطة الاجتماعات", 2, 1000),
-        sheetGetWithRetry("الأنشطة", 2, 1000),
-        sheetGetWithRetry("توزيع الأولاد", 2, 1000),
+      const[ldrs,passes,meets,acts,ch2]=await Promise.all([
+        sheetGet("القادة"),sheetGet("كلمات السر"),
+        sheetGet("خطة الاجتماعات"),sheetGet("الأنشطة"),sheetGet("توزيع الأولاد")
       ]);
-
-      // Leaders — require at least some data to count as success
       DATA.leaders=ldrs.filter(r=>r[0]&&String(r[0]).trim()).map((r,i)=>({
-        id:i+1, name:String(r[0]).trim(), cls:String(r[1]||"").trim(),
-        phone:String(r[2]||"").trim(), dob:String(r[3]||"").trim()
+        id:i+1,name:String(r[0]).trim(),cls:String(r[1]||"").trim(),
+        phone:String(r[2]||"").trim(),dob:String(r[3]||"").trim()
       }));
-
-      // Passwords
       DATA.passwords=passes.filter(r=>r[0]).map(r=>({
-        role:String(r[0]).trim(), cls:String(r[1]||"").trim(), password:String(r[2]||"").trim()
+        role:String(r[0]).trim(),cls:String(r[1]||"").trim(),password:String(r[2]||"").trim()
       }));
-
-      // Meetings
       DATA.meetings=meets.filter(r=>r[0]&&r[1]).map((r,i)=>({
-        id:i+1, num:parseInt(r[0])||i+1, date:String(r[1]||"").trim(),
-        responsible:null,
+        id:i+1,num:parseInt(r[0])||i+1,date:String(r[1]||"").trim(),responsible:null,
         paras:{spiritual:{topic:"",leaders:[]},scout:{topic:"",leaders:[]},culture:{topic:"",leaders:[]},game:{topic:"",leaders:[]},other:{topic:"",leaders:[]}}
       }));
-
-      // Activities
       DATA.activities=acts.filter(r=>r[0]).map((r,i)=>({
-        id:i+1, name:String(r[0]).trim(), date:String(r[1]||"").trim(), cls:String(r[2]||"").trim()
+        id:i+1,name:String(r[0]).trim(),date:String(r[1]||"").trim(),cls:String(r[2]||"").trim()
       }));
-
-      // Children assignments
-      chSheet.filter(r=>r[0]&&r[1]).forEach(r=>{
+      ch2.filter(r=>r[0]&&r[1]).forEach(r=>{
         const ch=DATA.children.find(c=>c.name===String(r[0]).trim());
-        if(ch){ const l=DATA.leaders.find(l=>l.name===String(r[1]).trim()); if(l) ch.lid=l.id; }
+        if(ch){const l=DATA.leaders.find(l=>l.name===String(r[1]).trim());if(l)ch.lid=l.id;}
       });
-
-      success=true;
-      break;
-
+      ok=true;break;
     }catch(e){
-      console.error(`loadAll attempt ${attempt}:`,e);
-      if(attempt<3) await new Promise(res=>setTimeout(res,2000));
+      console.error("loadAll att"+att,e);
+      if(att<3)await new Promise(r=>setTimeout(r,2000));
     }
   }
-
   hideLoading();
   document.getElementById("screen-login").style.visibility="visible";
-
-  if(!success){
-    // Show retry button on login screen
-    showRetryBanner();
-  }
+  if(!ok)showRetryBanner();
 }
-
 function showRetryBanner(){
   const box=document.querySelector(".login-box");
-  const existing=document.getElementById("retry-banner");
-  if(existing) existing.remove();
-  const div=document.createElement("div");
-  div.id="retry-banner";
-  div.style.cssText="background:#FFF3CD;border:1px solid #E9A919;border-radius:10px;padding:12px 14px;margin-bottom:14px;text-align:center;font-size:13px;color:#7A5000";
-  div.innerHTML=`⚠️ تعذر تحميل البيانات — تأكد من الاتصال<br><button onclick="retryLoad()" style="margin-top:8px;background:#2D6A4F;color:white;border:none;border-radius:8px;padding:7px 18px;font-family:'Cairo',sans-serif;font-size:13px;font-weight:600;cursor:pointer">🔄 إعادة المحاولة</button>`;
-  box.insertBefore(div,box.firstChild);
+  document.getElementById("retry-banner")?.remove();
+  const d=document.createElement("div");
+  d.id="retry-banner";
+  d.style.cssText="background:#FFF3CD;border:1px solid var(--am);border-radius:10px;padding:11px 13px;margin-bottom:13px;text-align:center;font-size:13px;color:#7A5000";
+  d.innerHTML='⚠️ تعذر تحميل البيانات<br><button onclick="retryLoad()" style="margin-top:8px;background:var(--g);color:#fff;border:none;border-radius:8px;padding:6px 16px;font-family:Cairo,sans-serif;font-size:13px;font-weight:600;cursor:pointer">🔄 إعادة المحاولة</button>';
+  box.insertBefore(d,box.firstChild);
 }
-
 async function retryLoad(){
-  const banner=document.getElementById("retry-banner");
-  if(banner) banner.remove();
+  document.getElementById("retry-banner")?.remove();
   await loadAll();
-  // Refresh dropdown if class was selected
   const cls=document.getElementById("sel-class").value;
-  if(cls) document.getElementById("sel-class").dispatchEvent(new Event("change"));
+  if(cls)document.getElementById("sel-class").dispatchEvent(new Event("change"));
 }
 
-// =========================================================
-// AUTH
-// =========================================================
-function getPassword(role, cls){
-  // Try sheet passwords first
-  const entry = DATA.passwords.find(p=>{
-    if(role==="admin") return p.role==="قائد القطاع";
-    if(role==="teamleader") return p.role==="قائد الفريق" && p.cls===cls;
-    if(role==="assistant") return p.role==="مساعد قائد" && p.cls===cls;
-    return false;
+// ── AUTH ───────────────────────────────────────────────
+function getPass(role,cls){
+  const e=DATA.passwords.find(p=>{
+    if(role==="admin")return p.role==="قائد القطاع";
+    if(role==="teamleader")return p.role==="قائد الفريق"&&p.cls===cls;
+    return p.role==="مساعد قائد"&&p.cls===cls;
   });
-  if(entry) return entry.password;
-  // Fallback defaults
-  if(role==="admin") return "Jesus2026";
-  return "";
+  if(e)return e.password;
+  if(role==="admin")return"Jesus2026";
+  return"";
 }
-
 function selectRole(r){
   currentRole=r;
   ["assistant","teamleader","admin"].forEach(x=>document.getElementById("rt-"+x).classList.toggle("active",x===r));
   document.getElementById("lf-leader").style.display=r==="admin"?"none":"block";
   document.getElementById("lf-admin").style.display=r==="admin"?"block":"none";
-  // hide name field for teamleader (no need to pick name, just cls+pass)
   document.getElementById("lf-name-wrap").style.display=r==="assistant"?"block":"none";
 }
-
 document.getElementById("sel-class").addEventListener("change",function(){
   const cls=this.value;
   const sel=document.getElementById("sel-leader");
   const list=DATA.leaders.filter(l=>l.cls===cls||l.cls==="كلا الفصلين");
   sel.innerHTML='<option value="">-- اختار --</option>'+list.map(l=>`<option value="${l.id}">${l.name}</option>`).join("");
 });
-
 function doLogin(){
-  const err=document.getElementById("login-err");
-  err.style.display="none";
+  const err=document.getElementById("login-err");err.style.display="none";
   const pass=document.getElementById("login-pass").value.trim();
   const cls=document.getElementById("sel-class").value;
-
   if(currentRole==="admin"){
-    if(pass!==getPassword("admin","")) {err.textContent="كلمة السر غلط";err.style.display="block";return;}
+    if(pass!==getPass("admin",""))return(err.textContent="كلمة السر غلط",err.style.display="block");
     CU={role:"admin",name:"قائد القطاع",cls:""};
-  } else if(currentRole==="teamleader"){
-    if(!cls){err.textContent="اختار الفصل";err.style.display="block";return;}
-    if(pass!==getPassword("teamleader",cls)){err.textContent="كلمة السر غلط";err.style.display="block";return;}
+  }else if(currentRole==="teamleader"){
+    if(!cls)return(err.textContent="اختار الفصل",err.style.display="block");
+    if(pass!==getPass("teamleader",cls))return(err.textContent="كلمة السر غلط",err.style.display="block");
     CU={role:"teamleader",name:`قائد فريق ${cls}`,cls};
-  } else {
+  }else{
     const lid=document.getElementById("sel-leader").value;
-    if(!cls||!lid){err.textContent="اختار الفصل والاسم";err.style.display="block";return;}
-    if(pass!==getPassword("assistant",cls)){err.textContent="كلمة السر غلط";err.style.display="block";return;}
+    if(!cls||!lid)return(err.textContent="اختار الفصل والاسم",err.style.display="block");
+    if(pass!==getPass("assistant",cls))return(err.textContent="كلمة السر غلط",err.style.display="block");
     const leader=DATA.leaders.find(l=>l.id==lid);
-    if(!leader){err.textContent="القائد غير موجود";err.style.display="block";return;}
+    if(!leader)return(err.textContent="القائد غير موجود",err.style.display="block");
     CU={role:"assistant",name:leader.name,id:leader.id,cls};
   }
   document.getElementById("screen-login").classList.remove("active");
   document.getElementById("screen-app").classList.add("active");
   initApp();
 }
-
 function doLogout(){
   CU=null;
   document.getElementById("screen-app").classList.remove("active");
@@ -603,9 +510,7 @@ function doLogout(){
   ["assistant","teamleader","admin"].forEach(r=>document.getElementById("tabs-"+r).style.display="none");
 }
 
-// =========================================================
-// INIT
-// =========================================================
+// ── INIT & TABS ────────────────────────────────────────
 function initApp(){
   const rl={admin:"قائد القطاع",teamleader:"قائد الفريق",assistant:"مساعد قائد"};
   document.getElementById("hd-title").textContent=CU.role==="admin"?"لوحة تحكم الأدمن — قطاع الملايكة":"قطاع الملايكة";
@@ -613,11 +518,10 @@ function initApp(){
   document.getElementById("role-bdg").textContent=rl[CU.role];
   ["assistant","teamleader","admin"].forEach(r=>document.getElementById("tabs-"+r).style.display=CU.role===r?"block":"none");
   checkBdays();
-  if(CU.role==="admin"){ rAdPlan();rAdChildren();rAdLeaders();rAdLatt();rBdays();rReports("ad");rPasswords(); }
-  else if(CU.role==="teamleader"){ rTLPlan();rTLChildren();rTLLatt();rTLCatt();rTLFollowup();rTLActivities();rTLLvisit();rReports("tl"); }
-  else{ rAsPlan();rAsFollowup();rActivities("as");rAsAttendance(); }
+  if(CU.role==="admin"){rAdPlan();rAdChildren();rAdLeaders();rAdLatt();rBdays();rReports("ad");rPasswords();}
+  else if(CU.role==="teamleader"){rTLPlan();rTLChildren();rTLLatt();rTLCatt();rTLFollowup();rTLLvisit();rTLActivities();rReports("tl");}
+  else{rAsPlan();rAsFollowup();rActivities("as");rAsAttendance();}
 }
-
 function showTab(name,role){
   document.querySelectorAll(`#tabs-${role} .tab-content`).forEach(t=>t.classList.remove("active"));
   document.querySelectorAll(`#tabs-${role} .tab-btn`).forEach(t=>t.classList.remove("active"));
@@ -625,137 +529,130 @@ function showTab(name,role){
   event.target.classList.add("active");
 }
 
-// =========================================================
-// MODAL
-// =========================================================
+// ── MODAL (key fix: store callback, never use inline onclick for save) ──
+let _modalCb=null;
 function openModal(title,body,onOk){
+  _modalCb=onOk;
   document.getElementById("modal-title").textContent=title;
   document.getElementById("modal-body").innerHTML=body;
-  document.getElementById("modal-ok").onclick=onOk;
   document.getElementById("modal-ov").classList.add("open");
 }
-function closeModal(){ document.getElementById("modal-ov").classList.remove("open"); }
+function closeModal(){document.getElementById("modal-ov").classList.remove("open");_modalCb=null;}
+document.getElementById("modal-ok").addEventListener("click",()=>{if(_modalCb)_modalCb();});
 
-// =========================================================
-// ASSISTANT
-// =========================================================
-function meetParasHTML(m, highlightMine){
-  let h=`<div class="meet-body">`;
+// ── MEETING HELPERS ────────────────────────────────────
+function parasHTML(m,highlight){
+  let h='<div class="meet-body">';
   PARA_KEYS.forEach(k=>{
     const p=m.paras[k]||{};
-    const mine=highlightMine&&(p.leaders||[]).includes(CU?.id);
-    h+=`<div class="para-item ${mine?"mine":""}">
+    const mine=highlight&&(p.leaders||[]).includes(CU?.id);
+    h+=`<div class="para-item${mine?" mine":""}">
       <div class="para-lbl">${PARA_NAMES[k]}</div>
       <div class="para-topic">${p.topic||"—"}</div>
       <div class="para-ldrs">${lNamesArr(p.leaders)}${mine?" ⭐":""}</div>
     </div>`;
   });
-  h+=`</div>`;
-  return h;
+  return h+'</div>';
+}
+function upcomingMeet(){
+  const today=new Date();today.setHours(0,0,0,0);
+  const s=[...DATA.meetings].sort((a,b)=>new Date(a.date)-new Date(b.date));
+  return s.find(m=>new Date(m.date)>=today)||s[s.length-1];
 }
 
-function getUpcomingMeeting(){
-  const today=new Date(); today.setHours(0,0,0,0);
-  const sorted=[...DATA.meetings].sort((a,b)=>new Date(a.date)-new Date(b.date));
-  return sorted.find(m=>new Date(m.date)>=today) || sorted[sorted.length-1];
-}
-
+// ── ASSISTANT ─────────────────────────────────────────
 function rAsPlan(){
   const c=document.getElementById("tab-as-plan");
-  if(!DATA.meetings.length){c.innerHTML=`<div class="empty-state"><div class="ei">📅</div>لم تُضف اجتماعات بعد</div>`;return;}
-  const upcoming=getUpcomingMeeting();
-  const rest=[...DATA.meetings].filter(m=>m.id!==upcoming?.id).sort((a,b)=>new Date(a.date)-new Date(b.date));
-
-  let h=`<h2 class="sec-title">خطة اجتماعات السنة</h2>`;
-
-  // Featured upcoming meeting
-  if(upcoming){
-    h+=`<div style="background:linear-gradient(135deg,#1B4332,#2D6A4F);border-radius:16px;padding:18px;margin-bottom:18px;color:white">
-      <div style="font-size:11px;font-weight:700;opacity:.75;margin-bottom:6px;letter-spacing:1px">▶ الاجتماع القادم</div>
-      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:14px">
-        <span style="font-size:18px;font-weight:700">اجتماع ${upcoming.num}</span>
-        <span style="font-size:14px;opacity:.85">📅 ${fDate(upcoming.date)}</span>
-        <span style="background:rgba(255,255,255,0.2);padding:3px 12px;border-radius:20px;font-size:12px">المسئول: ${lName(upcoming.responsible)}</span>
+  if(!DATA.meetings.length){c.innerHTML='<div class="empty-state"><div class="ei">📅</div>لم تُضف اجتماعات بعد</div>';return;}
+  const up=upcomingMeet();
+  const rest=[...DATA.meetings].filter(m=>m.id!==up?.id).sort((a,b)=>new Date(a.date)-new Date(b.date));
+  let h='<h2 class="sec-title">خطة اجتماعات السنة</h2>';
+  if(up){
+    h+=`<div style="background:linear-gradient(135deg,#1B4332,#2D6A4F);border-radius:16px;padding:16px;margin-bottom:16px;color:#fff">
+      <div style="font-size:10px;font-weight:700;opacity:.7;margin-bottom:5px;letter-spacing:1px">▶ الاجتماع القادم</div>
+      <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:7px;margin-bottom:12px">
+        <span style="font-size:17px;font-weight:700">اجتماع ${up.num}</span>
+        <span style="font-size:13px;opacity:.85">📅 ${fDate(up.date)}</span>
+        <span style="background:rgba(255,255,255,0.2);padding:3px 11px;border-radius:20px;font-size:11px">المسئول: ${lName(up.responsible)}</span>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">`;
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px">`;
     PARA_KEYS.forEach(k=>{
-      const p=upcoming.paras[k]||{};
-      const mine=(p.leaders||[]).includes(CU?.id);
-      h+=`<div style="background:rgba(255,255,255,${mine?'0.25':'0.12'});border-radius:10px;padding:10px 12px;border:1px solid rgba(255,255,255,${mine?'0.5':'0.15'})">
-        <div style="font-size:10px;font-weight:700;opacity:.7;margin-bottom:3px">${PARA_NAMES[k]}</div>
-        <div style="font-size:11px;opacity:.8;margin-bottom:3px;font-style:italic">${p.topic||"—"}</div>
-        <div style="font-size:13px;font-weight:700">${lNamesArr(p.leaders)}${mine?" ⭐":""}</div>
+      const p=up.paras[k]||{};const mine=(p.leaders||[]).includes(CU?.id);
+      h+=`<div style="background:rgba(255,255,255,${mine?'.22':'.1'});border-radius:9px;padding:9px 11px;border:1px solid rgba(255,255,255,${mine?'.45':'.15'})">
+        <div style="font-size:10px;font-weight:700;opacity:.7;margin-bottom:2px">${PARA_NAMES[k]}</div>
+        <div style="font-size:11px;opacity:.75;margin-bottom:2px;font-style:italic">${p.topic||"—"}</div>
+        <div style="font-size:12px;font-weight:700">${lNamesArr(p.leaders)}${mine?" ⭐":""}</div>
       </div>`;
     });
-    h+=`</div></div>`;
+    h+='</div></div>';
   }
-
-  // Accordion for rest
   if(rest.length){
-    h+=`<div style="font-size:13px;font-weight:700;color:var(--mu);margin-bottom:10px">باقي الاجتماعات</div>`;
+    h+='<div style="font-size:12px;font-weight:700;color:var(--mu);margin-bottom:9px">باقي الاجتماعات</div>';
     rest.forEach(m=>{
-      h+=`<div class="meet-card" style="margin-bottom:8px">
-        <div class="meet-hd" style="cursor:pointer" onclick="toggleAccordion('acc-${m.id}')">
+      h+=`<div class="meet-card" style="margin-bottom:7px">
+        <div class="meet-hd" style="cursor:pointer" onclick="toggleAcc(${m.id})">
           <span class="meet-num">اجتماع ${m.num}</span>
           <span class="meet-date">${fDate(m.date)}</span>
           <span class="meet-resp">المسئول: ${lName(m.responsible)}</span>
-          <span style="font-size:16px;color:var(--mu);margin-right:auto" id="acc-icon-${m.id}">▼</span>
+          <span id="acc-ic-${m.id}" style="font-size:14px;color:var(--mu);margin-right:auto">▼</span>
         </div>
-        <div id="acc-${m.id}" style="display:none">
-          ${meetParasHTML(m, true)}
-        </div>
+        <div id="acc-${m.id}" style="display:none">${parasHTML(m,true)}</div>
       </div>`;
     });
   }
   c.innerHTML=h;
 }
-
-function toggleAccordion(accId){
-  const el=document.getElementById(accId);
-  if(!el) return;
-  const meetId=accId.replace("acc-","");
-  const icon=document.getElementById("acc-icon-"+meetId);
-  const isOpen=el.style.display!=="none"&&el.style.display!=="";
-  el.style.display=isOpen?"none":"block";
-  if(icon) icon.textContent=isOpen?"▼":"▲";
+function toggleAcc(mid){
+  const el=document.getElementById("acc-"+mid);
+  const ic=document.getElementById("acc-ic-"+mid);
+  if(!el)return;
+  const open=el.style.display==="block";
+  el.style.display=open?"none":"block";
+  if(ic)ic.textContent=open?"▼":"▲";
 }
 
 function rAsFollowup(){
   const kids=myAssistKids();
   const c=document.getElementById("tab-as-followup");
-  if(!kids.length){c.innerHTML=`<div class="empty-state"><div class="ei">👦</div>لا يوجد أولاد مخصصين لك بعد</div>`;return;}
+  if(!kids.length){c.innerHTML='<div class="empty-state"><div class="ei">👦</div>لا يوجد أولاد مخصصين لك بعد</div>';return;}
   let h=`<h2 class="sec-title">الافتقاد <span class="badge bg-g">${kids.length} طفل</span></h2>`;
   kids.forEach(ch=>{
-    const key=`f_${ch.id}`,st=DATA.followup[key]||"",nt=DATA.followup[key+"_n"]||"";
+    const key="f_"+ch.id,st=DATA.followup[key]||"",nt=DATA.followup[key+"_n"]||"";
     h+=`<div class="child-row">
       <div class="child-name">${ch.name}</div>
       <div class="child-info">📞 ${ch.phone||"—"} | 📍 ${ch.addr||"—"} | 🎂 ${fDate(ch.dob)}</div>
       <div class="st-btns">
-        <button class="st-btn ${st==="done"?"sd":""}" onclick="setFU(${ch.id},'done',this)">تم ✓</button>
-        <button class="st-btn ${st==="pending"?"sa":""}" onclick="setFU(${ch.id},'pending',this)">لم يتم</button>
+        <button class="st-btn${st==="done"?" sd":""}" data-cid="${ch.id}" data-st="done">تم ✓</button>
+        <button class="st-btn${st==="pending"?" sa":""}" data-cid="${ch.id}" data-st="pending">لم يتم</button>
       </div>
-      <textarea class="notes" placeholder="ملاحظات..." onchange="DATA.followup['${key}_n']=this.value">${nt}</textarea>
+      <textarea class="notes" placeholder="ملاحظات..." data-key="${key}_n">${nt}</textarea>
     </div>`;
   });
   c.innerHTML=h;
-}
-function setFU(cid,st,btn){
-  DATA.followup["f_"+cid]=st;
-  btn.closest(".child-row").querySelectorAll(".st-btn").forEach(b=>b.className="st-btn");
-  btn.classList.add(st==="done"?"sd":"sa");
-  const ch=DATA.children.find(c=>c.id===cid);
-  sheetPost({sheet:"الافتقاد",row:[new Date().toLocaleDateString("ar-EG"),CU.name,ch?.name||cid,st==="done"?"تم":"لم يتم"]});
+  c.querySelectorAll(".st-btn[data-cid]").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      const cid=parseInt(btn.dataset.cid),st=btn.dataset.st;
+      DATA.followup["f_"+cid]=st;
+      btn.closest(".child-row").querySelectorAll(".st-btn").forEach(b=>b.classList.remove("sd","sa","sp","se"));
+      btn.classList.add(st==="done"?"sd":"sa");
+      const ch=DATA.children.find(c=>c.id===cid);
+      sheetPost({sheet:"الافتقاد",row:[new Date().toLocaleDateString("ar-EG"),CU.name,ch?.name||cid,st==="done"?"تم":"لم يتم"]});
+    });
+  });
+  c.querySelectorAll("textarea[data-key]").forEach(ta=>{
+    ta.addEventListener("change",()=>{DATA.followup[ta.dataset.key]=ta.value;});
+  });
 }
 
 function rActivities(prefix){
   const c=document.getElementById(`tab-${prefix}-activities`);
   const acts=prefix==="tl"?DATA.activities.filter(a=>!a.cls||a.cls===CU.cls):DATA.activities;
-  if(!acts.length){c.innerHTML=`<div class="empty-state"><div class="ei">⛺</div>لم تُضف أنشطة بعد</div>`;return;}
-  let h=`<h2 class="sec-title">الأنشطة السنوية</h2>`;
+  if(!acts.length){c.innerHTML='<div class="empty-state"><div class="ei">⛺</div>لم تُضف أنشطة بعد</div>';return;}
+  let h='<h2 class="sec-title">الأنشطة السنوية</h2>';
   acts.forEach(a=>{
     h+=`<div class="act-card"><div class="act-icon">⛺</div>
       <div style="flex:1"><div style="font-size:14px;font-weight:700">${a.name}</div><div style="font-size:12px;color:var(--mu);margin-top:2px">📅 ${fDate(a.date)}${a.cls?` | ${a.cls}`:""}</div></div>
-      ${prefix==="tl"?`<div class="abtns"><button class="ab ab-a" onclick="editActivity(${a.id})">تعديل</button><button class="ab ab-r" onclick="deleteActivity(${a.id})">حذف</button></div>`:`<button class="ab ab-g" onclick="alert('PDF غير مرفق')">📄 PDF</button>`}
+      <button class="ab ab-g" onclick="alert('PDF غير مرفق')">📄 PDF</button>
     </div>`;
   });
   c.innerHTML=h;
@@ -764,13 +661,13 @@ function rActivities(prefix){
 function rAsAttendance(){
   const kids=myAssistKids();
   const c=document.getElementById("tab-as-attendance");
-  if(!kids.length){c.innerHTML=`<div class="empty-state"><div class="ei">✅</div>لا يوجد أولاد مخصصين لك</div>`;return;}
+  if(!kids.length){c.innerHTML='<div class="empty-state"><div class="ei">✅</div>لا يوجد أولاد مخصصين لك</div>';return;}
   const lastM=DATA.meetings[DATA.meetings.length-1];
   let h=`<h2 class="sec-title">التحضير <span class="badge bg-g">${kids.length} طفل</span></h2>`;
   if(DATA.meetings.length){
-    h+=`<div class="card" style="margin-bottom:12px"><label class="lbl">الاجتماع:</label>
+    h+=`<div class="card" style="margin-bottom:11px"><label class="lbl">الاجتماع:</label>
     <select class="fi" style="margin-bottom:0" id="as-att-sel">
-      ${DATA.meetings.map(m=>`<option value="${m.id}" ${m.id==lastM?.id?"selected":""}>اجتماع ${m.num} — ${fDate(m.date)}</option>`).join("")}
+      ${DATA.meetings.map(m=>`<option value="${m.id}"${m.id==lastM?.id?" selected":""}>اجتماع ${m.num} — ${fDate(m.date)}</option>`).join("")}
     </select></div>`;
   }
   const mid=lastM?.id||0;
@@ -779,162 +676,166 @@ function rAsAttendance(){
     h+=`<div class="child-row">
       <div class="child-name">${ch.name}</div>
       <div class="st-btns">
-        <button class="st-btn ${st==="present"?"sp":""}" onclick="setAtt('${key}','present',this,${ch.id},${mid})">حضر ✓</button>
-        <button class="st-btn ${st==="excused"?"se":""}" onclick="setAtt('${key}','excused',this,${ch.id},${mid})">بعذر</button>
-        <button class="st-btn ${st==="absent"?"sa":""}" onclick="setAtt('${key}','absent',this,${ch.id},${mid})">بدون عذر</button>
+        <button class="st-btn${st==="present"?" sp":""}" data-key="${key}" data-st="present" data-cid="${ch.id}" data-mid="${mid}">حضر ✓</button>
+        <button class="st-btn${st==="excused"?" se":""}" data-key="${key}" data-st="excused" data-cid="${ch.id}" data-mid="${mid}">بعذر</button>
+        <button class="st-btn${st==="absent"?" sa":""}" data-key="${key}" data-st="absent" data-cid="${ch.id}" data-mid="${mid}">بدون عذر</button>
       </div>
-      <textarea class="notes" placeholder="ملاحظات..." onchange="DATA.attendance['${key}_n']=this.value">${nt}</textarea>
+      <textarea class="notes" placeholder="ملاحظات..." data-akey="${key}_n">${nt}</textarea>
     </div>`;
   });
   c.innerHTML=h;
-}
-function setAtt(key,st,btn,cid,mid){
-  DATA.attendance[key]=st;
-  btn.closest(".child-row").querySelectorAll(".st-btn").forEach(b=>b.className="st-btn");
-  btn.classList.add({present:"sp",excused:"se",absent:"sa"}[st]);
-  const ch=DATA.children.find(c=>c.id===cid);
-  const m=DATA.meetings.find(m=>m.id==mid);
-  sheetPost({sheet:"حضور الأولاد",row:[new Date().toLocaleDateString("ar-EG"),m?`اجتماع ${m.num}`:"",ch?.name||cid,CU.name,{present:"حضر",excused:"بعذر",absent:"بدون عذر"}[st]]});
+  c.querySelectorAll(".st-btn[data-key]").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      const key=btn.dataset.key,st=btn.dataset.st,cid=parseInt(btn.dataset.cid),mid=parseInt(btn.dataset.mid);
+      DATA.attendance[key]=st;
+      btn.closest(".child-row").querySelectorAll(".st-btn").forEach(b=>b.classList.remove("sp","se","sa","sd"));
+      btn.classList.add({present:"sp",excused:"se",absent:"sa"}[st]);
+      const ch=DATA.children.find(c=>c.id===cid);
+      const m=DATA.meetings.find(m=>m.id===mid);
+      sheetPost({sheet:"حضور الأولاد",row:[new Date().toLocaleDateString("ar-EG"),m?`اجتماع ${m.num}`:"",ch?.name||cid,CU.name,{present:"حضر",excused:"بعذر",absent:"بدون عذر"}[st]]});
+    });
+  });
+  c.querySelectorAll("textarea[data-akey]").forEach(ta=>{
+    ta.addEventListener("change",()=>{DATA.attendance[ta.dataset.akey]=ta.value;});
+  });
 }
 
-// =========================================================
-// TEAM LEADER
-// =========================================================
+// ── TEAM LEADER ────────────────────────────────────────
 function rTLPlan(){
   const c=document.getElementById("tab-tl-plan");
-  if(!DATA.meetings.length){c.innerHTML=`<div class="empty-state"><div class="ei">📅</div>لم يُضف قائد القطاع اجتماعات بعد</div>`;return;}
+  if(!DATA.meetings.length){c.innerHTML='<div class="empty-state"><div class="ei">📅</div>لم يُضف قائد القطاع اجتماعات بعد</div>';return;}
   const ml=myLdrs();
   let h=`<h2 class="sec-title">توزيع فقرات الخطة <span class="badge bg-a">${CU.cls}</span></h2>
-  <div class="card" style="margin-bottom:12px;font-size:13px;color:var(--mu)">💡 حدد القادة المسئولين عن كل فقرة (يمكن اختيار أكثر من قائد).</div>`;
+  <div class="card" style="margin-bottom:11px;font-size:13px;color:var(--mu)">💡 اضغط Ctrl (أو Cmd) لاختيار أكثر من قائد لنفس الفقرة</div>`;
   DATA.meetings.forEach(m=>{
     h+=`<div class="meet-card"><div class="meet-hd">
       <span class="meet-num">اجتماع ${m.num}</span>
       <span class="meet-date">${fDate(m.date)}</span>
-    </div><div style="padding:12px 16px">
-    <div class="fr fr1" style="margin-bottom:10px"><div class="fg"><label>المسئول العام</label>
-      <select onchange="m${m.id}_setResp(this.value)"><option value="">-- اختار --</option>${lOpts(ml)}</select>
+    </div><div style="padding:11px 14px">
+    <div class="fr fr1" style="margin-bottom:9px"><div class="fg"><label>المسئول العام</label>
+      <select data-mid="${m.id}" data-field="resp"><option value="">-- اختار --</option>${lOpts(ml)}</select>
     </div></div>
     <div class="meet-body">`;
     PARA_KEYS.forEach(k=>{
       const p=m.paras[k]||{topic:"",leaders:[]};
       h+=`<div class="para-item">
         <div class="para-lbl">${PARA_NAMES[k]}</div>
-        <input type="text" class="notes" style="min-height:30px;margin-bottom:6px" placeholder="عنوان الفقرة..." value="${p.topic||""}"
-          onchange="setPTopic(${m.id},'${k}',this.value)">
-        <select multiple style="width:100%;padding:4px 8px;border:1.5px solid var(--bd);border-radius:8px;font-family:'Cairo',sans-serif;font-size:12px;height:80px"
-          onchange="setPLeaders(${m.id},'${k}',this)">
+        <input type="text" class="notes" style="min-height:28px;margin-bottom:5px" placeholder="عنوان الفقرة..." value="${p.topic||""}" data-mid="${m.id}" data-para="${k}" data-field="topic">
+        <select multiple style="width:100%;padding:4px 7px;border:1.5px solid var(--bd);border-radius:8px;font-family:'Cairo',sans-serif;font-size:12px;height:78px" data-mid="${m.id}" data-para="${k}" data-field="leaders">
           ${lMultiOpts(ml,p.leaders)}
         </select>
       </div>`;
     });
     h+=`</div></div></div>`;
   });
-  h+=`<button class="sv-btn" style="margin-top:8px" onclick="saveTLPlan()">💾 حفظ التوزيع في الشيت</button>`;
+  h+='<button class="sv-btn" style="margin-top:8px" onclick="saveTLPlan()">💾 حفظ التوزيع</button>';
   c.innerHTML=h;
-  // attach responsible setters
-  DATA.meetings.forEach(m=>{
-    window[`m${m.id}_setResp`]=(lid)=>{ const mt=DATA.meetings.find(x=>x.id===m.id); if(mt) mt.responsible=parseInt(lid); };
+  c.querySelectorAll("select[data-field='resp']").forEach(sel=>{
+    sel.addEventListener("change",()=>{
+      const m=DATA.meetings.find(m=>m.id==sel.dataset.mid);
+      if(m)m.responsible=parseInt(sel.value)||null;
+    });
+  });
+  c.querySelectorAll("input[data-field='topic']").forEach(inp=>{
+    inp.addEventListener("change",()=>{
+      const m=DATA.meetings.find(m=>m.id==inp.dataset.mid);
+      if(m){if(!m.paras[inp.dataset.para])m.paras[inp.dataset.para]={};m.paras[inp.dataset.para].topic=inp.value;}
+    });
+  });
+  c.querySelectorAll("select[data-field='leaders']").forEach(sel=>{
+    sel.addEventListener("change",()=>{
+      const m=DATA.meetings.find(m=>m.id==sel.dataset.mid);
+      if(m){if(!m.paras[sel.dataset.para])m.paras[sel.dataset.para]={};
+        m.paras[sel.dataset.para].leaders=Array.from(sel.selectedOptions).map(o=>parseInt(o.value));
+        rAsPlan();}
+    });
   });
 }
-function setPTopic(mid,k,v){ const m=DATA.meetings.find(m=>m.id==mid); if(m){if(!m.paras[k])m.paras[k]={};m.paras[k].topic=v;} }
-function setPLeaders(mid,k,sel){
-  const m=DATA.meetings.find(m=>m.id==mid);
-  if(m){if(!m.paras[k])m.paras[k]={};m.paras[k].leaders=Array.from(sel.selectedOptions).map(o=>parseInt(o.value));}
-  rAsPlan();
-}
 function saveTLPlan(){
-  DATA.meetings.forEach(m=>{
-    PARA_KEYS.forEach(k=>{
-      const p=m.paras[k]||{};
-      if(p.leaders&&p.leaders.length) sheetPost({sheet:"توزيع الخطة",row:[`اجتماع ${m.num}`,fDate(m.date),PARA_NAMES[k],p.topic||"",lNamesArr(p.leaders)]});
+  DATA.meetings.forEach(m=>PARA_KEYS.forEach(k=>{
+    const p=m.paras[k]||{};
+    if(p.leaders&&p.leaders.length)sheetPost({sheet:"توزيع الخطة",row:[`اجتماع ${m.num}`,fDate(m.date),PARA_NAMES[k],p.topic||"",lNamesArr(p.leaders)]});
+  }));
+}
+
+function rTLChildren(){
+  const kids=myKids();const c=document.getElementById("tab-tl-children");const ml=myLdrs();
+  let h=`<h2 class="sec-title">أولاد ${CU.cls} <span class="badge bg-g">${kids.length}</span></h2>
+  <div class="tw"><table><thead><tr><th>الاسم</th><th>القائد</th><th>التليفون</th><th>الميلاد</th><th></th></tr></thead><tbody>`;
+  kids.forEach(ch=>{
+    h+=`<tr><td><b>${ch.name}</b></td>
+      <td><select style="font-family:'Cairo',sans-serif;font-size:12px;border:1px solid var(--bd);border-radius:6px;padding:3px 7px" data-cid="${ch.id}" class="kid-ldr-sel">
+        <option value="0">-- اختار --</option>${lOpts(ml).replace(`value="${ch.lid}"`,`value="${ch.lid}" selected`)}
+      </select></td>
+      <td>${ch.phone||"—"}</td><td>${fDate(ch.dob)}</td>
+      <td><button class="ab ab-a kid-edit-btn" data-cid="${ch.id}">تعديل</button></td></tr>`;
+  });
+  h+='</tbody></table></div>';
+  c.innerHTML=h;
+  c.querySelectorAll(".kid-ldr-sel").forEach(sel=>{
+    sel.addEventListener("change",()=>{
+      const ch=DATA.children.find(c=>c.id==sel.dataset.cid);
+      if(ch){ch.lid=parseInt(sel.value)||0;sheetPost({sheet:"توزيع الأولاد",row:[ch.name,lName(ch.lid),ch.cls]});}
+    });
+  });
+  c.querySelectorAll(".kid-edit-btn").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      const ch=DATA.children.find(c=>c.id==btn.dataset.cid);if(!ch)return;
+      const ml2=myLdrs();
+      openModal("تعديل: "+ch.name,
+        `<div class="fr"><div class="fg"><label>التليفون</label><input type="text" id="ec-ph" value="${ch.phone||""}"></div>
+        <div class="fg"><label>العنوان</label><input type="text" id="ec-ad" value="${ch.addr||""}"></div></div>
+        <div class="fr fr1"><div class="fg"><label>القائد</label><select id="ec-lid"><option value="0">--</option>${lOpts(ml2)}</select></div></div>`,
+        ()=>{ch.phone=document.getElementById("ec-ph").value;ch.addr=document.getElementById("ec-ad").value;ch.lid=parseInt(document.getElementById("ec-lid").value)||0;closeModal();rTLChildren();}
+      );
     });
   });
 }
 
-function rTLChildren(){
-  const kids=myKids();
-  const c=document.getElementById("tab-tl-children");
-  const ml=myLdrs();
-  let h=`<h2 class="sec-title">أولاد ${CU.cls} <span class="badge bg-g">${kids.length}</span></h2>
-  <div class="tw"><table><thead><tr><th>الاسم</th><th>القائد المسئول</th><th>التليفون</th><th>الميلاد</th><th></th></tr></thead><tbody>`;
-  kids.forEach(ch=>{
-    h+=`<tr><td><b>${ch.name}</b></td>
-      <td><select style="font-family:'Cairo',sans-serif;font-size:12px;border:1px solid var(--bd);border-radius:6px;padding:3px 8px" onchange="assignKid(${ch.id},this.value)">
-        <option value="0">-- اختار --</option>${lOpts(ml).replace(`value="${ch.lid}"`,`value="${ch.lid}" selected`)}
-      </select></td>
-      <td>${ch.phone||"—"}</td><td>${fDate(ch.dob)}</td>
-      <td><div class="abtns"><button class="ab ab-a" onclick="editChildTL(${ch.id})">تعديل</button></div></td></tr>`;
-  });
-  h+=`</tbody></table></div>`;
-  c.innerHTML=h;
-}
-function assignKid(cid,lid){
-  const ch=DATA.children.find(c=>c.id===cid);
-  if(ch){ ch.lid=parseInt(lid)||0; sheetPost({sheet:"توزيع الأولاد",row:[ch.name,lName(ch.lid),ch.cls]}); }
-}
-function editChildTL(id){
-  id=parseInt(id);
-  const ch=DATA.children.find(c=>c.id===id);
-  const ml=myLdrs();
-  openModal("تعديل: "+ch.name,
-    `<div class="fr"><div class="fg"><label>التليفون</label><input type="text" id="ec-ph" value="${ch.phone||""}"></div>
-    <div class="fg"><label>العنوان</label><input type="text" id="ec-ad" value="${ch.addr||""}"></div></div>
-    <div class="fr fr1"><div class="fg"><label>القائد المسئول</label><select id="ec-lid"><option value="0">--</option>${lOpts(ml)}</select></div></div>`,
-    ()=>{ ch.phone=document.getElementById("ec-ph").value; ch.addr=document.getElementById("ec-ad").value; ch.lid=parseInt(document.getElementById("ec-lid").value)||0; closeModal(); rTLChildren(); }
-  );
-}
-
 function rTLLatt(){
-  const ml=myLdrs();
-  const c=document.getElementById("tab-tl-latt");
-  if(!ml.length){c.innerHTML=`<div class="empty-state"><div class="ei">👥</div>لا يوجد قادة في فريقك</div>`;return;}
-  const lastM=DATA.meetings[DATA.meetings.length-1];
+  const ml=myLdrs();const c=document.getElementById("tab-tl-latt");
+  if(!ml.length){c.innerHTML='<div class="empty-state"><div class="ei">👥</div>لا يوجد قادة في فريقك</div>';return;}
+  const lastM=DATA.meetings[DATA.meetings.length-1];const mid=lastM?.id||0;
   let h=`<h2 class="sec-title">حضور قادة ${CU.cls}</h2>`;
-  if(DATA.meetings.length){
-    h+=`<div class="card" style="margin-bottom:12px"><label class="lbl">الاجتماع:</label>
-    <select class="fi" style="margin-bottom:0" id="tl-la-sel">
-      ${DATA.meetings.map(m=>`<option value="${m.id}" ${m.id==lastM?.id?"selected":""}>اجتماع ${m.num} — ${fDate(m.date)}</option>`).join("")}
-    </select></div>`;
-  }
-  const mid=lastM?.id||0;
+  if(DATA.meetings.length)h+=`<div class="card" style="margin-bottom:11px"><label class="lbl">الاجتماع:</label>
+    <select class="fi" style="margin-bottom:0" id="tl-la-sel">${DATA.meetings.map(m=>`<option value="${m.id}"${m.id==mid?" selected":""}>اجتماع ${m.num} — ${fDate(m.date)}</option>`).join("")}</select></div>`;
   ml.forEach(l=>{
     const key=`la_${mid}_${l.id}`,st=DATA.latt[key]||"",uni=DATA.latt[key+"_u"]||false;
     h+=`<div class="latt-row">
       <div class="latt-name">${l.name} <span class="badge bg-gray">${l.cls}</span></div>
       <div class="latt-ctrl">
-        <button class="st-btn ${st==="present"?"sp":""}" onclick="setLA('${key}',${l.id},'present',this)">حضر ✓</button>
-        <button class="st-btn ${st==="excused"?"se":""}" onclick="setLA('${key}',${l.id},'excused',this)">بعذر</button>
-        <button class="st-btn ${st==="absent"?"sa":""}" onclick="setLA('${key}',${l.id},'absent',this)">بدون عذر</button>
-        <label class="uni-tog"><input type="checkbox" ${uni?"checked":""} onchange="DATA.latt['${key}_u']=this.checked"> بزي</label>
+        <button class="st-btn${st==="present"?" sp":""}" data-key="${key}" data-lid="${l.id}" data-st="present">حضر ✓</button>
+        <button class="st-btn${st==="excused"?" se":""}" data-key="${key}" data-lid="${l.id}" data-st="excused">بعذر</button>
+        <button class="st-btn${st==="absent"?" sa":""}" data-key="${key}" data-lid="${l.id}" data-st="absent">بدون عذر</button>
+        <label class="uni-tog"><input type="checkbox"${uni?" checked":""} data-ukey="${key}_u"> بزي</label>
       </div>
-      <textarea class="notes" style="margin-top:7px" placeholder="ملاحظات...">${DATA.latt[key+"_n"]||""}</textarea>
+      <textarea class="notes" style="margin-top:7px" placeholder="ملاحظات..." data-nkey="${key}_n">${DATA.latt[key+"_n"]||""}</textarea>
     </div>`;
   });
   c.innerHTML=h;
-}
-function setLA(key,lid,st,btn){
-  DATA.latt[key]=st;
-  btn.closest(".latt-row").querySelectorAll(".st-btn").forEach(b=>b.className="st-btn");
-  btn.classList.add({present:"sp",excused:"se",absent:"sa"}[st]);
-  const l=DATA.leaders.find(l=>l.id===lid);
-  sheetPost({sheet:"حضور القادة",row:[new Date().toLocaleDateString("ar-EG"),l?.name||lid,{present:"حضر",excused:"بعذر",absent:"بدون عذر"}[st],DATA.latt[key+"_u"]?"بزي":"بدون زي",""]});
+  c.querySelectorAll(".st-btn[data-lid]").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      const key=btn.dataset.key,st=btn.dataset.st,lid=parseInt(btn.dataset.lid);
+      DATA.latt[key]=st;
+      btn.closest(".latt-ctrl").querySelectorAll(".st-btn").forEach(b=>b.classList.remove("sp","se","sa"));
+      btn.classList.add({present:"sp",excused:"se",absent:"sa"}[st]);
+      const l=DATA.leaders.find(l=>l.id===lid);
+      sheetPost({sheet:"حضور القادة",row:[new Date().toLocaleDateString("ar-EG"),l?.name||lid,{present:"حضر",excused:"بعذر",absent:"بدون عذر"}[st],DATA.latt[key+"_u"]?"بزي":"بدون زي",""]});
+    });
+  });
+  c.querySelectorAll("input[data-ukey]").forEach(cb=>{cb.addEventListener("change",()=>{DATA.latt[cb.dataset.ukey]=cb.checked;});});
+  c.querySelectorAll("textarea[data-nkey]").forEach(ta=>{ta.addEventListener("change",()=>{DATA.latt[ta.dataset.nkey]=ta.value;});});
 }
 
 function rTLCatt(){
-  const kids=myKids();
-  const c=document.getElementById("tab-tl-catt");
-  if(!kids.length){c.innerHTML=`<div class="empty-state"><div class="ei">✅</div>لا يوجد أولاد</div>`;return;}
-  const lastM=DATA.meetings[DATA.meetings.length-1];
-  const mid=lastM?.id||0;
+  const kids=myKids();const c=document.getElementById("tab-tl-catt");
+  if(!kids.length){c.innerHTML='<div class="empty-state"><div class="ei">✅</div>لا يوجد أولاد</div>';return;}
+  const lastM=DATA.meetings[DATA.meetings.length-1];const mid=lastM?.id||0;
   let h=`<h2 class="sec-title">حضور أولاد ${CU.cls} <span class="badge bg-g">${kids.length}</span></h2>`;
-  if(DATA.meetings.length){
-    h+=`<div class="card" style="margin-bottom:12px"><label class="lbl">الاجتماع:</label>
-    <select class="fi" style="margin-bottom:0" id="tl-ca-sel">
-      ${DATA.meetings.map(m=>`<option value="${m.id}" ${m.id==mid?"selected":""}>اجتماع ${m.num} — ${fDate(m.date)}</option>`).join("")}
-    </select></div>`;
-  }
+  if(DATA.meetings.length)h+=`<div class="card" style="margin-bottom:11px"><label class="lbl">الاجتماع:</label>
+    <select class="fi" style="margin-bottom:0" id="tl-ca-sel">${DATA.meetings.map(m=>`<option value="${m.id}"${m.id==mid?" selected":""}>اجتماع ${m.num} — ${fDate(m.date)}</option>`).join("")}</select></div>`;
   kids.forEach(ch=>{
-    const key=`att_${mid}_${ch.id}`,st=DATA.attendance[key]||"";
+    const st=DATA.attendance[`att_${mid}_${ch.id}`]||"";
     const lbl={present:"حضر ✓",excused:"بعذر",absent:"بدون عذر","":"لم يسجل"}[st];
     const bg={present:"bg-g",excused:"bg-a",absent:"bg-r","":"bg-gray"}[st];
     h+=`<div class="child-row"><div class="child-rh"><div class="child-name">${ch.name}</div><span class="badge ${bg}">${lbl}</span></div>
@@ -944,13 +845,12 @@ function rTLCatt(){
 }
 
 function rTLFollowup(){
-  const kids=myKids();
-  const c=document.getElementById("tab-tl-followup");
-  if(!kids.length){c.innerHTML=`<div class="empty-state"><div class="ei">🔍</div>لا يوجد أولاد</div>`;return;}
+  const kids=myKids();const c=document.getElementById("tab-tl-followup");
+  if(!kids.length){c.innerHTML='<div class="empty-state"><div class="ei">🔍</div>لا يوجد أولاد</div>';return;}
   const done=kids.filter(c=>DATA.followup["f_"+c.id]==="done").length;
   const pct=kids.length?Math.round(done/kids.length*100):0;
   let h=`<h2 class="sec-title">متابعة الافتقاد — ${CU.cls} <span class="badge bg-g">${kids.length}</span></h2>
-  <div class="card" style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;margin-bottom:7px"><b>الإجمالي</b><b style="color:var(--g)">${done}/${kids.length} (${pct}%)</b></div><div class="prog"><div class="prog-fill" style="width:${pct}%"></div></div></div>`;
+  <div class="card" style="margin-bottom:13px"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><b>الإجمالي</b><b style="color:var(--g)">${done}/${kids.length} (${pct}%)</b></div><div class="prog"><div class="prog-fill" style="width:${pct}%"></div></div></div>`;
   kids.forEach(ch=>{
     const st=DATA.followup["f_"+ch.id]||"",nt=DATA.followup["f_"+ch.id+"_n"]||"";
     h+=`<div class="child-row"><div class="child-rh"><div class="child-name">${ch.name}</div>
@@ -961,49 +861,37 @@ function rTLFollowup(){
 }
 
 function rTLLvisit(){
-  const ml=myLdrs();
-  const c=document.getElementById("tab-tl-lvisit");
-  if(!ml.length){c.innerHTML=`<div class="empty-state"><div class="ei">👥</div>لا يوجد قادة في فريقك بعد</div>`;return;}
+  const ml=myLdrs();const c=document.getElementById("tab-tl-lvisit");
+  if(!ml.length){c.innerHTML='<div class="empty-state"><div class="ei">👥</div>لا يوجد قادة في فريقك بعد</div>';return;}
   const done=ml.filter(l=>DATA.lvisit["lv_"+l.id]==="done").length;
   const pct=ml.length?Math.round(done/ml.length*100):0;
-  let h=`<h2 class="sec-title">افتقاد قادة ${CU.cls} <span class="badge bg-g">${ml.length} قائد</span></h2>
-  <div class="card" style="margin-bottom:14px">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px">
-      <b style="font-size:14px">إجمالي الافتقاد</b>
-      <b style="color:var(--g);font-size:14px">${done}/${ml.length} (${pct}%)</b>
-    </div>
-    <div class="prog"><div class="prog-fill" style="width:${pct}%"></div></div>
-  </div>`;
+  let h=`<h2 class="sec-title">افتقاد قادة ${CU.cls} <span class="badge bg-g">${ml.length}</span></h2>
+  <div class="card" style="margin-bottom:13px"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><b>الإجمالي</b><b style="color:var(--g)">${done}/${ml.length} (${pct}%)</b></div><div class="prog"><div class="prog-fill" style="width:${pct}%"></div></div></div>`;
   ml.forEach(l=>{
     const key="lv_"+l.id,st=DATA.lvisit[key]||"",nt=DATA.lvisit[key+"_n"]||"";
     h+=`<div class="child-row">
-      <div class="child-rh">
-        <div class="child-name">${l.name}</div>
-        <span class="badge ${st==="done"?"bg-g":"bg-r"}">${st==="done"?"تم ✓":"لم يتم"}</span>
-      </div>
+      <div class="child-rh"><div class="child-name">${l.name}</div><span class="badge ${st==="done"?"bg-g":"bg-r"}">${st==="done"?"تم ✓":"لم يتم"}</span></div>
       <div class="child-info">📞 ${l.phone||"—"}</div>
       <div class="st-btns">
-        <button class="st-btn ${st==="done"?"sd":""}" onclick="setLV(${l.id},done,this)">تم الافتقاد ✓</button>
-        <button class="st-btn ${st==="pending"?"sa":""}" onclick="setLV(${l.id},pending,this)">لم يتم</button>
+        <button class="st-btn${st==="done"?" sd":""}" data-lid="${l.id}" data-lv-st="done">تم الافتقاد ✓</button>
+        <button class="st-btn${st==="pending"?" sa":""}" data-lid="${l.id}" data-lv-st="pending">لم يتم</button>
       </div>
-      <textarea class="notes" placeholder="ملاحظات..." onchange="DATA.lvisit[_n]=this.value;syncLvisit(${l.id})">${nt}</textarea>
+      <textarea class="notes" placeholder="ملاحظات..." data-lvkey="${key}_n">${nt}</textarea>
     </div>`;
   });
   c.innerHTML=h;
-}
-function setLV(lid,st,btn){
-  const key="lv_"+lid;
-  DATA.lvisit[key]=st;
-  btn.closest(".child-row").querySelectorAll(".st-btn").forEach(b=>b.className="st-btn");
-  btn.classList.add(st==="done"?"sd":"sa");
-  const l=DATA.leaders.find(l=>l.id===lid);
-  sheetPost({sheet:"افتقاد القادة",row:[new Date().toLocaleDateString("ar-EG"),CU.cls,l?.name||lid,st==="done"?"تم":"لم يتم",DATA.lvisit[key+"_n"]||""]});
-  rTLLvisit();
-}
-function syncLvisit(lid){
-  const key="lv_"+lid;
-  const l=DATA.leaders.find(l=>l.id===lid);
-  sheetPost({sheet:"افتقاد القادة",row:[new Date().toLocaleDateString("ar-EG"),CU.cls,l?.name||lid,DATA.lvisit[key]==="done"?"تم":"لم يتم",DATA.lvisit[key+"_n"]||""]});
+  c.querySelectorAll(".st-btn[data-lv-st]").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      const lid=parseInt(btn.dataset.lid),st=btn.dataset.lvSt||btn.getAttribute("data-lv-st");
+      DATA.lvisit["lv_"+lid]=st;
+      btn.closest(".child-row").querySelectorAll(".st-btn").forEach(b=>b.classList.remove("sd","sa","sp","se"));
+      btn.classList.add(st==="done"?"sd":"sa");
+      const l=DATA.leaders.find(l=>l.id===lid);
+      sheetPost({sheet:"افتقاد القادة",row:[new Date().toLocaleDateString("ar-EG"),CU.cls,l?.name||lid,st==="done"?"تم":"لم يتم",DATA.lvisit["lv_"+lid+"_n"]||""]});
+      rTLLvisit();
+    });
+  });
+  c.querySelectorAll("textarea[data-lvkey]").forEach(ta=>{ta.addEventListener("change",()=>{DATA.lvisit[ta.dataset.lvkey]=ta.value;});});
 }
 
 function rTLActivities(){
@@ -1011,42 +899,40 @@ function rTLActivities(){
   const acts=DATA.activities.filter(a=>!a.cls||a.cls===CU.cls);
   let h=`<h2 class="sec-title">الأنشطة <span class="badge bg-g">${acts.length}</span></h2>
   <div class="add-form"><h3>➕ إضافة نشاط</h3>
-    <div class="fr"><div class="fg"><label>الاسم</label><input type="text" id="tl-na-name"></div><div class="fg"><label>التاريخ</label><input type="date" id="tl-na-date"></div></div>
-    <button class="sv-btn" onclick="addActivityTL()">إضافة</button>
+    <div class="fr"><div class="fg"><label>الاسم</label><input type="text" id="tl-na-nm"></div><div class="fg"><label>التاريخ</label><input type="date" id="tl-na-dt"></div></div>
+    <button class="sv-btn" onclick="addActTL()">إضافة</button>
   </div>`;
   acts.forEach(a=>{
     h+=`<div class="act-card"><div class="act-icon">⛺</div><div style="flex:1"><div style="font-size:14px;font-weight:700">${a.name}</div><div style="font-size:12px;color:var(--mu)">📅 ${fDate(a.date)}</div></div>
-    <div class="abtns"><button class="ab ab-a" onclick="editActivityTL(${a.id})">تعديل</button><button class="ab ab-r" onclick="deleteActivity(${a.id})">حذف</button></div></div>`;
+    <div class="abtns"><button class="ab ab-a act-edit-btn" data-aid="${a.id}">تعديل</button><button class="ab ab-r act-del-btn" data-aid="${a.id}">حذف</button></div></div>`;
   });
   c.innerHTML=h;
+  c.querySelectorAll(".act-edit-btn").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      const a=DATA.activities.find(x=>x.id==btn.dataset.aid);if(!a)return;
+      openModal("تعديل نشاط",
+        `<div class="fr"><div class="fg"><label>الاسم</label><input type="text" id="ea-n" value="${a.name}"></div><div class="fg"><label>التاريخ</label><input type="date" id="ea-d" value="${a.date||""}"></div></div>`,
+        ()=>{a.name=document.getElementById("ea-n").value;a.date=document.getElementById("ea-d").value;closeModal();rTLActivities();}
+      );
+    });
+  });
+  c.querySelectorAll(".act-del-btn").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      if(!confirm("حذف النشاط؟"))return;
+      DATA.activities=DATA.activities.filter(x=>x.id!=btn.dataset.aid);
+      rTLActivities();
+    });
+  });
 }
-function addActivityTL(){
-  const name=document.getElementById("tl-na-name").value;
-  const date=document.getElementById("tl-na-date").value;
+function addActTL(){
+  const name=document.getElementById("tl-na-nm").value,date=document.getElementById("tl-na-dt").value;
   if(!name){alert("ادخل الاسم");return;}
-  const a={id:nxtId(DATA.activities),name,date,cls:CU.cls};
-  DATA.activities.push(a);
+  DATA.activities.push({id:nxtId(DATA.activities),name,date,cls:CU.cls});
   rTLActivities();
   sheetPost({sheet:"الأنشطة",row:[name,date,CU.cls]});
 }
-function deleteActivity(id){
-  id=parseInt(id);
-  if(!confirm("حذف النشاط؟"))return;
-  DATA.activities=DATA.activities.filter(a=>a.id!==id);
-  rTLActivities(); rAdPlan&&rAdPlan();
-}
-function editActivityTL(id){
-  id=parseInt(id);
-  const a=DATA.activities.find(a=>a.id===id);
-  openModal("تعديل نشاط",
-    `<div class="fr"><div class="fg"><label>الاسم</label><input type="text" id="ea-n" value="${a.name}"></div><div class="fg"><label>التاريخ</label><input type="date" id="ea-d" value="${a.date||""}"></div></div>`,
-    ()=>{a.name=document.getElementById("ea-n").value;a.date=document.getElementById("ea-d").value;closeModal();rTLActivities();}
-  );
-}
 
-// =========================================================
-// ADMIN
-// =========================================================
+// ── ADMIN ──────────────────────────────────────────────
 function rAdPlan(){
   const c=document.getElementById("tab-ad-plan");
   let h=`<h2 class="sec-title">خطة الاجتماعات</h2>
@@ -1054,17 +940,20 @@ function rAdPlan(){
     <div class="fr"><div class="fg"><label>التاريخ</label><input type="date" id="nm-dt"></div><div class="fg"><label>رقم الاجتماع</label><input type="number" id="nm-nu" min="1"></div></div>
     <button class="sv-btn" onclick="addMeeting()">إضافة</button>
   </div>`;
-  if(!DATA.meetings.length){h+=`<div class="empty-state"><div class="ei">📅</div>لم تُضف اجتماعات بعد</div>`;}
+  if(!DATA.meetings.length)h+='<div class="empty-state"><div class="ei">📅</div>لم تُضف اجتماعات بعد</div>';
   DATA.meetings.forEach(m=>{
     h+=`<div class="meet-card"><div class="meet-hd">
       <span class="meet-num">اجتماع ${m.num}</span>
       <span class="meet-date">${fDate(m.date)}</span>
       <span class="meet-resp">المسئول: ${lName(m.responsible)}</span>
-      <div class="abtns"><button class="ab ab-a" onclick="editMeeting(${m.id})">تعديل</button><button class="ab ab-r" onclick="deleteMeeting(${m.id})">حذف</button></div>
+      <div class="abtns">
+        <button class="ab ab-a meet-edit-btn" data-mid="${m.id}">تعديل</button>
+        <button class="ab ab-r meet-del-btn" data-mid="${m.id}">حذف</button>
+      </div>
     </div><div class="meet-body">`;
     PARA_KEYS.forEach(k=>{
       const p=m.paras[k]||{};
-      h+=`<div class="para-item ${p.leaders&&p.leaders.length?"":"unset"}">
+      h+=`<div class="para-item${p.leaders&&p.leaders.length?"":" unset"}">
         <div class="para-lbl">${PARA_NAMES[k]}</div>
         <div class="para-topic">${p.topic||"—"}</div>
         <div class="para-ldrs">${lNamesArr(p.leaders)}</div>
@@ -1072,18 +961,43 @@ function rAdPlan(){
     });
     h+=`</div></div>`;
   });
-  // Activities section
-  h+=`<h2 class="sec-title" style="margin-top:24px">الأنشطة السنوية</h2>
+  h+=`<h2 class="sec-title" style="margin-top:22px">الأنشطة السنوية</h2>
   <div class="add-form"><h3>➕ إضافة نشاط</h3>
     <div class="fr"><div class="fg"><label>الاسم</label><input type="text" id="na-nm"></div><div class="fg"><label>التاريخ</label><input type="date" id="na-dt"></div></div>
     <div class="fr fr1"><div class="fg"><label>الفريق</label><select id="na-cls"><option value="">الكل</option><option value="ملايكة أ">ملايكة أ</option><option value="ملايكة ب">ملايكة ب</option></select></div></div>
-    <button class="sv-btn" onclick="addActivityAdmin()">إضافة</button>
+    <button class="sv-btn" onclick="addActAdmin()">إضافة</button>
   </div>`;
   DATA.activities.forEach(a=>{
     h+=`<div class="act-card"><div class="act-icon">⛺</div><div style="flex:1"><div style="font-size:14px;font-weight:700">${a.name}</div><div style="font-size:12px;color:var(--mu)">📅 ${fDate(a.date)}${a.cls?` | ${a.cls}`:""}</div></div>
-    <div class="abtns"><button class="ab ab-a" onclick="editActivityAdmin(${a.id})">تعديل</button><button class="ab ab-r" onclick="deleteActivityAdmin(${a.id})">حذف</button></div></div>`;
+    <div class="abtns"><button class="ab ab-a act-edit-btn" data-aid="${a.id}">تعديل</button><button class="ab ab-r act-del-btn" data-aid="${a.id}">حذف</button></div></div>`;
   });
   c.innerHTML=h;
+  // meetings
+  c.querySelectorAll(".meet-edit-btn").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      const m=DATA.meetings.find(m=>m.id==btn.dataset.mid);if(!m)return;
+      openModal("تعديل اجتماع "+m.num,
+        `<div class="fr"><div class="fg"><label>التاريخ</label><input type="date" id="em-dt" value="${m.date}"></div><div class="fg"><label>الرقم</label><input type="number" id="em-nu" value="${m.num}"></div></div>`,
+        ()=>{m.date=document.getElementById("em-dt").value;m.num=parseInt(document.getElementById("em-nu").value);closeModal();rAdPlan();}
+      );
+    });
+  });
+  c.querySelectorAll(".meet-del-btn").forEach(btn=>{
+    btn.addEventListener("click",()=>{if(!confirm("حذف؟"))return;DATA.meetings=DATA.meetings.filter(m=>m.id!=btn.dataset.mid);rAdPlan();});
+  });
+  // activities
+  c.querySelectorAll(".act-edit-btn").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      const a=DATA.activities.find(x=>x.id==btn.dataset.aid);if(!a)return;
+      openModal("تعديل نشاط",
+        `<div class="fr"><div class="fg"><label>الاسم</label><input type="text" id="ea-n" value="${a.name}"></div><div class="fg"><label>التاريخ</label><input type="date" id="ea-d" value="${a.date||""}"></div></div>`,
+        ()=>{a.name=document.getElementById("ea-n").value;a.date=document.getElementById("ea-d").value;closeModal();rAdPlan();}
+      );
+    });
+  });
+  c.querySelectorAll(".act-del-btn").forEach(btn=>{
+    btn.addEventListener("click",()=>{if(!confirm("حذف؟"))return;DATA.activities=DATA.activities.filter(x=>x.id!=btn.dataset.aid);rAdPlan();});
+  });
 }
 function addMeeting(){
   const date=document.getElementById("nm-dt").value,num=document.getElementById("nm-nu").value;
@@ -1093,36 +1007,18 @@ function addMeeting(){
   rAdPlan();
   sheetPost({sheet:"خطة الاجتماعات",row:[`اجتماع ${num}`,date]});
 }
-function deleteMeeting(id){id=parseInt(id);if(!confirm("حذف؟"))return;DATA.meetings=DATA.meetings.filter(m=>m.id!==id);rAdPlan();}
-function editMeeting(id){
-  id=parseInt(id);
-  const m=DATA.meetings.find(m=>m.id===id);
-  openModal("تعديل اجتماع "+m.num,
-    `<div class="fr"><div class="fg"><label>التاريخ</label><input type="date" id="em-dt" value="${m.date}"></div><div class="fg"><label>الرقم</label><input type="number" id="em-nu" value="${m.num}"></div></div>`,
-    ()=>{m.date=document.getElementById("em-dt").value;m.num=parseInt(document.getElementById("em-nu").value);closeModal();rAdPlan();}
-  );
-}
-function addActivityAdmin(){
+function addActAdmin(){
   const name=document.getElementById("na-nm").value,date=document.getElementById("na-dt").value,cls=document.getElementById("na-cls").value;
   if(!name){alert("ادخل الاسم");return;}
   DATA.activities.push({id:nxtId(DATA.activities),name,date,cls});
   rAdPlan();
   sheetPost({sheet:"الأنشطة",row:[name,date,cls]});
 }
-function deleteActivityAdmin(id){id=parseInt(id);if(!confirm("حذف؟"))return;DATA.activities=DATA.activities.filter(a=>a.id!==id);rAdPlan();}
-function editActivityAdmin(id){
-  id=parseInt(id);
-  const a=DATA.activities.find(a=>a.id===id);
-  openModal("تعديل نشاط",
-    `<div class="fr"><div class="fg"><label>الاسم</label><input type="text" id="ea-n" value="${a.name}"></div><div class="fg"><label>التاريخ</label><input type="date" id="ea-d" value="${a.date||""}"></div></div>`,
-    ()=>{a.name=document.getElementById("ea-n").value;a.date=document.getElementById("ea-d").value;closeModal();rAdPlan();}
-  );
-}
 
 function rAdChildren(){
   const c=document.getElementById("tab-ad-children");
   const lo=allLOpts()||'<option>لا يوجد قادة</option>';
-  const clsO=`<option value="ملايكة أ">ملايكة أ</option><option value="ملايكة ب">ملايكة ب</option>`;
+  const clsO='<option value="ملايكة أ">ملايكة أ</option><option value="ملايكة ب">ملايكة ب</option>';
   let h=`<h2 class="sec-title">الأولاد <span class="badge bg-g">${DATA.children.length}</span></h2>
   <div class="add-form"><h3>➕ إضافة طفل</h3>
     <div class="fr"><div class="fg"><label>الاسم</label><input type="text" id="nc-nm"></div><div class="fg"><label>التليفون</label><input type="text" id="nc-ph"></div></div>
@@ -1133,202 +1029,178 @@ function rAdChildren(){
   <div class="tw"><table><thead><tr><th>الاسم</th><th>الفصل</th><th>القائد</th><th>التليفون</th><th>الميلاد</th><th></th></tr></thead><tbody>`;
   DATA.children.forEach(ch=>{
     h+=`<tr><td><b>${ch.name}</b></td><td>${ch.cls}</td><td>${lName(ch.lid)}</td><td>${ch.phone||"—"}</td><td>${fDate(ch.dob)}</td>
-    <td><div class="abtns"><button class="ab ab-a" onclick="editChild(${ch.id})">تعديل</button><button class="ab ab-r" onclick="delChild(${ch.id})">حذف</button></div></td></tr>`;
+    <td><div class="abtns"><button class="ab ab-a ch-edit-btn" data-cid="${ch.id}">تعديل</button><button class="ab ab-r ch-del-btn" data-cid="${ch.id}">حذف</button></div></td></tr>`;
   });
-  h+=`</tbody></table></div>`;
+  h+='</tbody></table></div>';
   c.innerHTML=h;
+  c.querySelectorAll(".ch-edit-btn").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      const ch=DATA.children.find(c=>c.id==btn.dataset.cid);if(!ch)return;
+      const lo2=allLOpts();
+      const clsO2=["ملايكة أ","ملايكة ب"].map(x=>`<option value="${x}"${ch.cls===x?" selected":""}>${x}</option>`).join("");
+      openModal("تعديل: "+ch.name,
+        `<div class="fr"><div class="fg"><label>الاسم</label><input type="text" id="ech-n" value="${ch.name}"></div><div class="fg"><label>التليفون</label><input type="text" id="ech-p" value="${ch.phone||""}"></div></div>
+        <div class="fr"><div class="fg"><label>العنوان</label><input type="text" id="ech-a" value="${ch.addr||""}"></div><div class="fg"><label>الميلاد</label><input type="date" id="ech-d" value="${ch.dob||""}"></div></div>
+        <div class="fr"><div class="fg"><label>الفصل</label><select id="ech-c">${clsO2}</select></div><div class="fg"><label>القائد</label><select id="ech-l">${lo2}</select></div></div>`,
+        ()=>{
+          ch.name=document.getElementById("ech-n").value;ch.phone=document.getElementById("ech-p").value;
+          ch.addr=document.getElementById("ech-a").value;ch.dob=document.getElementById("ech-d").value;
+          ch.cls=document.getElementById("ech-c").value;ch.lid=parseInt(document.getElementById("ech-l").value)||0;
+          closeModal();rAdChildren();
+          sheetPost({sheet:"تعديل بيانات",row:[ch.name,ch.cls,lName(ch.lid),ch.phone,ch.addr,ch.dob]});
+        }
+      );
+    });
+  });
+  c.querySelectorAll(".ch-del-btn").forEach(btn=>{
+    btn.addEventListener("click",()=>{if(!confirm("حذف الطفل؟"))return;DATA.children=DATA.children.filter(c=>c.id!=btn.dataset.cid);rAdChildren();});
+  });
 }
 function addChild(){
-  const name=document.getElementById("nc-nm").value;
-  if(!name){alert("ادخل الاسم");return;}
-  const ch={id:nxtId(DATA.children),name,phone:document.getElementById("nc-ph").value,addr:document.getElementById("nc-ad").value,dob:document.getElementById("nc-db").value,cls:document.getElementById("nc-cl").value,lid:parseInt(document.getElementById("nc-ld").value)||0};
-  DATA.children.push(ch);
-  rAdChildren();
+  const name=document.getElementById("nc-nm").value;if(!name){alert("ادخل الاسم");return;}
+  const ch={id:nxtId(DATA.children),name,phone:document.getElementById("nc-ph").value,addr:document.getElementById("nc-ad").value,
+    dob:document.getElementById("nc-db").value,cls:document.getElementById("nc-cl").value,lid:parseInt(document.getElementById("nc-ld").value)||0};
+  DATA.children.push(ch);rAdChildren();
   sheetPost({sheet:ch.cls,row:[ch.name,ch.phone,ch.addr,ch.dob,lName(ch.lid)]});
-}
-function delChild(id){id=parseInt(id);if(!confirm("حذف؟"))return;DATA.children=DATA.children.filter(c=>c.id!==id);rAdChildren();}
-function editChild(id){
-  id=parseInt(id);
-  const ch=DATA.children.find(c=>c.id===id);
-  const lo=allLOpts();
-  const clsO=["ملايكة أ","ملايكة ب"].map(x=>`<option value="${x}" ${ch.cls===x?"selected":""}>${x}</option>`).join("");
-  openModal("تعديل: "+ch.name,
-    `<div class="fr"><div class="fg"><label>الاسم</label><input type="text" id="ech-n" value="${ch.name}"></div><div class="fg"><label>التليفون</label><input type="text" id="ech-p" value="${ch.phone||""}"></div></div>
-    <div class="fr"><div class="fg"><label>العنوان</label><input type="text" id="ech-a" value="${ch.addr||""}"></div><div class="fg"><label>الميلاد</label><input type="date" id="ech-d" value="${ch.dob||""}"></div></div>
-    <div class="fr"><div class="fg"><label>الفصل</label><select id="ech-c">${clsO}</select></div><div class="fg"><label>القائد</label><select id="ech-l">${lo}</select></div></div>`,
-    ()=>{ch.name=document.getElementById("ech-n").value;ch.phone=document.getElementById("ech-p").value;ch.addr=document.getElementById("ech-a").value;ch.dob=document.getElementById("ech-d").value;ch.cls=document.getElementById("ech-c").value;ch.lid=parseInt(document.getElementById("ech-l").value)||0;closeModal();rAdChildren();}
-  );
 }
 
 function rAdLeaders(){
   const c=document.getElementById("tab-ad-leaders");
-  const clsO=`<option value="ملايكة أ">ملايكة أ</option><option value="ملايكة ب">ملايكة ب</option><option value="كلا الفصلين">كلا الفصلين</option>`;
+  const clsO='<option value="ملايكة أ">ملايكة أ</option><option value="ملايكة ب">ملايكة ب</option><option value="كلا الفصلين">كلا الفصلين</option>';
   let h=`<h2 class="sec-title">القادة <span class="badge bg-g">${DATA.leaders.length}</span></h2>
   <div class="add-form"><h3>➕ إضافة قائد</h3>
     <div class="fr"><div class="fg"><label>الاسم</label><input type="text" id="nl-nm"></div><div class="fg"><label>الموبايل</label><input type="text" id="nl-ph"></div></div>
     <div class="fr"><div class="fg"><label>تاريخ الميلاد</label><input type="date" id="nl-db"></div><div class="fg"><label>الفصل</label><select id="nl-cl">${clsO}</select></div></div>
     <button class="sv-btn" onclick="addLeader()">إضافة</button>
   </div>`;
-  if(!DATA.leaders.length){h+=`<div class="empty-state"><div class="ei">👥</div>لم يُضف قادة بعد</div>`;}
+  if(!DATA.leaders.length)h+='<div class="empty-state"><div class="ei">👥</div>لم يُضف قادة بعد</div>';
   else{
-    h+=`<div class="tw"><table><thead><tr><th>الاسم</th><th>الفصل</th><th>الموبايل</th><th>الميلاد</th><th></th></tr></thead><tbody>`;
+    h+='<div class="tw"><table><thead><tr><th>الاسم</th><th>الفصل</th><th>الموبايل</th><th>الميلاد</th><th></th></tr></thead><tbody>';
     DATA.leaders.forEach(l=>{
-      h+=`<tr>
-        <td><b>${l.name}</b></td>
-        <td>${l.cls}</td>
-        <td>${l.phone||"—"}</td>
-        <td>${fDate(l.dob)}</td>
-        <td><div class="abtns">
-          <button class="ab ab-a ldr-edit-btn" data-id="${l.id}">تعديل</button>
-          <button class="ab ab-r ldr-del-btn" data-id="${l.id}">حذف</button>
-        </div></td>
-      </tr>`;
+      h+=`<tr><td><b>${l.name}</b></td><td>${l.cls}</td><td>${l.phone||"—"}</td><td>${fDate(l.dob)}</td>
+      <td><div class="abtns"><button class="ab ab-a ldr-edit-btn" data-lid="${l.id}">تعديل</button><button class="ab ab-r ldr-del-btn" data-lid="${l.id}">حذف</button></div></td></tr>`;
     });
-    h+=`</tbody></table></div>`;
+    h+='</tbody></table></div>';
   }
   c.innerHTML=h;
-
-  // Attach events via data attributes — safe for any name content
   c.querySelectorAll(".ldr-edit-btn").forEach(btn=>{
-    btn.addEventListener("click", ()=> editLeader(parseInt(btn.dataset.id)));
+    btn.addEventListener("click",()=>{
+      const l=DATA.leaders.find(l=>l.id==btn.dataset.lid);
+      if(!l){alert("القائد غير موجود");return;}
+      const clsO2=["ملايكة أ","ملايكة ب","كلا الفصلين"].map(x=>`<option value="${x}"${l.cls===x?" selected":""}>${x}</option>`).join("");
+      openModal("تعديل بيانات: "+l.name,
+        `<div class="fr"><div class="fg"><label>الاسم</label><input type="text" id="el-n" value="${l.name}"></div><div class="fg"><label>الموبايل</label><input type="text" id="el-p" value="${l.phone||""}"></div></div>
+        <div class="fr"><div class="fg"><label>الميلاد</label><input type="date" id="el-d" value="${l.dob||""}"></div><div class="fg"><label>الفصل</label><select id="el-c">${clsO2}</select></div></div>`,
+        ()=>{
+          const newName=document.getElementById("el-n").value.trim();
+          if(!newName){alert("الاسم لا يمكن أن يكون فارغاً");return;}
+          l.name=newName;l.phone=document.getElementById("el-p").value.trim();
+          l.dob=document.getElementById("el-d").value;l.cls=document.getElementById("el-c").value;
+          closeModal();rAdLeaders();
+          sheetPost({sheet:"القادة",action:"update",id:String(l.id),row:[l.name,l.cls,l.phone,l.dob]});
+          showSync("✓ تم تحديث بيانات "+l.name);
+        }
+      );
+    });
   });
   c.querySelectorAll(".ldr-del-btn").forEach(btn=>{
-    btn.addEventListener("click", ()=> delLeader(parseInt(btn.dataset.id)));
+    btn.addEventListener("click",()=>{
+      const l=DATA.leaders.find(l=>l.id==btn.dataset.lid);
+      if(!confirm(`حذف القائد "${l?.name}"؟`))return;
+      DATA.leaders=DATA.leaders.filter(l=>l.id!=btn.dataset.lid);
+      rAdLeaders();showSync("✓ تم حذف القائد");
+    });
   });
 }
 function addLeader(){
-  const name=document.getElementById("nl-nm").value;
-  if(!name){alert("ادخل الاسم");return;}
+  const name=document.getElementById("nl-nm").value;if(!name){alert("ادخل الاسم");return;}
   const l={id:nxtId(DATA.leaders),name,phone:document.getElementById("nl-ph").value,dob:document.getElementById("nl-db").value,cls:document.getElementById("nl-cl").value};
-  DATA.leaders.push(l);
-  rAdLeaders();
+  DATA.leaders.push(l);rAdLeaders();
   sheetPost({sheet:"القادة",row:[l.name,l.cls,l.phone,l.dob]});
-}
-function delLeader(id){
-  id=parseInt(id);
-  if(!confirm("حذف القائد؟")) return;
-  DATA.leaders=DATA.leaders.filter(l=>l.id!==id);
-  rAdLeaders();
-  showSync("✓ تم حذف القائد");
-}
-function editLeader(id){
-  id=parseInt(id);
-  const l=DATA.leaders.find(l=>l.id===id);
-  if(!l){alert("القائد غير موجود — id: "+id);return;}
-  const clsO=["ملايكة أ","ملايكة ب","كلا الفصلين"].map(x=>`<option value="${x}" ${l.cls===x?"selected":""}>${x}</option>`).join("");
-  openModal("تعديل بيانات: "+l.name,
-    `<div class="fr">
-      <div class="fg"><label>الاسم</label><input type="text" id="el-n" value="${l.name}"></div>
-      <div class="fg"><label>الموبايل</label><input type="text" id="el-p" value="${l.phone||""}"></div>
-    </div>
-    <div class="fr">
-      <div class="fg"><label>الميلاد</label><input type="date" id="el-d" value="${l.dob||""}"></div>
-      <div class="fg"><label>الفصل</label><select id="el-c">${clsO}</select></div>
-    </div>`,
-    ()=>{
-      const newName=document.getElementById("el-n").value.trim();
-      if(!newName){alert("الاسم لا يمكن أن يكون فارغاً");return;}
-      l.name=newName;
-      l.phone=document.getElementById("el-p").value.trim();
-      l.dob=document.getElementById("el-d").value;
-      l.cls=document.getElementById("el-c").value;
-      closeModal();
-      rAdLeaders();
-      sheetPost({sheet:"القادة", action:"update", id:String(id), row:[l.name,l.cls,l.phone,l.dob]});
-      showSync("✓ تم تحديث بيانات "+l.name);
-    }
-  );
 }
 
 function rAdLatt(){
   const c=document.getElementById("tab-ad-latt");
-  const lastM=DATA.meetings[DATA.meetings.length-1];
-  let h=`<h2 class="sec-title">حضور القادة</h2>`;
-  if(DATA.meetings.length){
-    h+=`<div class="card" style="margin-bottom:12px"><label class="lbl">الاجتماع:</label>
-    <select class="fi" style="margin-bottom:0" id="ad-la-sel">
-      ${DATA.meetings.map(m=>`<option value="${m.id}" ${m.id==lastM?.id?"selected":""}>اجتماع ${m.num} — ${fDate(m.date)}</option>`).join("")}
-    </select></div>`;
-  }
-  if(!DATA.leaders.length){h+=`<div class="empty-state"><div class="ei">👥</div>لم يُضف قادة بعد</div>`;}
-  const mid=lastM?.id||0;
+  const lastM=DATA.meetings[DATA.meetings.length-1];const mid=lastM?.id||0;
+  let h='<h2 class="sec-title">حضور القادة</h2>';
+  if(DATA.meetings.length)h+=`<div class="card" style="margin-bottom:11px"><label class="lbl">الاجتماع:</label>
+    <select class="fi" style="margin-bottom:0" id="ad-la-sel">${DATA.meetings.map(m=>`<option value="${m.id}"${m.id==mid?" selected":""}>اجتماع ${m.num} — ${fDate(m.date)}</option>`).join("")}</select></div>`;
+  if(!DATA.leaders.length)h+='<div class="empty-state"><div class="ei">👥</div>لم يُضف قادة بعد</div>';
   DATA.leaders.forEach(l=>{
     const key=`la_${mid}_${l.id}`,st=DATA.latt[key]||"",uni=DATA.latt[key+"_u"]||false;
     h+=`<div class="latt-row">
       <div class="latt-name">${l.name} <span class="badge bg-gray">${l.cls}</span></div>
       <div class="latt-ctrl">
-        <button class="st-btn ${st==="present"?"sp":""}" onclick="setLA('${key}',${l.id},'present',this)">حضر ✓</button>
-        <button class="st-btn ${st==="excused"?"se":""}" onclick="setLA('${key}',${l.id},'excused',this)">بعذر</button>
-        <button class="st-btn ${st==="absent"?"sa":""}" onclick="setLA('${key}',${l.id},'absent',this)">بدون عذر</button>
-        <label class="uni-tog"><input type="checkbox" ${uni?"checked":""} onchange="DATA.latt['${key}_u']=this.checked"> بزي</label>
+        <button class="st-btn${st==="present"?" sp":""}" data-key="${key}" data-lid="${l.id}" data-st="present">حضر ✓</button>
+        <button class="st-btn${st==="excused"?" se":""}" data-key="${key}" data-lid="${l.id}" data-st="excused">بعذر</button>
+        <button class="st-btn${st==="absent"?" sa":""}" data-key="${key}" data-lid="${l.id}" data-st="absent">بدون عذر</button>
+        <label class="uni-tog"><input type="checkbox"${uni?" checked":""} data-ukey="${key}_u"> بزي</label>
       </div>
-      <textarea class="notes" style="margin-top:7px" placeholder="ملاحظات...">${DATA.latt[key+"_n"]||""}</textarea>
+      <textarea class="notes" style="margin-top:7px" placeholder="ملاحظات..." data-nkey="${key}_n">${DATA.latt[key+"_n"]||""}</textarea>
     </div>`;
   });
   c.innerHTML=h;
+  c.querySelectorAll(".st-btn[data-lid]").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      const key=btn.dataset.key,st=btn.dataset.st,lid=parseInt(btn.dataset.lid);
+      DATA.latt[key]=st;
+      btn.closest(".latt-ctrl").querySelectorAll(".st-btn").forEach(b=>b.classList.remove("sp","se","sa"));
+      btn.classList.add({present:"sp",excused:"se",absent:"sa"}[st]);
+      const l=DATA.leaders.find(l=>l.id===lid);
+      sheetPost({sheet:"حضور القادة",row:[new Date().toLocaleDateString("ar-EG"),l?.name||lid,{present:"حضر",excused:"بعذر",absent:"بدون عذر"}[st],DATA.latt[key+"_u"]?"بزي":"بدون زي",""]});
+    });
+  });
+  c.querySelectorAll("input[data-ukey]").forEach(cb=>{cb.addEventListener("change",()=>{DATA.latt[cb.dataset.ukey]=cb.checked;});});
+  c.querySelectorAll("textarea[data-nkey]").forEach(ta=>{ta.addEventListener("change",()=>{DATA.latt[ta.dataset.nkey]=ta.value;});});
 }
 
-// =========================================================
-// PASSWORDS (Admin only)
-// =========================================================
 function rPasswords(){
   const c=document.getElementById("tab-ad-passwords");
   let h=`<h2 class="sec-title">إدارة كلمات السر</h2>
   <div class="add-form"><h3>➕ إضافة / تعديل كلمة سر</h3>
     <div class="fr fr3">
-      <div class="fg"><label>الدور</label>
-        <select id="np-role" class="fi" style="margin-bottom:0">
-          <option value="قائد القطاع">قائد القطاع</option>
-          <option value="قائد الفريق">قائد الفريق</option>
-          <option value="مساعد قائد">مساعد قائد</option>
-        </select>
-      </div>
-      <div class="fg"><label>الفريق (إن وجد)</label>
-        <select id="np-cls" class="fi" style="margin-bottom:0">
-          <option value="">— لا ينطبق —</option>
-          <option value="ملايكة أ">ملايكة أ</option>
-          <option value="ملايكة ب">ملايكة ب</option>
-        </select>
-      </div>
+      <div class="fg"><label>الدور</label><select id="np-role" class="fi" style="margin-bottom:0">
+        <option value="قائد القطاع">قائد القطاع</option>
+        <option value="قائد الفريق">قائد الفريق</option>
+        <option value="مساعد قائد">مساعد قائد</option>
+      </select></div>
+      <div class="fg"><label>الفريق</label><select id="np-cls" class="fi" style="margin-bottom:0">
+        <option value="">— لا ينطبق —</option>
+        <option value="ملايكة أ">ملايكة أ</option>
+        <option value="ملايكة ب">ملايكة ب</option>
+      </select></div>
       <div class="fg"><label>كلمة السر</label><input type="text" id="np-pass" placeholder="اكتب كلمة السر"></div>
     </div>
-    <div style="margin-top:10px"><button class="sv-btn" onclick="savePassword()">حفظ في الشيت</button></div>
+    <div style="margin-top:9px"><button class="sv-btn" onclick="savePass()">حفظ في الشيت</button></div>
   </div>`;
-
-  if(!DATA.passwords.length){
-    h+=`<div class="empty-state"><div class="ei">🔒</div>لم تُضف كلمات سر بعد — الباسوورد الافتراضي للأدمن: <b>Jesus2026</b></div>`;
-  } else {
-    h+=`<div class="tw"><table><thead><tr><th>الدور</th><th>الفريق</th><th>كلمة السر</th><th></th></tr></thead><tbody>`;
+  if(!DATA.passwords.length)h+='<div class="empty-state"><div class="ei">🔒</div>لم تُضف كلمات سر — الافتراضي للأدمن: <b>Jesus2026</b></div>';
+  else{
+    h+='<div class="tw"><table><thead><tr><th>الدور</th><th>الفريق</th><th>كلمة السر</th><th></th></tr></thead><tbody>';
     DATA.passwords.forEach((p,i)=>{
       h+=`<tr><td><b>${p.role}</b></td><td>${p.cls||"—"}</td>
       <td><code style="background:var(--gf);padding:2px 8px;border-radius:4px">${p.password}</code></td>
-      <td><button class="ab ab-r" onclick="delPassword(${i})">حذف</button></td></tr>`;
+      <td><button class="ab ab-r pass-del-btn" data-idx="${i}">حذف</button></td></tr>`;
     });
-    h+=`</tbody></table></div>`;
+    h+='</tbody></table></div>';
   }
   c.innerHTML=h;
+  c.querySelectorAll(".pass-del-btn").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      if(!confirm("حذف كلمة السر؟"))return;
+      DATA.passwords.splice(parseInt(btn.dataset.idx),1);
+      rPasswords();
+    });
+  });
 }
-function savePassword(){
-  const role=document.getElementById("np-role").value;
-  const cls=document.getElementById("np-cls").value;
-  const pass=document.getElementById("np-pass").value.trim();
+function savePass(){
+  const role=document.getElementById("np-role").value,cls=document.getElementById("np-cls").value,pass=document.getElementById("np-pass").value.trim();
   if(!pass){alert("ادخل كلمة السر");return;}
-  // Update or add
-  const existing=DATA.passwords.find(p=>p.role===role&&p.cls===cls);
-  if(existing){ existing.password=pass; }
-  else { DATA.passwords.push({role,cls,password:pass}); }
+  const ex=DATA.passwords.find(p=>p.role===role&&p.cls===cls);
+  if(ex)ex.password=pass;else DATA.passwords.push({role,cls,password:pass});
   sheetPost({sheet:"كلمات السر",row:[role,cls,pass]});
   rPasswords();
 }
-function delPassword(i){
-  if(!confirm("حذف كلمة السر دي؟"))return;
-  DATA.passwords.splice(i,1);
-  rPasswords();
-}
 
-// =========================================================
-// BIRTHDAYS
-// =========================================================
 function checkBdays(){
   const today=new Date(),mm=String(today.getMonth()+1).padStart(2,'0'),dd=String(today.getDate()).padStart(2,'0');
   const b=DATA.leaders.find(l=>l.dob&&l.dob.slice(5)===`${mm}-${dd}`);
@@ -1337,32 +1209,27 @@ function checkBdays(){
 function rBdays(){
   const c=document.getElementById("tab-ad-birthdays");
   const today=new Date(),mm=String(today.getMonth()+1).padStart(2,'0'),dd=String(today.getDate()).padStart(2,'0');
-  if(!DATA.leaders.length){c.innerHTML=`<div class="empty-state"><div class="ei">🎂</div>لم يُضف قادة بعد</div>`;return;}
+  if(!DATA.leaders.length){c.innerHTML='<div class="empty-state"><div class="ei">🎂</div>لم يُضف قادة بعد</div>';return;}
   let byM={};
   DATA.leaders.forEach(l=>{if(!l.dob)return;const m=parseInt(l.dob.split("-")[1])-1;if(!byM[m])byM[m]=[];byM[m].push(l);});
-  let h=`<h2 class="sec-title">أعياد ميلاد القادة</h2>`;
+  let h='<h2 class="sec-title">أعياد ميلاد القادة</h2>';
   for(let i=0;i<12;i++){
     if(!byM[i])continue;
-    h+=`<div style="margin-bottom:18px"><div class="mo-title">🗓 ${MONTHS[i]}</div>`;
+    h+=`<div style="margin-bottom:16px"><div class="mo-title">🗓 ${MONTHS[i]}</div>`;
     byM[i].forEach(l=>{
       const isT=l.dob&&l.dob.slice(5)===`${mm}-${dd}`;
-      h+=`<div class="bday-item ${isT?"bday-today":""}"><div class="bday-av">${l.name[0]}</div><div style="flex:1;font-size:14px;font-weight:700">${l.name}${isT?" 🎂":""}</div><div style="font-size:12px;color:var(--mu)">${fDate(l.dob)}</div><span class="badge ${isT?"bg-a":"bg-g"}">${isT?"اليوم!":l.cls}</span></div>`;
+      h+=`<div class="bday-item${isT?" bday-today":""}"><div class="bday-av">${l.name[0]}</div><div style="flex:1;font-size:14px;font-weight:700">${l.name}${isT?" 🎂":""}</div><div style="font-size:12px;color:var(--mu)">${fDate(l.dob)}</div><span class="badge${isT?" bg-a":" bg-g"}">${isT?"اليوم!":l.cls}</span></div>`;
     });
-    h+=`</div>`;
+    h+='</div>';
   }
   c.innerHTML=h;
 }
 
-// =========================================================
-// REPORTS
-// =========================================================
 function rReports(prefix){
-  const scope = prefix==="tl" ? myKids() : DATA.children;
-  const scopeLdrs = prefix==="tl" ? myLdrs() : DATA.leaders;
+  const scope=prefix==="tl"?myKids():DATA.children;
+  const scopeLdrs=prefix==="tl"?myLdrs():DATA.leaders;
   const c=document.getElementById(`tab-${prefix}-reports`);
-  const total=scope.length;
-  const done=scope.filter(ch=>DATA.followup["f_"+ch.id]==="done").length;
-  const pct=total?Math.round(done/total*100):0;
+  const total=scope.length,done=scope.filter(ch=>DATA.followup["f_"+ch.id]==="done").length,pct=total?Math.round(done/total*100):0;
   const lastM=DATA.meetings[DATA.meetings.length-1];
   let pr=0,ex=0,ab=0;
   scope.forEach(ch=>{const s=DATA.attendance[`att_${lastM?.id||0}_${ch.id}`];if(s==="present")pr++;else if(s==="excused")ex++;else if(s==="absent")ab++;});
@@ -1370,76 +1237,55 @@ function rReports(prefix){
   <div class="stats-grid">
     <div class="stat-box"><div class="stat-num">${total}</div><div class="stat-lbl">إجمالي الأولاد</div></div>
     <div class="stat-box"><div class="stat-num">${done}/${total}</div><div class="stat-lbl">تم افتقادهم</div><div class="prog"><div class="prog-fill" style="width:${pct}%"></div></div></div>
-    <div class="stat-box"><div class="stat-num" style="color:var(--g)">${pr}</div><div class="stat-lbl">حضروا (آخر اجتماع)</div></div>
+    <div class="stat-box"><div class="stat-num" style="color:var(--g)">${pr}</div><div class="stat-lbl">حضروا</div></div>
     <div class="stat-box"><div class="stat-num" style="color:var(--am)">${ex}</div><div class="stat-lbl">بعذر</div></div>
     <div class="stat-box"><div class="stat-num" style="color:var(--rd)">${ab}</div><div class="stat-lbl">بدون عذر</div></div>
     <div class="stat-box"><div class="stat-num">${scopeLdrs.length}</div><div class="stat-lbl">القادة</div></div>
   </div>`;
   if(scopeLdrs.length){
-    h+=`<div class="card"><div style="font-size:14px;font-weight:700;margin-bottom:12px">افتقاد الأولاد — كل قائد</div><div class="tw"><table><thead><tr><th>القائد</th><th>الفصل</th><th>الأولاد</th><th>تم</th><th>النسبة</th></tr></thead><tbody>`;
+    h+='<div class="card"><div style="font-size:14px;font-weight:700;margin-bottom:11px">افتقاد الأولاد — كل قائد</div><div class="tw"><table><thead><tr><th>القائد</th><th>الفصل</th><th>الأولاد</th><th>تم</th><th>النسبة</th></tr></thead><tbody>';
     scopeLdrs.forEach(l=>{
       const kids=DATA.children.filter(c=>c.lid==l.id);
       const d=kids.filter(c=>DATA.followup["f_"+c.id]==="done").length;
       const p=kids.length?Math.round(d/kids.length*100):0;
       h+=`<tr><td><b>${l.name}</b></td><td>${l.cls}</td><td>${kids.length}</td><td>${d}</td><td><div style="display:flex;align-items:center;gap:7px"><div class="prog" style="flex:1;min-width:50px"><div class="prog-fill" style="width:${p}%"></div></div><b style="font-size:11px;color:var(--g)">${p}%</b></div></td></tr>`;
     });
-    h+=`</tbody></table></div></div>`;
-
-    // Leaders visitation report — grouped by class
-    const lvisitLdrs = prefix==="ad" ? DATA.leaders : scopeLdrs;
-    const lDone = lvisitLdrs.filter(l=>DATA.lvisit["lv_"+l.id]==="done").length;
-    const lPct = lvisitLdrs.length ? Math.round(lDone/lvisitLdrs.length*100) : 0;
-    h+=`<div class="card" style="margin-top:16px">
-      <div style="font-size:14px;font-weight:700;margin-bottom:12px">افتقاد القادة 👥</div>
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-        <span style="font-size:13px;color:var(--mu)">إجمالي القطاع</span>
-        <b style="color:var(--g)">${lDone}/${lvisitLdrs.length} (${lPct}%)</b>
-      </div>
-      <div class="prog" style="margin-bottom:16px"><div class="prog-fill" style="width:${lPct}%"></div></div>
-      <div class="tw"><table><thead><tr><th>القائد</th><th>الفصل</th><th>حالة الافتقاد</th><th>ملاحظات</th></tr></thead><tbody>`;
-    lvisitLdrs.forEach(l=>{
-      const st=DATA.lvisit["lv_"+l.id]||"";
-      const nt=DATA.lvisit["lv_"+l.id+"_n"]||"";
-      h+=`<tr>
-        <td><b>${l.name}</b></td>
-        <td>${l.cls}</td>
-        <td><span class="badge ${st==="done"?"bg-g":"bg-r"}">${st==="done"?"تم ✓":"لم يتم"}</span></td>
-        <td style="font-size:12px;color:var(--mu)">${nt||"—"}</td>
-      </tr>`;
+    h+='</tbody></table></div></div>';
+    // Leaders visitation
+    const lvLdrs=prefix==="ad"?DATA.leaders:scopeLdrs;
+    const lvDone=lvLdrs.filter(l=>DATA.lvisit["lv_"+l.id]==="done").length;
+    const lvPct=lvLdrs.length?Math.round(lvDone/lvLdrs.length*100):0;
+    h+=`<div class="card" style="margin-top:14px"><div style="font-size:14px;font-weight:700;margin-bottom:11px">افتقاد القادة 👥</div>
+    <div style="display:flex;justify-content:space-between;margin-bottom:7px"><span style="font-size:13px;color:var(--mu)">الإجمالي</span><b style="color:var(--g)">${lvDone}/${lvLdrs.length} (${lvPct}%)</b></div>
+    <div class="prog" style="margin-bottom:14px"><div class="prog-fill" style="width:${lvPct}%"></div></div>
+    <div class="tw"><table><thead><tr><th>القائد</th><th>الفصل</th><th>الحالة</th><th>ملاحظات</th></tr></thead><tbody>`;
+    lvLdrs.forEach(l=>{
+      const st=DATA.lvisit["lv_"+l.id]||"",nt=DATA.lvisit["lv_"+l.id+"_n"]||"";
+      h+=`<tr><td><b>${l.name}</b></td><td>${l.cls}</td><td><span class="badge ${st==="done"?"bg-g":"bg-r"}">${st==="done"?"تم ✓":"لم يتم"}</span></td><td style="font-size:12px;color:var(--mu)">${nt||"—"}</td></tr>`;
     });
-    h+=`</tbody></table></div>`;
-
-    // Per-class breakdown for admin
+    h+='</tbody></table></div>';
     if(prefix==="ad"){
-      h+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px">`;
+      h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px">';
       ["ملايكة أ","ملايكة ب"].forEach(cls=>{
-        const clsLdrs=DATA.leaders.filter(l=>l.cls===cls||l.cls==="كلا الفصلين");
-        const clsDone=clsLdrs.filter(l=>DATA.lvisit["lv_"+l.id]==="done").length;
-        const clsPct=clsLdrs.length?Math.round(clsDone/clsLdrs.length*100):0;
-        h+=`<div class="stat-box"><div style="font-size:13px;font-weight:700;margin-bottom:8px">${cls}</div>
-          <div class="stat-num" style="font-size:22px">${clsDone}/${clsLdrs.length}</div>
-          <div class="stat-lbl">قادة تم افتقادهم</div>
-          <div class="prog"><div class="prog-fill" style="width:${clsPct}%"></div></div>
-        </div>`;
+        const cl=DATA.leaders.filter(l=>l.cls===cls||l.cls==="كلا الفصلين");
+        const cd=cl.filter(l=>DATA.lvisit["lv_"+l.id]==="done").length;
+        const cp=cl.length?Math.round(cd/cl.length*100):0;
+        h+=`<div class="stat-box"><div style="font-size:13px;font-weight:700;margin-bottom:7px">${cls}</div><div class="stat-num" style="font-size:20px">${cd}/${cl.length}</div><div class="stat-lbl">قادة تم افتقادهم</div><div class="prog"><div class="prog-fill" style="width:${cp}%"></div></div></div>`;
       });
-      h+=`</div>`;
+      h+='</div>';
     }
-    h+=`</div>`;
+    h+='</div>';
   }
   c.innerHTML=h;
 }
 
-// =========================================================
-// STARTUP
-// =========================================================
+// ── STARTUP ────────────────────────────────────────────
 selectRole("teamleader");
-window.addEventListener("load", async ()=>{
+window.addEventListener("load",async()=>{
   await loadAll();
   const cls=document.getElementById("sel-class").value;
-  if(cls) document.getElementById("sel-class").dispatchEvent(new Event("change"));
+  if(cls)document.getElementById("sel-class").dispatchEvent(new Event("change"));
 });
-
-
 </script>
 </body>
 </html>

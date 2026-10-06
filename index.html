@@ -409,11 +409,21 @@ async function sheetGet(name,tries=2){
 }
 async function sheetPost(payload){
   try{
-    // Use text/plain so Apps Script treats it as a simple CORS request
-    // Apps Script reads e.postData.contents regardless of content-type
     await fetch(AS_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain"},body:JSON.stringify(payload)});
     showSync("✓ تم الحفظ في الشيت");
   }catch(e){showSync("⚠ تعذر الحفظ",true);}
+}
+
+// Update only specific cells that changed
+// changes = [ {col: "اسم العمود" | colNumber, value: newValue}, ... ]
+async function sheetPatch(sheetName, matchValue, changes){
+  if(!changes||!changes.length)return;
+  for(const ch of changes){
+    await fetch(AS_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain"},
+      body:JSON.stringify({sheet:sheetName,action:"updateCell",match:matchValue,col:ch.col,value:ch.value})
+    });
+  }
+  showSync("✓ تم الحفظ في الشيت");
 }
 
 async function sheetPostWithResponse(payload){
@@ -1038,7 +1048,7 @@ function rTLChildren(){
   c.querySelectorAll(".kid-ldr-sel").forEach(sel=>{
     sel.addEventListener("change",()=>{
       const ch=DATA.children.find(c=>c.id==sel.dataset.cid);
-      if(ch){ch.lid=parseInt(sel.value)||0;sheetPost({sheet:ch.cls,action:"update",match:ch.name,row:[ch.name,ch.addr||"",ch.dob||"",ch.phone||"","",lName(ch.lid)]});}
+      if(ch){ch.lid=parseInt(sel.value)||0;sheetPatch(ch.cls,ch.name,[{col:"القائد المسئول",value:lName(ch.lid)}]);}
     });
   });
   c.querySelectorAll(".kid-edit-btn").forEach(btn=>{
@@ -1049,7 +1059,19 @@ function rTLChildren(){
         `<div class="fr"><div class="fg"><label>التليفون</label><input type="text" id="ec-ph" value="${ch.phone||""}"></div>
         <div class="fg"><label>العنوان</label><input type="text" id="ec-ad" value="${ch.addr||""}"></div></div>
         <div class="fr fr1"><div class="fg"><label>القائد</label><select id="ec-lid"><option value="0">--</option>${lOpts(ml2)}</select></div></div>`,
-        ()=>{ch.phone=document.getElementById("ec-ph").value;ch.addr=document.getElementById("ec-ad").value;ch.lid=parseInt(document.getElementById("ec-lid").value)||0;closeModal();rTLChildren();}
+        ()=>{
+          const nPhone=document.getElementById("ec-ph").value.trim();
+          const nAddr=document.getElementById("ec-ad").value.trim();
+          const nLid=parseInt(document.getElementById("ec-lid").value)||0;
+          const changes=[];
+          if(nPhone!==ch.phone) changes.push({col:"تليفون الام",value:nPhone});
+          if(nAddr!==ch.addr)   changes.push({col:"العنوان",value:nAddr});
+          if(nLid!==ch.lid)     changes.push({col:"القائد المسئول",value:lName(nLid)});
+          const oldName=ch.name; const cls=ch.cls;
+          ch.phone=nPhone;ch.addr=nAddr;ch.lid=nLid;
+          closeModal();rTLChildren();
+          if(changes.length) sheetPatch(cls,oldName,changes);
+        }
       );
     });
   });
@@ -1213,12 +1235,17 @@ function rTLActivities(){
           <select id="ea-ldr"><option value="">-- اختار --</option>${lOpts(ml).replace(`value="${curLdr}"`,`value="${curLdr}" selected`)}</select>
         </div></div>`,
         ()=>{
-          a.name=document.getElementById("ea-n").value;
-          a.date=document.getElementById("ea-d").value;
-          const ldrVal=parseInt(document.getElementById("ea-ldr").value)||0;
-          a[teamKey2]=ldrVal;
+          const oldName=a.name;
+          const nName=document.getElementById("ea-n").value.trim();
+          const nDate=document.getElementById("ea-d").value;
+          const nLdr=parseInt(document.getElementById("ea-ldr").value)||0;
+          const changes=[];
+          if(nName!==a.name) changes.push({col:"الاسم",value:nName});
+          if(nDate!==a.date) changes.push({col:"التاريخ",value:nDate});
+          if(nLdr!==a[teamKey2]) changes.push({col:teamKey2==="leader_a"?"قائد أ":"قائد ب",value:lName(nLdr)});
+          a.name=nName;a.date=nDate;a[teamKey2]=nLdr;
           closeModal();rTLActivities();
-          sheetPost({sheet:"الأنشطة",action:"update",match:a.name,row:[a.name,a.date,a.cls,lName(a.leader_a),lName(a.leader_b)]});
+          if(changes.length) sheetPatch("الأنشطة",oldName,changes);
         }
       );
     });
@@ -1433,27 +1460,48 @@ function rAdPlan(){
         <div style="font-size:12px;font-weight:700;color:var(--g);margin-bottom:8px;margin-top:4px">فقرات الاجتماع:</div>
         ${paraRows}`,
         ()=>{
-          m.date=document.getElementById("em-dt").value;
+          const matchKey=`اجتماع ${m.num}`;
+          const changes=[];
+          // date
+          const nDate=document.getElementById("em-dt").value;
+          if(nDate!==m.date) changes.push({col:"التاريخ",value:nDate});
+          // responsible
+          const nRespA=parseInt(document.getElementById("em-resp-a").value)||null;
+          const nRespB=parseInt(document.getElementById("em-resp-b").value)||null;
+          if(nRespA!==m.responsible_a) changes.push({col:"مسئول أ",value:lName(nRespA)});
+          if(nRespB!==m.responsible_b) changes.push({col:"مسئول ب",value:lName(nRespB)});
+          // paras — map key to column names
+          const PARA_COLS_NAMES={
+            spiritual:["روحية-موضوع","روحية-قائد أ","روحية-قائد ب"],
+            scout:    ["كشفية-موضوع","كشفية-قائد أ","كشفية-قائد ب"],
+            culture:  ["ثقافية-موضوع","ثقافية-قائد أ","ثقافية-قائد ب"],
+            game:     ["لعبة-موضوع",  "لعبة-قائد أ",  "لعبة-قائد ب"],
+            other:    ["أخرى-موضوع",  "أخرى-قائد أ",  "أخرى-قائد ب"]
+          };
+          // update num
           m.num=parseInt(document.getElementById("em-nu").value);
-          m.responsible_a=parseInt(document.getElementById("em-resp-a").value)||null;
-          m.responsible_b=parseInt(document.getElementById("em-resp-b").value)||null;
+          m.date=nDate;
+          m.responsible_a=nRespA;
+          m.responsible_b=nRespB;
           PARA_KEYS.forEach(k=>{
             if(!m.paras[k])m.paras[k]={};
-            m.paras[k].topic=document.getElementById(`ep-topic-${k}`).value;
-            m.paras[k].leaders_a=Array.from(document.getElementById(`ep-ldrs-a-${k}`).selectedOptions).map(o=>parseInt(o.value));
-            m.paras[k].leaders_b=Array.from(document.getElementById(`ep-ldrs-b-${k}`).selectedOptions).map(o=>parseInt(o.value));
+            const oldTopic=m.paras[k].topic||"";
+            const oldA=JSON.stringify(m.paras[k].leaders_a||[]);
+            const oldB=JSON.stringify(m.paras[k].leaders_b||[]);
+            const nTopic=document.getElementById(`ep-topic-${k}`).value;
+            const nLdrsA=Array.from(document.getElementById(`ep-ldrs-a-${k}`).selectedOptions).map(o=>parseInt(o.value));
+            const nLdrsB=Array.from(document.getElementById(`ep-ldrs-b-${k}`).selectedOptions).map(o=>parseInt(o.value));
+            const cols=PARA_COLS_NAMES[k];
+            if(nTopic!==oldTopic)           changes.push({col:cols[0],value:nTopic});
+            if(JSON.stringify(nLdrsA)!==oldA) changes.push({col:cols[1],value:lNamesArr(nLdrsA)});
+            if(JSON.stringify(nLdrsB)!==oldB) changes.push({col:cols[2],value:lNamesArr(nLdrsB)});
+            m.paras[k].topic=nTopic;
+            m.paras[k].leaders_a=nLdrsA;
+            m.paras[k].leaders_b=nLdrsB;
             m.paras[k].leaders=allParaLeaders(m.paras[k]);
           });
-          closeModal();
-          rAdPlan();
-          sheetPost({sheet:"خطة الاجتماعات",action:"update",match:`اجتماع ${m.num}`,
-            row:[
-              `اجتماع ${m.num}`, m.date,
-              lName(m.responsible_a), lName(m.responsible_b),
-              ...PARA_KEYS.map(k=>m.paras[k]?.topic||""),
-              ...PARA_KEYS.map(k=>lNamesArr(m.paras[k]?.leaders_a||[])),
-              ...PARA_KEYS.map(k=>lNamesArr(m.paras[k]?.leaders_b||[]))
-            ]});
+          closeModal();rAdPlan();
+          if(changes.length) sheetPatch("خطة الاجتماعات",matchKey,changes);
           showSync("✓ تم تحديث الاجتماع");
         }
       );
@@ -1468,7 +1516,17 @@ function rAdPlan(){
       const a=DATA.activities.find(x=>x.id==btn.dataset.aid);if(!a)return;
       openModal("تعديل نشاط",
         `<div class="fr"><div class="fg"><label>الاسم</label><input type="text" id="ea-n" value="${a.name}"></div><div class="fg"><label>التاريخ</label><input type="date" id="ea-d" value="${a.date||""}"></div></div>`,
-        ()=>{a.name=document.getElementById("ea-n").value;a.date=document.getElementById("ea-d").value;closeModal();rAdPlan();}
+        ()=>{
+          const oldName=a.name;
+          const nName=document.getElementById("ea-n").value.trim();
+          const nDate=document.getElementById("ea-d").value;
+          const changes=[];
+          if(nName!==a.name) changes.push({col:"الاسم",value:nName});
+          if(nDate!==a.date) changes.push({col:"التاريخ",value:nDate});
+          a.name=nName;a.date=nDate;
+          closeModal();rAdPlan();
+          if(changes.length) sheetPatch("الأنشطة",oldName,changes);
+        }
       );
     });
   });
@@ -1536,11 +1594,23 @@ function rAdChildren(){
         <div class="fr"><div class="fg"><label>العنوان</label><input type="text" id="ech-a" value="${ch.addr||""}"></div><div class="fg"><label>الميلاد</label><input type="date" id="ech-d" value="${ch.dob||""}"></div></div>
         <div class="fr"><div class="fg"><label>الفصل</label><select id="ech-c">${clsO2}</select></div><div class="fg"><label>القائد</label><select id="ech-l">${lo2}</select></div></div>`,
         ()=>{
-          ch.name=document.getElementById("ech-n").value;ch.phone=document.getElementById("ech-p").value;
-          ch.addr=document.getElementById("ech-a").value;ch.dob=document.getElementById("ech-d").value;
-          ch.cls=document.getElementById("ech-c").value;ch.lid=parseInt(document.getElementById("ech-l").value)||0;
+          const oldName=ch.name; const oldCls=ch.cls;
+          const nName=document.getElementById("ech-n").value.trim();
+          const nPhone=document.getElementById("ech-p").value.trim();
+          const nAddr=document.getElementById("ech-a").value.trim();
+          const nDob=document.getElementById("ech-d").value;
+          const nCls=document.getElementById("ech-c").value;
+          const nLid=parseInt(document.getElementById("ech-l").value)||0;
+          // col names match sheet headers: الاسم, العنوان, تاريخ الميلاد, تليفون الام, القائد المسئول
+          const changes=[];
+          if(nName!==ch.name)   changes.push({col:"الاسم",value:nName});
+          if(nPhone!==ch.phone) changes.push({col:"تليفون الام",value:nPhone});
+          if(nAddr!==ch.addr)   changes.push({col:"العنوان",value:nAddr});
+          if(nDob!==ch.dob)     changes.push({col:"تاريخ الميلاد",value:nDob});
+          if(nLid!==ch.lid)     changes.push({col:"القائد المسئول",value:lName(nLid)});
+          ch.name=nName;ch.phone=nPhone;ch.addr=nAddr;ch.dob=nDob;ch.cls=nCls;ch.lid=nLid;
           closeModal();rAdChildren();
-          sheetPost({sheet:ch.cls,action:"update",match:ch.name,row:[ch.name,ch.phone,ch.addr,ch.dob,lName(ch.lid)]});
+          if(changes.length) sheetPatch(oldCls,oldName,changes);
         }
       );
     });
@@ -1594,10 +1664,18 @@ function rAdLeaders(){
         ()=>{
           const newName=document.getElementById("el-n").value.trim();
           if(!newName){alert("الاسم لا يمكن أن يكون فارغاً");return;}
-          l.name=newName;l.phone=document.getElementById("el-p").value.trim();
-          l.dob=document.getElementById("el-d").value;l.cls=document.getElementById("el-c").value;
+          const oldName=l.name;
+          const changes=[];
+          const nPhone=document.getElementById("el-p").value.trim();
+          const nDob=document.getElementById("el-d").value;
+          const nCls=document.getElementById("el-c").value;
+          if(newName!==l.name) changes.push({col:"الاسم",value:newName});
+          if(nPhone!==l.phone) changes.push({col:"الموبايل",value:nPhone});
+          if(nDob!==l.dob)     changes.push({col:"تاريخ الميلاد",value:nDob});
+          if(nCls!==l.cls)     changes.push({col:"الفصل",value:nCls});
+          l.name=newName;l.phone=nPhone;l.dob=nDob;l.cls=nCls;
           closeModal();rAdLeaders();
-          sheetPost({sheet:"القادة",action:"update",match:l.name,row:[l.name,l.cls,l.phone,l.dob]});
+          if(changes.length) sheetPatch("القادة",oldName,changes);
           showSync("✓ تم تحديث بيانات "+l.name);
         }
       );
